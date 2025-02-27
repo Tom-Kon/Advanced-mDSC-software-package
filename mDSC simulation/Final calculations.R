@@ -43,6 +43,7 @@ resampled_points$RHF <- RHF
 NRHF <- resampled_points$rollmean - resampled_points$RHF
 resampled_points$NRHF <- NRHF
 names(resampled_points)[names(resampled_points) == "rollmean"] <- "THF"
+resampled_points$TRef <- resampled_points$time*heatRate + startTemp
 
 
 loess_model_RHF <- loess(RHF ~ time, data = resampled_points, span = loessAlpha)
