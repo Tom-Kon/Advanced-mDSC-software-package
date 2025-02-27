@@ -13,6 +13,8 @@ library(stats)
 #However, for a FT, you want equally-spaced time-values. That's why THF and 
 #RHF calculations use different inputs. 
 
+#Hello hello test test :)))
+
 rm(list = ls())
 graphics.off()
 
