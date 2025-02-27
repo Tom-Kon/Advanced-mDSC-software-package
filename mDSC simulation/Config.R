@@ -9,9 +9,11 @@ endTemp <- 180       # in °C
 period <- 40        # in modulations/sec
 periodSignal <- 40    # in sec
 heatRate <- 2/60        # in °C/sec
-phase <- -0.4 # in rad
+phase <- -0.2 # in rad
 ws <- period*sampling*1
 loessAlpha <- 0.05
+user_frequency <- 1/period
+
 
 #Temperature mod:
 Atemp <- 0.212 # in °C
@@ -40,7 +42,7 @@ deltaHFTg <- -0.268*heatRate  # in W/g
 
 
 #Small melting peaks
-MeltEnth <- -0.04
+MeltEnth <- -0.02
 phase_melt <- 0
 locationMelt <- c(134, 154, 144)   # in °C
 

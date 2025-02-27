@@ -1,112 +1,14 @@
-library(ggplot2)
-library(dplyr)
-library(openxlsx)
-library(grid)
-library(signal)
-library(zoo)
-library(stats)
 
-
-#NOTE: one of the main issues is the requirements of a moving window and how
-#those requirements depend on what you're actually trying to achieve. 
-#Basically, for a simple time-average, you want equally-spaced y-values. 
-#However, for a FT, you want equally-spaced time-values. That's why THF and 
-#RHF calculations use different inputs. 
 
 rm(list = ls())
 graphics.off()
 
 
-#**SETTINGS*#
-savetitle <- "20s period 4 °C_min HR"
-
-
-#General EVERYTHING IN SECOND - EVERYTHING!!!!!!!!!!!!!!!!!!!!!!
-sampling <- 10 #in pts/sec
-startTemp <- 20      # in °C
-endTemp <- 180       # in °C
-period <- 40        # in modulations/sec
-periodSignal <- 40    # in sec
-heatRate <- 2/60        # in °C/sec
-phase <- -0.4 # in rad
-ws <- period*sampling*1
-loessAlpha <- 0.05
-
-#Temperature mod:
-Atemp <- 0.212 # in °C
-
-#Reversing Heat flow:
-deltaRHFPreTg <- -0.000137  # in W/(g*°C)
-deltaRHFPostTg <- -0.000120  # in W/(g*°C)
-StartRHFPreTg <- -0.040 # in J/(g*°C)
-
-deltaRevCpTempPreTg <- -deltaRHFPreTg/heatRate
-deltaRevCpTempPostTg <- -deltaRHFPostTg/heatRate
-StartRevCpTempPreTg <- -StartRHFPreTg/heatRate
-
-#Baseline total heat flow
-deltaHFPreTg <- -0.000286 # in W/(g*°C)
-deltaHFPostTg <- -0.000068 # in W/(g*°C)
-StartHFTempPreTg <- -0.035 # in W/g
-
-
-
-#Tg
-locationTgTHF <- c(28.46, 39.13, 33.77) # in °C
-locationTgRHF <- c(35, 45, 40) # in °C
-deltaCpTg <- 0.268   # in J/(g*°C)
-deltaHFTg <- -0.268*heatRate  # in W/g
-
-
-#Small melting peaks
-MeltEnth <- -0.04
-phase_melt <- 0
-locationMelt <- c(134, 154, 144)   # in °C
-
-
-#Crystallisation
-Crystalenth <- 0.005
-locationcrystal <-c(80,100,90) # in °C
-
-
-#Enthalpy recovery
-locationEnthRec <-c(30,45,37.5) # in °C
-EnthrecEnth <- -0.002
-
+source("mDSC simulation/Libraries.R")
+source("mDSC simulation/config.R")
+source("mDSC simulation/Time point generation.R")
 
 #**CODE*#
-
-# Basic definitions
-freq <- 1/period
-timeSpan <- (endTemp - startTemp) / heatRate
-
-.nrMods <- ceiling(timeSpan/period)
-
-# Define total number of points
-points_per_mod <- period*sampling  # Points per modulation
-total_points <- .nrMods * (points_per_mod +1) # Total points needed
-
-# Initialize vector with correct length
-times <- numeric(total_points)
-groups <- numeric(total_points)
-
-# Fill the vectors iteratively
-for (i in 1:.nrMods) {
-  start_idx <- (i - 1) * (points_per_mod + 1) + 1  # Adjust for extra points
-  end_idx <- i * (points_per_mod + 1)  # Include extra point
-  times[start_idx:end_idx] <- (i-1) * period + seq(0, period, length.out = (points_per_mod+1))
-  groups[start_idx:end_idx] <- i
-}
-
-# Convert to a data frame and filter out duplicates
-df1 <- data.frame(times, groups) %>%
-  distinct(times, .keep_all = TRUE)  # Keep the first occurrence of each time point
-df1 <- df1[-1,]
-times <- df1$times
-groups <- df1$groups
-
-
-N <- length(times)
 modTemp <- Atemp * sin(2*pi/period * times) + heatRate * times
 modTempnoRamp <- Atemp * sin(2*pi/period * times)
 TRef <- startTemp + heatRate * times
@@ -322,7 +224,6 @@ rolling_amplitude <- rollapply(resampled_points$BaselinecorrMHFNotEven, width = 
   amplitude_spectrum <- Mod(fft_result)
   
   # Find the index of the closest frequency to the user-defined frequency
-  user_frequency <- 1/period
   bin <- which.min(abs(frequencies - user_frequency))
   
   # Extract AC component as the amplitude at the first harmonic
