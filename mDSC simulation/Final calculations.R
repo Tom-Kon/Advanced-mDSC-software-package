@@ -53,3 +53,5 @@ resampled_points$loessTHF <- predict(loess_model_THF, newdata = resampled_points
 
 loess_model_NRHF <- loess(NRHF ~ time, data = resampled_points, span = loessAlpha)
 resampled_points$loessNRHF <- predict(loess_model_NRHF, newdata = resampled_points$time)
+
+resampled_points <<- resampled_points
