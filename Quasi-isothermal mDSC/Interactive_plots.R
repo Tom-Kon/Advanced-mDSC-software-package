@@ -1,9 +1,3 @@
-# shiny_app.R
-
-library(shiny)
-library(ggplot2)
-library(plotly)
-
 runDSCShinyApp <- function(sample_results, average_heat_flow_per_pattern) {
   
   ui <- fluidPage(

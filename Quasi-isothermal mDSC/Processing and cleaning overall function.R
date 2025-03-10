@@ -1,7 +1,6 @@
 source("detailed functions.R")
 source("config.R")
-library(crayon)
-library(rstudioapi)
+
 
 
 

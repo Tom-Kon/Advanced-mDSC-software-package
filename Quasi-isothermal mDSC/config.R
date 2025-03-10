@@ -1,9 +1,9 @@
 #What to print, save, calculate? ------------
 plot_datasteps4 <- FALSE
 saveplotdatasteps4 <- FALSE
-saveNRHFplot <- TRUE
-saveRHFplot <- TRUE
-savemanualRHFplot <- TRUE
+saveNRHFplot <- FALSE
+saveRHFplot <- FALSE
+savemanualRHFplot <- FALSE
 saveDatasteps <- FALSE
 saveDatasteps2 <- FALSE
 saveDatasteps3 <- FALSE
@@ -11,7 +11,7 @@ saveDatasteps4 <- FALSE
 saveExtremadf1 <- FALSE
 saveExtremadf2 <- FALSE
 saveExtremadf3 <- FALSE
-saveSummaryFT <- TRUE
+saveSummaryFT <- FALSE
 
 #----------------------------------
 

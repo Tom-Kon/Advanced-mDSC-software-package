@@ -1,7 +1,5 @@
-library(plotly)
-
 #Change when changing file----------
-setwd("C:/Users/u0155764/OneDrive - KU Leuven/Tom Konings/Software/Quasi-isothermal mDSC analyzer")
+setwd("C:/Users/u0155764/OneDrive - KU Leuven/Tom Konings/Software/DSC full app (git clone)/mDSC_apps/Quasi-isothermal mDSC")
 fileName <- "DSC_data_240minanneal"
 modulations_back <- 28
 subtractblank <- FALSE
@@ -9,7 +7,7 @@ sample_size <- 5.79
 Interactive <- FALSE
 #----------------------------
 
-
+source("libraries.R")
 source("Processing and cleaning overall function.R")
 source("config.R")
 source("plots.R")

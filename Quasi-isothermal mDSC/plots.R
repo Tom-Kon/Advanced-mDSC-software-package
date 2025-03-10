@@ -1,6 +1,3 @@
-library(ggplot2)
-library(plotly)
-
 NRHF_plot <- function(sample_results) {
   
  NRHF_p <- ggplot(sample_results, aes(x = TRef)) +
