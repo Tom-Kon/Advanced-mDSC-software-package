@@ -192,7 +192,8 @@ delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df) {
 #   
 # }
 
-# Define a function to delete data after the last minimum for each pattern
+
+# Define a function to only keep data after an equilibrium is reached
 delete_data_until_equil <- function(data_steps_cleaned_3, extrema_df2) {
   # Initialize an empty dataframe to store the filtered results
   data_steps_cleaned_4 <- data.frame()
@@ -209,8 +210,16 @@ delete_data_until_equil <- function(data_steps_cleaned_3, extrema_df2) {
     
     # Get the time and temperature of the last minimum
     max_time <- last_maximum$time
-    start_time <- max_time-(period*modulations_back)
+    target_time <- max_time-(period*modulations_back)
     max_temp <- last_maximum$temperature
+    
+    
+    # Find the row in pattern_extrema whose time is closest to the target time
+    closest_row <- maxima_for_pattern %>% 
+      slice(which.min(abs(time - target_time)))
+    
+    # Use that row’s temperature as the starting time
+    start_time <- closest_row$time
     
     # Check the condition: if the minimum is larger than Tref
     data_from_start <- data_steps_cleaned_3 %>%
