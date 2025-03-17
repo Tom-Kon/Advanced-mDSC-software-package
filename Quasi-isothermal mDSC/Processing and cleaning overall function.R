@@ -4,25 +4,22 @@ source("config.R")
 
 
 
-processDSC <- function(file, export = FALSE, rangesmin, rangesmax, starting_temp, step_size, temp_margin_first_cleanup,
-                       modulations_back, period, setAmplitude, tempModAmplitude) {
-  library(readxl)  
-  library(dplyr)   
-  library(ggplot2)
-  library(openxlsx)
-  library(tidyr)  # For unnest
-  library(purrr)
+processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp, step_size, temp_margin_first_cleanup,
+                       modulations_back, period, setAmplitude) {
+
+  tempModAmplitude <- setAmplitude*2*pi/period
+
   
   # 1. Load and pre‐process the data -------------------------------
-  d <- na.omit(read_excel(paste0(file, ".xlsx")))
+  d <- na.omit(read.xlsx(Excel))
   d <- d[-1,]
   d[] <- lapply(d, function(x) if(is.character(x)) as.numeric(gsub(",", ".", x)) else x)
   names(d) <- c("time", "temperature", "heat_flow")
   
   # Define the temperature ranges----
   rangesn <- c(0:100)
-  rangesmax <- starting_temp + rangesn * step_size + temp_margin_first_cleanup
-  rangesmin <- starting_temp + rangesn * step_size - temp_margin_first_cleanup
+  rangesmax <- starting_temp + rangesn * step_size + setAmplitude + temp_margin_first_cleanup
+  rangesmin <- starting_temp + rangesn * step_size - setAmplitude - temp_margin_first_cleanup
 
   
   # Filter based on temperature ranges
@@ -35,21 +32,21 @@ processDSC <- function(file, export = FALSE, rangesmin, rangesmax, starting_temp
   
   # Assign each data point to a pattern
   d_steps <- d_unique %>%
-    mutate(pattern = floor((temperature - starting_temp + temp_margin_first_cleanup)/ step_size))
+    mutate(pattern = floor((temperature - starting_temp + setAmplitude + temp_margin_first_cleanup)/ step_size))
   
   # Apply your duplicate-filtering function (already defined in your code)
   d_steps_cleaned <- filter_duplicates(d_steps)
   
   
+  #Generate extrema_df1
+  extrema_df1 <- d_steps_cleaned %>% 
+    group_by(pattern) %>% 
+    summarise(extrema_info = list(locate_extrema_manual(heat_flow, time, temperature))) %>% 
+    unnest(cols = c(extrema_info))
   
   # Then proceed with your cleaning steps – note that you must run your functions that delete data etc.
-  d_steps_cleaned_2 <- delete_data_after_last_maximum(d_steps_cleaned, 
-                                                      # Compute extrema (using your function)
-                                                      d_steps_cleaned %>% 
-                                                        group_by(pattern) %>% 
-                                                        summarise(extrema_info = list(locate_extrema_manual(heat_flow, time, temperature))) %>% 
-                                                        unnest(cols = c(extrema_info))
-  )
+  d_steps_cleaned_2 <- delete_data_after_last_maximum(d_steps_cleaned, extrema_df1)
+
   
   # Recompute extrema on the cleaned data for the subsequent steps
   extrema_counts2 <- d_steps_cleaned_2 %>%
@@ -59,12 +56,14 @@ processDSC <- function(file, export = FALSE, rangesmin, rangesmax, starting_temp
   extrema_df2 <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
   # d_steps_cleaned_3 <- delete_data_after_last_minimum(d_steps_cleaned_2, extrema_df2)
-  d_steps_cleaned_4 <- delete_data_until_equil(d_steps_cleaned_2, extrema_df2)
+  d_steps_cleaned_3 <- delete_data_until_equil(d_steps_cleaned_2, extrema_df2)
+  TRef <- d_steps_cleaned_3$pattern*step_size+starting_temp
+  d_steps_cleaned_3 <- cbind(d_steps_cleaned_3, TRef)
   
   # 2. Compute the FFT and extract the dc component ----------------------
   
   # Group the data and store the time vector for each group
-  ft_averages <- d_steps_cleaned_4 %>%
+  ft_averages <- d_steps_cleaned_3 %>%
     group_by(pattern) %>%
     summarise(
       n_points = n(),
@@ -152,10 +151,12 @@ processDSC <- function(file, export = FALSE, rangesmin, rangesmax, starting_temp
     Tref <- step_size * average_heat_maxima$pattern + starting_temp
     average_heat_flow_per_pattern <- cbind(average_amplitude, RevCpManual, Tref)
     
-    TrefCleaned4 <- as.character(c(step_size * d_steps_cleaned_4$pattern + starting_temp))
-    data_steps_cleaned_4 <<- data.frame(d_steps_cleaned_4, TrefCleaned4)
-    average_heat_flow_per_pattern <<- average_heat_flow_per_pattern
+    TrefCleaned4 <- as.character(c(step_size * d_steps_cleaned_3$pattern + starting_temp))
+
     
+    results <- list(extrema_df1, extrema_df2, extrema_df3,d, d_steps_cleaned, d_steps_cleaned_2, d_steps_cleaned_3, ft_averages, average_heat_flow_per_pattern)
+    names(results) <- c("Extrema df1","Extrema df2", "Extrema df3", "Original data", "d_steps_cleaned", "d_steps_cleaned_2", "d_steps_cleaned_3", "ft_averages", "average_heat_flow_per_pattern")
+
     
     #Save Excels----
     if (saveExtremadf1 == TRUE) {
@@ -183,7 +184,7 @@ processDSC <- function(file, export = FALSE, rangesmin, rangesmax, starting_temp
     # }
     # 
     if(saveDatasteps4 == TRUE){
-      write.xlsx(d_steps_cleaned_4, paste0(fileName, " data_steps_cleaned_4.xlsx"))
+      write.xlsx(d_steps_cleaned_3, paste0(fileName, " data_steps_cleaned_4.xlsx"))
     }  
   }
   
@@ -191,5 +192,6 @@ processDSC <- function(file, export = FALSE, rangesmin, rangesmax, starting_temp
     signfigerror <<- "⚠️ WARNING: More than 1000 duplicate neighbours removed! Did you ensure your input Excel has enough significant figures?!⚠️"
   }
   
-  return(ft_averages)
+  print("Done!")
+  return(results)
 }
