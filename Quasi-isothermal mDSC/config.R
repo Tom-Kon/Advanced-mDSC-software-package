@@ -25,7 +25,7 @@ setAmplitude <- 0.212
 #------------------------------
 
 #Don't touch this unless you know what you're doing----
-temp_margin_first_cleanup <- 0.25
+temp_margin_first_cleanup <- 0.045
 sampling <- 10 # pts/sec
 points_distance_minimum_margin <- (sampling*period*60)/2/5
 plotTitleTHF <-paste0("NRHF based on FT (frequency = 0), ", modulations_back, " modulations")
