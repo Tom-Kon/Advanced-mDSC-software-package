@@ -1,3 +1,7 @@
+num_ticks <- 10
+
+#***--------------------------------Normal resulting plots------------------------**#
+
 NRHF_plot <- function(sample_results) {
   
  NRHF_p <- ggplot(sample_results, aes(x = TRef)) +
@@ -65,6 +69,44 @@ RHF_plot <- function(sample_results) {
 } 
 
 
+Manual_RHF_plot <- function(average_heat_flow_per_pattern) {
+  manRHF_p <- ggplot(average_heat_flow_per_pattern, aes(x = Tref)) +
+    geom_line(aes(y = RevCpManual), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
+    labs(
+      title = plottitleRHFmanual,
+      subtitle = subtitle,
+      x = "Temperature (°C)",
+      y = "Reversing Heat Capacity (J/g)"
+    ) +
+    theme_minimal(base_size = 18) +  # Larger base font size for better readability
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
+      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      panel.grid.minor = element_blank(),  # Minor grid lines removed
+      plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
+      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
+    scale_y_continuous(
+      expand = c(0, 0)  # Remove space between plot and y-axis
+    )  # This ensures the y-axis covers the full range of your data with extra space at the top
+  if(savemanualRHFplot == TRUE){
+    ggsave(paste0(fileName, plottitleRHFmanual, ".png"), dpi = 600, width = 10, height = 10)
+  }
+  return(manRHF_p)  # <--- Ensure the function returns the ggplot object
+}
+
+
+
+
+
+
+#***--------------------------------Overlays------------------------**#
+
 RHF_NRHF_plot <- function(sample_results) {
   plot_ly(sample_results) %>%
     add_lines(
@@ -124,14 +166,18 @@ RHF_NRHF_plot <- function(sample_results) {
     )
 }
 
+#***--------------------------------Raw data------------------------**#
 
-Datasteps_plot <- function(data_steps_cleaned_4) {
-  datasteps_p <- ggplot(data_steps_cleaned_4, aes(x = time, y = heat_flow)) +
+Original_data <- function(orgData) {
+  orgDataSlice <- orgData %>% 
+    slice(seq(1, n(), by = 50))
+  
+  oD <- ggplot(orgDataSlice, aes(x = time, y = heat_flow)) +
     geom_line(color = "black", linewidth = 1) +  
     labs(
       title = "Temperature vs. Time",
       x = "Time (min)",
-      y = "Temperature (°C)"
+      y = "Heat flow (W/g)"
     ) +
     theme_minimal(base_size = 18) +  
     theme(
@@ -149,45 +195,213 @@ Datasteps_plot <- function(data_steps_cleaned_4) {
     scale_y_continuous(expand = c(0, 0))
   
   # Convert to plotly and add hover text
-  datasteps_p <- plotly::ggplotly(datasteps_p, tooltip = "text") %>%
+  oD <- plotly::ggplotly(oD, tooltip = "text") %>%
     plotly::style(text = paste0(
-      "Time: ", data_steps_cleaned_4$time, " min", "<br>",
-      "Heat Flow: ", data_steps_cleaned_4$heat_flow, "<br>",
-      "TRef: ", data_steps_cleaned_4$TrefCleaned4
+      "Time: ", orgDataSlice$time, " min", "<br>",
+      "Heat Flow: ", orgDataSlice$heat_flow, "<br>"
     ))
   
-  return(datasteps_p)  
+  return(oD)  
+}
+
+
+Datasteps_plot_1 <- function(d_steps_cleaned) {
+  d_steps_cleanedSlice <- d_steps_cleaned %>% 
+    slice(seq(1, n(), by = 50))
+  
+  
+  dStepsCleanedSlice <- ggplot(d_steps_cleanedSlice, aes(x = time, y = heat_flow)) +
+    geom_line(color = "black", size = 1) +  
+    labs(
+      title = "Temperature vs. Time",
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", size = 0.5),
+      panel.grid.major = element_line(color = "gray", size = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", size = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  # Convert to plotly and add hover text
+  dStepsCleanedSlice <- plotly::ggplotly(dStepsCleanedSlice, tooltip = "text") %>%
+    plotly::style(text = paste0(
+      "Time: ", d_steps_cleanedSlice$time, " min", "<br>",
+      "Heat Flow: ", d_steps_cleanedSlice$heat_flow, "<br>"
+    ))
+  
+  return(dStepsCleanedSlice)  
 }
 
 
 
-Manual_RHF_plot <- function(average_heat_flow_per_pattern) {
-    manRHF_p <- ggplot(average_heat_flow_per_pattern, aes(x = Tref)) +
-      geom_line(aes(y = RevCpManual), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
-      labs(
-        title = plottitleRHFmanual,
-        subtitle = subtitle,
-        x = "Temperature (°C)",
-        y = "Reversing Heat Capacity (J/g)"
-      ) +
-      theme_minimal(base_size = 18) +  # Larger base font size for better readability
-      theme(
-        plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
-        axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-        axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
-        axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-        axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-        panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
-        panel.grid.minor = element_blank(),  # Minor grid lines removed
-        plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-        axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
-      ) +
-      scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
-      scale_y_continuous(
-        expand = c(0, 0)  # Remove space between plot and y-axis
-      )  # This ensures the y-axis covers the full range of your data with extra space at the top
-  if(savemanualRHFplot == TRUE){
-    ggsave(paste0(fileName, plottitleRHFmanual, ".png"), dpi = 600, width = 10, height = 10)
-  }
-    return(manRHF_p)  # <--- Ensure the function returns the ggplot object
+Datasteps_plot_prefinal <- function(d_steps_cleaned_2) {
+  d_steps_cleaned_2Slice <- d_steps_cleaned_2 %>% 
+    slice(seq(1, n(), by = 50))
+  
+  
+  dStepsCleaned_2Slice <- ggplot(d_steps_cleaned_2Slice, aes(x = time, y = heat_flow)) +
+    geom_line(color = "black", size = 1) +  
+    labs(
+      title = "Temperature vs. Time",
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", size = 0.5),
+      panel.grid.major = element_line(color = "gray", size = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", size = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  # Convert to plotly and add hover text
+  dStepsCleaned_2Slice <- plotly::ggplotly(dStepsCleaned_2Slice, tooltip = "text") %>%
+    plotly::style(text = paste0(
+      "Time: ", d_steps_cleaned_2Slice$time, " min", "<br>",
+      "Heat Flow: ", d_steps_cleaned_2Slice$heat_flow, "<br>"
+    ))
+  
+  return(dStepsCleaned_2Slice)  
 }
+
+
+
+Datasteps_plot_final <- function(d_steps_cleaned_3) {
+  d_steps_cleaned_3Slice <- d_steps_cleaned_3 %>% 
+    slice(seq(1, n(), by = 1))
+  
+  
+  dStepsCleaned_3Slice <- ggplot(d_steps_cleaned_3Slice, aes(x = time, y = heat_flow)) +
+    geom_line(color = "black", size = 1) +  
+    labs(
+      title = "Temperature vs. Time",
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", size = 0.5),
+      panel.grid.major = element_line(color = "gray", size = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", size = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  # Convert to plotly and add hover text
+  dStepsCleaned_3Slice <- plotly::ggplotly(dStepsCleaned_3Slice, tooltip = "text") %>%
+    plotly::style(text = paste0(
+      "Time: ", d_steps_cleaned_3Slice$time, " min", "<br>",
+      "Heat Flow: ", d_steps_cleaned_3Slice$heat_flow, "<br>",
+      "TRef: ", d_steps_cleaned_3Slice$TRef
+    ))
+  
+  return(dStepsCleaned_3Slice)  
+}
+
+
+
+#****-------------------------Extremas-------------------------------------*
+Maxima_minima <- function(extramadf) {
+  Max_min <- ggplot(extramadf, aes(x = time, y = heat_flow)) +
+    geom_point(color = "black", size = 1) +  
+    labs(
+      title = "Heat flow vs. Time",
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", size = 0.5),
+      panel.grid.major = element_line(color = "gray", size = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", size = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  return(Max_min)  
+}
+
+
+
+
+Maxima_minima_1 <- function(extramadf2) {
+  Max_min_1 <- ggplot(extramadf2, aes(x = time, y = heat_flow)) +
+    geom_point(color = "black", size = 1) +  
+    labs(
+      title = "Heat flow vs. Time",
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", size = 0.5),
+      panel.grid.major = element_line(color = "gray", size = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", size = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+
+  return(Max_min_1)  
+}
+
+Maxima_minima_2 <- function(extramadf3) {
+  Max_min_2 <- ggplot(extramadf3, aes(x = time, y = heat_flow)) +
+    geom_point(color = "black", size = 1) +  
+    labs(
+      title = "Heat flow vs. Time",
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", size = 0.5),
+      panel.grid.major = element_line(color = "gray", size = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", size = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  return(Max_min_2)  
+}
+
