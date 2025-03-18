@@ -1,13 +1,7 @@
-library(shiny)
-library(shinythemes)
-library(bslib)
-
 source("libraries.R")
+source("configapp.R") 
 
 
-options(shiny.maxRequestSize = 100 * 1024^2)  # 100 MB limit
-
-source("configapp.R")  # Source the external function
 
 ui <- navbarPage(
   id = "tabs",
@@ -54,82 +48,101 @@ ui <- navbarPage(
 
 server <- function(input, output, session) {
   
-  # Create a reactive value for sample_results
-  sample_results_reac <- reactiveVal(NULL)
+  # Create a reactiveValues object to store inputs
+  reactive_inputs <- reactiveValues()
   
-  # Observe changes in checkboxes and update values
+  # This part is separate and independent of your server logic
   observe({
-    plot_datasteps4 <- input$plot_datasteps4
-    saveplotdatasteps4 <- input$saveplotdatasteps4
-    saveNRHFplot <- input$saveNRHFplot
-    saveRHFplot <- input$saveRHFplot
-    savemanualRHFplot <- input$savemanualRHFplot
-    saveDatasteps4 <- input$saveDatasteps4
-    saveExtremadf3 <- input$saveExtremadf3
-    saveSummaryFT <- input$saveSummaryFT
+    # Handle checkboxes
+    reactive_inputs$saveNRHFplot <- as.logical(input$saveNRHFplot)
+    reactive_inputs$saveRHFplot <- as.logical(input$saveRHFplot)
+    reactive_inputs$savemanualRHFplot <- as.logical(input$savemanualRHFplot)
+    reactive_inputs$saveDatasteps3 <- as.logical(input$saveDatasteps3)
+    reactive_inputs$saveExtremadf3 <- as.logical(input$saveExtremadf3)
+    reactive_inputs$saveSummaryFT <- as.logical(input$saveSummaryFT)
+    
+    # Store numerical/text inputs with proper reactive evaluation
+    reactive_inputs$period <- eval(parse(text = input$period_in))  # Assuming input is numeric
+    reactive_inputs$stepSize <- eval(parse(text = input$step_size_in))
+    reactive_inputs$isothermLength <- eval(parse(text = input$isotherm_length_in))
+    reactive_inputs$startingTemp <- eval(parse(text = input$starting_temp_in))
+    reactive_inputs$modulations_back <- eval(parse(text = input$modulations_back_in))
+    reactive_inputs$setAmplitude <- eval(parse(text = input$setAmplitude_in))
+
   })
   
-
   
+  # Update reactive values when calculate button is pressed
   observeEvent(input$calculate, {
-    
 
-    period <<- eval(parse(text = input$period_in))
-    stepSize <<- eval(parse(text = input$step_size_in))
-    isothermLength <<- eval(parse(text = input$isotherm_length_in))
-    startingTemp <<- eval(parse(text = input$starting_temp_in))
-    modulations_back <<- eval(parse(text = input$modulations_back_in))
-    setAmplitude <<- eval(parse(text = input$setAmplitude_in))
-    Excel <<- input$Excel_in$datapath
-    fileName <<- input$Excel_in$name
+    # Store file input
+    reactive_inputs$Excel <- input$Excel_in$datapath
+    reactive_inputs$fileName <- input$Excel_in$name
     
-    source("configapp-nonuser inputs.R")
+    # Source necessary scripts
     source("Processing and cleaning overall function.R")
     source("plots.R")
+
+    # Call the processing function and store results in reactive value
+    sample_results <- processDSC(
+      file = reactive_inputs$fileName,
+      Excel = reactive_inputs$Excel,
+      export = TRUE,
+      rangesmin = rangesmin,
+      rangesmax = rangesmax,
+      starting_temp = reactive_inputs$startingTemp,
+      step_size = reactive_inputs$stepSize,
+      modulations_back = reactive_inputs$modulations_back,
+      period = reactive_inputs$period,
+      setAmplitude = reactive_inputs$setAmplitude,
+      saveNRHFplot = reactive_inputs$saveNRHFplot,
+      saveRHFplot = reactive_inputs$saveRHFplot,
+      savemanualRHFplot = reactive_inputs$savemanualRHFplot,
+      saveDatasteps3 = reactive_inputs$saveDatasteps3,
+      saveExtremadf3 = reactive_inputs$saveExtremadf3,
+      saveSummaryFT = reactive_inputs$saveSummaryFT
+    )
     
-    
-    sample_results <<- processDSC(file = fileName, Excel = Excel, export = TRUE,
-                                 rangesmin = rangesmin, rangesmax = rangesmax, 
-                                 starting_temp = starting_temp, step_size = step_size,
-                                 temp_margin_first_cleanup = temp_margin_first_cleanup,
-                                 modulations_back = modulations_back, period = period,
-                                 setAmplitude = setAmplitude)
-    
-    sample_results_reac(sample_results)
-    })
+    # Store the processed results in reactiveValues()
+    reactive_inputs$sample_results <- sample_results
+  })
   
+  # Handle recalculation with a different number of modulations
   observeEvent(input$recalc, {
     source("quickly recalculate for different mods.R")
-    modulations_back <<- eval(parse(text = input$modulations_back_in_new))
-    sample_results <<- processDSCrecalc(sample_results = sample_results, modulations_back = modulations_back, period = period, setAmplitude = setAmplitude)
-    sample_results_reac(sample_results)
-  
+    
+    reactive_inputs$modulations_back <- eval(parse(text = input$modulations_back_in_new))
+    
+    reactive_inputs$sample_results <- processDSCrecalc(
+      sample_results = reactive_inputs$sample_results,
+      modulations_back = reactive_inputs$modulations_back,
+      period = reactive_inputs$period,
+      setAmplitude = reactive_inputs$setAmplitude
+    )
   })
   
   # Render the plot using the reactive sample_results
   output$plot <- renderPlotly({
-    # This will re-run whenever sample_results or input$plot_choice changes
-    res <- sample_results_reac()
-    req(res)  # Ensure res is available
+    req(reactive_inputs$sample_results)  # Ensure results exist
+    res <- reactive_inputs$sample_results
     
     plot_obj <- switch(input$plot_choice,
-                       "NRHF" = NRHF_plot(res$ft_averages),
-                       "RHF" = RHF_plot(res$ft_averages),
-                       "Manual RHF" = Manual_RHF_plot(res$average_heat_flow_per_pattern),
-                       "RHF and NRHF" = RHF_NRHF_plot(res$ft_averages),
-                       "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`),
-                       "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`),
-                       "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`),
-                       "Original data" = Original_data(res$`Original data`),
-                       "First cleaned up data" = Datasteps_plot_1(res$d_steps_cleaned),
-                       "Prefinal cleaned up data" = Datasteps_plot_prefinal(res$d_steps_cleaned_2),
-                       "Final data used for analysis" = Datasteps_plot_final(res$d_steps_cleaned_3))
+                       "NRHF" = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveNRHFplot),
+                       "RHF" = RHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveRHFplot),
+                       "Manual RHF" = Manual_RHF_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$savemanualRHFplot),
+                       "RHF and NRHF" = RHF_NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                       "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                       "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                       "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveExtremadf3),
+                       "Original data" = Original_data(res$`Original data`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                       "First cleaned up data" = Datasteps_plot_1(res$d_steps_cleaned, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                       "Prefinal cleaned up data" = Datasteps_plot_prefinal(res$d_steps_cleaned_2, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                       "Final data used for analysis" = Datasteps_plot_final(res$d_steps_cleaned_3, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveDatasteps3))
     
     ggplotly(plot_obj, tooltip = c("x", "y", "text"))
   })
-
-  
 }
+
 
 shinyApp(ui = ui, server = server)
 
