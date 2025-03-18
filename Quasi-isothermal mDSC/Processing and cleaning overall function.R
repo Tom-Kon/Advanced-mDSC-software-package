@@ -1,16 +1,20 @@
-source("detailed functions.R")
-source("config.R")
+processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp, step_size,
+           modulations_back, period, setAmplitude, saveNRHFplot, saveRHFplot, savemanualRHFplot, 
+           saveDatasteps3, saveExtremadf3, saveSummaryFT) {
 
-
-
-
-processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp, step_size, temp_margin_first_cleanup,
-                       modulations_back, period, setAmplitude) {
-
+  #Don't touch this unless you know what you're doing----
+  temp_margin_first_cleanup <- 0.05
   tempModAmplitude <- setAmplitude*2*pi/period
+  sampling <- 10 # pts/sec
+  points_distance_minimum_margin <- (sampling*period*60)/2/5
+  subtitle <- paste0("Dataset: ", "test")
+  tempModAmplitude <- setAmplitude*2*pi/period
+  num_ticks <- 10
+  sample_size <- 5.79
 
+  source("detailed functions.R")
   
-  # 1. Load and pre‐process the data -------------------------------
+    # 1. Load and pre‐process the data -------------------------------
   d <- na.omit(read.xlsx(Excel))
   d <- d[-1,]
   d[] <- lapply(d, function(x) if(is.character(x)) as.numeric(gsub(",", ".", x)) else x)
@@ -45,7 +49,7 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
     unnest(cols = c(extrema_info))
   
   # Then proceed with your cleaning steps – note that you must run your functions that delete data etc.
-  d_steps_cleaned_2 <- delete_data_after_last_maximum(d_steps_cleaned, extrema_df1)
+  d_steps_cleaned_2 <- delete_data_after_last_maximum(d_steps_cleaned, extrema_df1, step_size, starting_temp, sampling, period, points_distance_minimum_margin)
 
   
   # Recompute extrema on the cleaned data for the subsequent steps
@@ -56,7 +60,7 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
   extrema_df2 <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
   # d_steps_cleaned_3 <- delete_data_after_last_minimum(d_steps_cleaned_2, extrema_df2)
-  d_steps_cleaned_3 <- delete_data_until_equil(d_steps_cleaned_2, extrema_df2)
+  d_steps_cleaned_3 <- delete_data_until_equil(d_steps_cleaned_2, extrema_df2, period, modulations_back)
   TRef <- d_steps_cleaned_3$pattern*step_size+starting_temp
   d_steps_cleaned_3 <- cbind(d_steps_cleaned_3, TRef)
   
@@ -132,7 +136,7 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
   if (export){
     #3. Manual RHF calculation
     # Apply the function to your extrema_df2 data
-    extrema_df3 <- delete_extrema_until_equil(extrema_df2, d_steps_cleaned_2)
+    extrema_df3 <- delete_extrema_until_equil(extrema_df2, d_steps_cleaned_2, period, modulations_back)
     
     # Now average the heat_flow values per pattern
     average_heat_maxima <- extrema_df3 %>%
@@ -159,33 +163,29 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
 
     
     #Save Excels----
-    if (saveExtremadf1 == TRUE) {
-      write.xlsx(extrema_df, paste0(fileName, " extremadf.xlsx"))
-    }
-    
-    if(saveExtremadf2 == TRUE) {
-      write.xlsx(extrema_df2, paste0(fileName, " extremadf2.xlsx"))
-    }
-    
-    if(saveExtremadf3 == TRUE) {
-      write.xlsx(extrema_df3, paste0(fileName, " extremadf3.xlsx"))
-    }
-    
-    if(saveDatasteps == TRUE) {
-      write.xlsx(d_steps_cleaned, paste0(fileName, " data_steps_cleaned.xlsx"))
-    }
-    
-    if(saveDatasteps2 == TRUE){
-      write.xlsx(d_steps_cleaned_2, paste0(fileName, " data_steps_cleaned_2.xlsx"))
-    }
-    
-    # if(saveDatasteps3 == TRUE) {
-    #   write.xlsx(d_steps_cleaned_3, paste0(fileName, "data_steps_cleaned_3.xlsx"))
+    # if (saveExtremadf1 == TRUE) {
+    #   write.xlsx(extrema_df, paste0(fileName, " extremadf.xlsx"))
     # }
     # 
-    if(saveDatasteps4 == TRUE){
-      write.xlsx(d_steps_cleaned_3, paste0(fileName, " data_steps_cleaned_4.xlsx"))
-    }  
+    # if(saveExtremadf2 == TRUE) {
+    #   write.xlsx(extrema_df2, paste0(fileName, " extremadf2.xlsx"))
+    # }
+    # 
+    # if(saveExtremadf3 == TRUE) {
+    #   write.xlsx(extrema_df3, paste0(fileName, " extremadf3.xlsx"))
+    # }
+    # 
+    # if(saveDatasteps == TRUE) {
+    #   write.xlsx(d_steps_cleaned, paste0(fileName, " data_steps_cleaned.xlsx"))
+    # }
+    # 
+    # if(saveDatasteps2 == TRUE){
+    #   write.xlsx(d_steps_cleaned_2, paste0(fileName, " data_steps_cleaned_2.xlsx"))
+    # }
+    # 
+    # if(saveDatasteps4 == TRUE){
+    #   write.xlsx(d_steps_cleaned_3, paste0(fileName, " data_steps_cleaned_4.xlsx"))
+    # }  
   }
   
   if (nrow(d_steps) - nrow(d_steps_cleaned) > 1000) {
