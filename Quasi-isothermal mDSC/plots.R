@@ -2,9 +2,11 @@ num_ticks <- 10
 
 #***--------------------------------Normal resulting plots------------------------**#
 
-NRHF_plot <- function(sample_results) {
-  
- NRHF_p <- ggplot(sample_results, aes(x = TRef)) +
+NRHF_plot <- function(sample_results, modulations_back, fileName, saveNRHFplot) {
+  plotTitleTHF <- paste0("NRHF based on FT (frequency = 0), ", modulations_back, " modulations")
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]
+
+  NRHF_p <- ggplot(sample_results, aes(x = TRef)) +
           geom_line(aes(y = dc_value), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
           labs(
             title = plotTitleTHF,
@@ -30,12 +32,15 @@ NRHF_plot <- function(sample_results) {
           )  # This ensures the y-axis covers the full range of your data with extra space at the top
 
   if(saveNRHFplot == TRUE){
-    ggsave(paste0(fileName, plotTitleTHF, ".png"), dpi = 600, width = 10, height = 10)
+    ggsave(paste0(subtitle, " ", plotTitleTHF, ".png"), dpi = 600, width = 10, height = 10)
   }
  return(NRHF_p)  # <--- Ensure the function returns the ggplot object
  }
 
-RHF_plot <- function(sample_results) {
+RHF_plot <- function(sample_results, modulations_back, fileName, saveRHFplot) {
+  
+  plottitleRHF <- paste0("RevCp based on FT (1st harmonic), ", modulations_back, " modulations")
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]
     RHF_p <- ggplot(sample_results, aes(x = TRef)) +
       geom_line(aes(y = reversing_heat_flow), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
       labs(
@@ -69,7 +74,11 @@ RHF_plot <- function(sample_results) {
 } 
 
 
-Manual_RHF_plot <- function(average_heat_flow_per_pattern) {
+Manual_RHF_plot <- function(average_heat_flow_per_pattern, modulations_back, fileName, savemanualRHFplot) {
+  
+  plottitleRHFmanual <- paste0("RevCp calculated manually, ", modulations_back, " modulations")
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]
+
   manRHF_p <- ggplot(average_heat_flow_per_pattern, aes(x = Tref)) +
     geom_line(aes(y = RevCpManual), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
     labs(
@@ -107,7 +116,7 @@ Manual_RHF_plot <- function(average_heat_flow_per_pattern) {
 
 #***--------------------------------Overlays------------------------**#
 
-RHF_NRHF_plot <- function(sample_results) {
+RHF_NRHF_plot <- function(sample_results, modulations_back, fileName) {
   plot_ly(sample_results) %>%
     add_lines(
       x = ~TRef, 
@@ -168,7 +177,7 @@ RHF_NRHF_plot <- function(sample_results) {
 
 #***--------------------------------Raw data------------------------**#
 
-Original_data <- function(orgData) {
+Original_data <- function(orgData, modulations_back, fileName) {
   orgDataSlice <- orgData %>% 
     slice(seq(1, n(), by = 50))
   
@@ -205,7 +214,7 @@ Original_data <- function(orgData) {
 }
 
 
-Datasteps_plot_1 <- function(d_steps_cleaned) {
+Datasteps_plot_1 <- function(d_steps_cleaned, sample_results, modulations_back, fileName) {
   d_steps_cleanedSlice <- d_steps_cleaned %>% 
     slice(seq(1, n(), by = 50))
   
@@ -244,7 +253,7 @@ Datasteps_plot_1 <- function(d_steps_cleaned) {
 
 
 
-Datasteps_plot_prefinal <- function(d_steps_cleaned_2) {
+Datasteps_plot_prefinal <- function(d_steps_cleaned_2, sample_results, modulations_back, fileName) {
   d_steps_cleaned_2Slice <- d_steps_cleaned_2 %>% 
     slice(seq(1, n(), by = 50))
   
@@ -283,7 +292,7 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2) {
 
 
 
-Datasteps_plot_final <- function(d_steps_cleaned_3) {
+Datasteps_plot_final <- function(d_steps_cleaned_3, sample_results, modulations_back, fileName) {
   d_steps_cleaned_3Slice <- d_steps_cleaned_3 %>% 
     slice(seq(1, n(), by = 1))
   
@@ -324,7 +333,7 @@ Datasteps_plot_final <- function(d_steps_cleaned_3) {
 
 
 #****-------------------------Extremas-------------------------------------*
-Maxima_minima <- function(extramadf) {
+Maxima_minima <- function(extramadf, sample_results, modulations_back, fileName) {
   Max_min <- ggplot(extramadf, aes(x = time, y = heat_flow)) +
     geom_point(color = "black", size = 1) +  
     labs(
@@ -353,7 +362,7 @@ Maxima_minima <- function(extramadf) {
 
 
 
-Maxima_minima_1 <- function(extramadf2) {
+Maxima_minima_1 <- function(extramadf2, sample_results, modulations_back, fileName) {
   Max_min_1 <- ggplot(extramadf2, aes(x = time, y = heat_flow)) +
     geom_point(color = "black", size = 1) +  
     labs(
@@ -379,7 +388,7 @@ Maxima_minima_1 <- function(extramadf2) {
   return(Max_min_1)  
 }
 
-Maxima_minima_2 <- function(extramadf3) {
+Maxima_minima_2 <- function(extramadf3, sample_results, modulations_back, fileName) {
   Max_min_2 <- ggplot(extramadf3, aes(x = time, y = heat_flow)) +
     geom_point(color = "black", size = 1) +  
     labs(
