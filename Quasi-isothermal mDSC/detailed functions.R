@@ -68,7 +68,7 @@ locate_extrema_manual <- function(heat_flow_values, time_values, temperature_val
 }
 
 # Define a function to delete data after the last maximum for each pattern
-delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df) {
+delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df, step_size, starting_temp, sampling, period, points_distance_minimum_margin) {
   # Initialize an empty dataframe to store the filtered results (First Pass)
   data_steps_cleaned_2 <- data.frame()
   
@@ -194,7 +194,7 @@ delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df) {
 
 
 # Define a function to only keep data after an equilibrium is reached
-delete_data_until_equil <- function(data_steps_cleaned_3, extrema_df2) {
+delete_data_until_equil <- function(data_steps_cleaned_3, extrema_df2, period, modulations_back) {
   # Initialize an empty dataframe to store the filtered results
   data_steps_cleaned_4 <- data.frame()
   
@@ -234,7 +234,7 @@ delete_data_until_equil <- function(data_steps_cleaned_3, extrema_df2) {
 }
 
 # Define a function to delete data after the last minimum for each pattern in extrema_df2
-delete_extrema_until_equil <- function(extrema_df2, data_steps_cleaned_3) {
+delete_extrema_until_equil <- function(extrema_df2, data_steps_cleaned_3, period, modulations_back) {
   # Initialize an empty dataframe to store the filtered results
   extrema_df3 <- data.frame()
   
