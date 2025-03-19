@@ -181,7 +181,6 @@ RevCp_NRHF_plot <- function(sample_results, modulations_back, fileName) {
 
 Original_data <- function(orgData, modulations_back, fileName) {
   
-  plottitleoD <- paste0("RevCp based on FT (1st harmonic), ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
   orgDataSlice <- orgData %>% 
@@ -190,7 +189,7 @@ Original_data <- function(orgData, modulations_back, fileName) {
   oD <- ggplot(orgDataSlice, aes(x = time, y = heat_flow)) +
     geom_line(color = "black", linewidth = 1) +  
     labs(
-      title = plottitleoD, 
+      title = "Raw, unmodified modulated total heat flow data", 
       subtitle = subtitle, 
       x = "Time (min)",
       y = "Heat flow (W/g)"
@@ -221,15 +220,18 @@ Original_data <- function(orgData, modulations_back, fileName) {
 }
 
 
-Datasteps_plot_1 <- function(d_steps_cleaned, sample_results, modulations_back, fileName) {
+Datasteps_plot_1 <- function(d_steps_cleaned, modulations_back, fileName) {
   d_steps_cleanedSlice <- d_steps_cleaned %>% 
     slice(seq(1, n(), by = 50))
+  
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   
   dStepsCleanedSlice <- ggplot(d_steps_cleanedSlice, aes(x = time, y = heat_flow)) +
     geom_line(color = "black", size = 1) +  
     labs(
-      title = "Temperature vs. Time",
+      title = "Cleaned raw total heat flow data after\nremoving temperatures between steps",
+      subtitle = subtitle, 
       x = "Time (min)",
       y = "Heat flow (W/g)"
     ) +
@@ -242,7 +244,7 @@ Datasteps_plot_1 <- function(d_steps_cleaned, sample_results, modulations_back, 
       axis.line = element_line(color = "black", size = 0.5),
       panel.grid.major = element_line(color = "gray", size = 0.25),
       panel.grid.minor = element_blank(),
-      plot.margin = margin(20, 20, 20, 20),
+      plot.margin = margin(320, 20, 20, 20),
       axis.ticks = element_line(color = "black", size = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
@@ -260,15 +262,18 @@ Datasteps_plot_1 <- function(d_steps_cleaned, sample_results, modulations_back, 
 
 
 
-Datasteps_plot_prefinal <- function(d_steps_cleaned_2, sample_results, modulations_back, fileName) {
+Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileName) {
   d_steps_cleaned_2Slice <- d_steps_cleaned_2 %>% 
     slice(seq(1, n(), by = 50))
+  
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   
   dStepsCleaned_2Slice <- ggplot(d_steps_cleaned_2Slice, aes(x = time, y = heat_flow)) +
     geom_line(color = "black", size = 1) +  
     labs(
-      title = "Temperature vs. Time",
+      title = "Cleaned raw total heat flow data after\nremoving noisy pattern at the end of each step",
+      subtitle = subtitle, 
       x = "Time (min)",
       y = "Heat flow (W/g)"
     ) +
@@ -281,7 +286,7 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, sample_results, modulatio
       axis.line = element_line(color = "black", size = 0.5),
       panel.grid.major = element_line(color = "gray", size = 0.25),
       panel.grid.minor = element_blank(),
-      plot.margin = margin(20, 20, 20, 20),
+      plot.margin = margin(320, 20, 20, 20),
       axis.ticks = element_line(color = "black", size = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
@@ -299,15 +304,18 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, sample_results, modulatio
 
 
 
-Datasteps_plot_final <- function(d_steps_cleaned_3, sample_results, modulations_back, fileName) {
+Datasteps_plot_final <- function(d_steps_cleaned_3, modulations_back, fileName) {
   d_steps_cleaned_3Slice <- d_steps_cleaned_3 %>% 
     slice(seq(1, n(), by = 1))
   
+  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulations_back, " modulations")
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   dStepsCleaned_3Slice <- ggplot(d_steps_cleaned_3Slice, aes(x = time, y = heat_flow)) +
     geom_line(color = "black", size = 1) +  
     labs(
-      title = "Temperature vs. Time",
+      title = plottitledStepsCleaned_3Slice,
+      subtitle = subtitle,
       x = "Time (min)",
       y = "Heat flow (W/g)"
     ) +
@@ -340,11 +348,15 @@ Datasteps_plot_final <- function(d_steps_cleaned_3, sample_results, modulations_
 
 
 #****-------------------------Extremas-------------------------------------*
-Maxima_minima <- function(extramadf, sample_results, modulations_back, fileName) {
+Maxima_minima <- function(extramadf, modulations_back, fileName) {
+  
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
+  
   Max_min <- ggplot(extramadf, aes(x = time, y = heat_flow)) +
     geom_point(color = "black", size = 1) +  
     labs(
-      title = "Heat flow vs. Time",
+      title = "Maxima and minima of oscillations\nafter removing temperatures in between temperature steps",
+      subtitle = subtitle,
       x = "Time (min)",
       y = "Heat flow (W/g)"
     ) +
@@ -357,7 +369,7 @@ Maxima_minima <- function(extramadf, sample_results, modulations_back, fileName)
       axis.line = element_line(color = "black", size = 0.5),
       panel.grid.major = element_line(color = "gray", size = 0.25),
       panel.grid.minor = element_blank(),
-      plot.margin = margin(20, 20, 20, 20),
+      plot.margin = margin(320, 20, 20, 20),
       axis.ticks = element_line(color = "black", size = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
@@ -367,13 +379,15 @@ Maxima_minima <- function(extramadf, sample_results, modulations_back, fileName)
 }
 
 
-
-
-Maxima_minima_1 <- function(extramadf2, sample_results, modulations_back, fileName) {
+Maxima_minima_1 <- function(extramadf2, modulations_back, fileName) {
+  
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
+  
   Max_min_1 <- ggplot(extramadf2, aes(x = time, y = heat_flow)) +
     geom_point(color = "black", size = 1) +  
     labs(
-      title = "Heat flow vs. Time",
+      title = "Maxima and minima of oscillations after 2 cleaning steps\n(removing noise after the last maximum + initial cleaning) ",
+      subtitle = subtitle,
       x = "Time (min)",
       y = "Heat flow (W/g)"
     ) +
@@ -386,7 +400,7 @@ Maxima_minima_1 <- function(extramadf2, sample_results, modulations_back, fileNa
       axis.line = element_line(color = "black", size = 0.5),
       panel.grid.major = element_line(color = "gray", size = 0.25),
       panel.grid.minor = element_blank(),
-      plot.margin = margin(20, 20, 20, 20),
+      plot.margin = margin(320, 20, 20, 20),
       axis.ticks = element_line(color = "black", size = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
@@ -395,11 +409,16 @@ Maxima_minima_1 <- function(extramadf2, sample_results, modulations_back, fileNa
   return(Max_min_1)  
 }
 
-Maxima_minima_2 <- function(extramadf3, sample_results, modulations_back, fileName) {
+Maxima_minima_2 <- function(extramadf3, modulations_back, fileName) {
+  
+  plottitlemaxmin2 <- paste0("Maxima and minima of oscillations used in calculations, ", modulations_back, " modulations")
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]
+  
   Max_min_2 <- ggplot(extramadf3, aes(x = time, y = heat_flow)) +
     geom_point(color = "black", size = 1) +  
     labs(
-      title = "Heat flow vs. Time",
+      title = plottitlemaxmin2,
+      subtitle = subtitle,
       x = "Time (min)",
       y = "Heat flow (W/g)"
     ) +

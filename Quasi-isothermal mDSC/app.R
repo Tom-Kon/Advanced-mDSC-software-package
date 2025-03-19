@@ -2,7 +2,6 @@ source("libraries.R")
 source("configapp.R") 
 
 
-
 ui <- navbarPage(
   id = "tabs",
   title = "Quasi-isothermal mDSC data analyzer",
@@ -133,11 +132,11 @@ server <- function(input, output, session) {
                        "RevCp and NRHF" = RevCp_NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
                        "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, reactive_inputs$modulations_back, reactive_inputs$fileName),
                        "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                       "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveExtremadf3),
+                       "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, reactive_inputs$modulations_back, reactive_inputs$fileName),
                        "Original data" = Original_data(res$`Original data`, reactive_inputs$modulations_back, reactive_inputs$fileName),
                        "First cleaned up data" = Datasteps_plot_1(res$d_steps_cleaned, reactive_inputs$modulations_back, reactive_inputs$fileName),
                        "Prefinal cleaned up data" = Datasteps_plot_prefinal(res$d_steps_cleaned_2, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                       "Final data used for analysis" = Datasteps_plot_final(res$d_steps_cleaned_3, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveDatasteps3))
+                       "Final data used for analysis" = Datasteps_plot_final(res$d_steps_cleaned_3, reactive_inputs$modulations_back, reactive_inputs$fileName))
     
     ggplotly(plot_obj, tooltip = c("x", "y", "text"))
   })
