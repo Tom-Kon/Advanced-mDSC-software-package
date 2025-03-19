@@ -158,14 +158,12 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
       filter(type == "maxima") %>%
       group_by(pattern) %>%
       summarise(avg_heat_flow = mean(heat_flow, na.rm = TRUE))
-    print(average_heat_maxima)
-    
+
     average_heat_minima <- extrema_df3 %>%
       filter(type == "minima") %>%
       group_by(pattern) %>%
       summarise(avg_heat_flow = mean(heat_flow, na.rm = TRUE))
-    print(average_heat_minima)
-    
+
     average_amplitude <- (average_heat_maxima-average_heat_minima)/2
     
     RevCpManual <- (average_amplitude$avg_heat_flow)/tempModAmplitude
