@@ -1,5 +1,5 @@
 processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp, step_size,
-           modulations_back, period, setAmplitude, saveNRHFplot, saveRHFplot, savemanualRHFplot, 
+           modulations_back, period, setAmplitude, saveNRHFplot, saveRevCpplot, savemanualRevCpplot, 
            saveDatasteps3, saveExtremadf3, saveSummaryFT) {
 
   #Don't touch this unless you know what you're doing----
@@ -122,19 +122,22 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
             delta <- ifelse(denominator == 0, 0, 0.5 * (y1 - y3) / denominator)
             amp <- y2 - 0.25 * (y1 - y3) * delta
           }
-          # Multiply by 2 (for the symmetric negative frequencies) and normalize by original n_points:
-          2 * amp / n_points
+          # Multiply by 2 (for the symmetric negative frequencies), multiply by two again to correct for the Hann windowing gain, and normalize by original n_points:
+          2*2 * amp / n_points
         }
       ),
       
+    
       # Calculate reversing heat flow:
       reversing_heat_flow = first_harmonic / tempModAmplitude,
       TRef = pattern * step_size + starting_temp
     )
+  
+  print(ft_averages$first_harmonic)
 
   
   if (export){
-    #3. Manual RHF calculation
+    #3. Manual RevCp calculation
     # Apply the function to your extrema_df2 data
     extrema_df3 <- delete_extrema_until_equil(extrema_df2, d_steps_cleaned_2, period, modulations_back)
     
@@ -143,20 +146,20 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
       filter(type == "maxima") %>%
       group_by(pattern) %>%
       summarise(avg_heat_flow = mean(heat_flow, na.rm = TRUE))
+    print(average_heat_maxima)
     
     average_heat_minima <- extrema_df3 %>%
       filter(type == "minima") %>%
       group_by(pattern) %>%
       summarise(avg_heat_flow = mean(heat_flow, na.rm = TRUE))
+    print(average_heat_minima)
     
-    average_amplitude <- (average_heat_maxima-average_heat_minima)*0.5
+    average_amplitude <- (average_heat_maxima-average_heat_minima)/2
     
-    RevCpManual <- (average_amplitude$avg_heat_flow)/tempModAmplitude/sample_size
+    RevCpManual <- (average_amplitude$avg_heat_flow)/tempModAmplitude
     Tref <- step_size * average_heat_maxima$pattern + starting_temp
     average_heat_flow_per_pattern <- cbind(average_amplitude, RevCpManual, Tref)
     
-    TrefCleaned4 <- as.character(c(step_size * d_steps_cleaned_3$pattern + starting_temp))
-
     
     results <- list(extrema_df1, extrema_df2, extrema_df3,d, d_steps_cleaned, d_steps_cleaned_2, d_steps_cleaned_3, ft_averages, average_heat_flow_per_pattern)
     names(results) <- c("Extrema df1","Extrema df2", "Extrema df3", "Original data", "d_steps_cleaned", "d_steps_cleaned_2", "d_steps_cleaned_3", "ft_averages", "average_heat_flow_per_pattern")
