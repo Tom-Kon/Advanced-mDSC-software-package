@@ -5,8 +5,8 @@ configUI1<- function() {
   tagList(
     column(6,
       checkboxInput("saveNRHFplot", "Save non-reversing heat flow plot?", FALSE),
-      checkboxInput("saveRHFplot", "Save reversing heat flow plot?", FALSE),
-      checkboxInput("savemanualRHFplot", "Save manually calculated reversing heat flow plot?", FALSE),
+      checkboxInput("saveRevCpplot", "Save reversing heat flow plot?", FALSE),
+      checkboxInput("savemanualRevCpplot", "Save manually calculated reversing heat flow plot?", FALSE),
       checkboxInput("saveDatasteps3", "Save final raw data?", FALSE),
       checkboxInput("saveExtremadf3", "Save final maxima and minima list?", FALSE),
       checkboxInput("saveSummaryFT", "Save final analysed data", FALSE),

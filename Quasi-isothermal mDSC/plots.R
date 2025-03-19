@@ -3,6 +3,7 @@ num_ticks <- 10
 #***--------------------------------Normal resulting plots------------------------**#
 
 NRHF_plot <- function(sample_results, modulations_back, fileName, saveNRHFplot) {
+  
   plotTitleTHF <- paste0("NRHF based on FT (frequency = 0), ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
 
@@ -37,14 +38,15 @@ NRHF_plot <- function(sample_results, modulations_back, fileName, saveNRHFplot) 
  return(NRHF_p)  # <--- Ensure the function returns the ggplot object
  }
 
-RHF_plot <- function(sample_results, modulations_back, fileName, saveRHFplot) {
+RevCp_plot <- function(sample_results, modulations_back, fileName, saveRevCpplot) {
   
-  plottitleRHF <- paste0("RevCp based on FT (1st harmonic), ", modulations_back, " modulations")
+  plottitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
-    RHF_p <- ggplot(sample_results, aes(x = TRef)) +
+  
+    RevCp_p <- ggplot(sample_results, aes(x = TRef)) +
       geom_line(aes(y = reversing_heat_flow), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
       labs(
-        title = plottitleRHF,
+        title = plottitleRevCp,
         subtitle = subtitle,
         x = "Temperature (°C)",
         y = "Reversing Heat Capacity (J/g)"
@@ -66,23 +68,23 @@ RHF_plot <- function(sample_results, modulations_back, fileName, saveRHFplot) {
         expand = c(0.0002, 0.0002) # Remove space between plot and y-axis
       )  # This ensures the y-axis covers the full range of your data with extra space at the top
 
-  if(saveRHFplot == TRUE) {
-    ggsave(paste0(fileName, plottitleRHF, ".png"), dpi = 600, width = 10, height = 10)
+  if(saveRevCpplot == TRUE) {
+    ggsave(paste0(fileName, plottitleRevCp, ".png"), dpi = 600, width = 10, height = 10)
   }
-  return(RHF_p)  # <--- Ensure the function returns the ggplot object
+  return(RevCp_p)  # <--- Ensure the function returns the ggplot object
     
 } 
 
 
-Manual_RHF_plot <- function(average_heat_flow_per_pattern, modulations_back, fileName, savemanualRHFplot) {
+Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, fileName, savemanualRevCpplot) {
   
-  plottitleRHFmanual <- paste0("RevCp calculated manually, ", modulations_back, " modulations")
+  plottitleRevCpmanual <- paste0("RevCp calculated manually, ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
 
-  manRHF_p <- ggplot(average_heat_flow_per_pattern, aes(x = Tref)) +
+  manRevCp_p <- ggplot(average_heat_flow_per_pattern, aes(x = Tref)) +
     geom_line(aes(y = RevCpManual), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
     labs(
-      title = plottitleRHFmanual,
+      title = plottitleRevCpmanual,
       subtitle = subtitle,
       x = "Temperature (°C)",
       y = "Reversing Heat Capacity (J/g)"
@@ -103,10 +105,10 @@ Manual_RHF_plot <- function(average_heat_flow_per_pattern, modulations_back, fil
     scale_y_continuous(
       expand = c(0, 0)  # Remove space between plot and y-axis
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
-  if(savemanualRHFplot == TRUE){
-    ggsave(paste0(fileName, plottitleRHFmanual, ".png"), dpi = 600, width = 10, height = 10)
+  if(savemanualRevCpplot == TRUE){
+    ggsave(paste0(fileName, plottitleRevCpmanual, ".png"), dpi = 600, width = 10, height = 10)
   }
-  return(manRHF_p)  # <--- Ensure the function returns the ggplot object
+  return(manRevCp_p)  # <--- Ensure the function returns the ggplot object
 }
 
 
@@ -116,7 +118,7 @@ Manual_RHF_plot <- function(average_heat_flow_per_pattern, modulations_back, fil
 
 #***--------------------------------Overlays------------------------**#
 
-RHF_NRHF_plot <- function(sample_results, modulations_back, fileName) {
+RevCp_NRHF_plot <- function(sample_results, modulations_back, fileName) {
   plot_ly(sample_results) %>%
     add_lines(
       x = ~TRef, 
@@ -134,7 +136,7 @@ RHF_NRHF_plot <- function(sample_results, modulations_back, fileName) {
     ) %>%
     layout(
       title = list(
-        text = plottitleRHF,
+        text = plottitleRevCp,
         x = 0.5,  # Center title
         font = list(size = 20, family = "Arial", color = "black", weight = "bold")
       ),
@@ -178,13 +180,18 @@ RHF_NRHF_plot <- function(sample_results, modulations_back, fileName) {
 #***--------------------------------Raw data------------------------**#
 
 Original_data <- function(orgData, modulations_back, fileName) {
+  
+  plottitleoD <- paste0("RevCp based on FT (1st harmonic), ", modulations_back, " modulations")
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]
+  
   orgDataSlice <- orgData %>% 
     slice(seq(1, n(), by = 50))
   
   oD <- ggplot(orgDataSlice, aes(x = time, y = heat_flow)) +
     geom_line(color = "black", linewidth = 1) +  
     labs(
-      title = "Temperature vs. Time",
+      title = plottitleoD, 
+      subtitle = subtitle, 
       x = "Time (min)",
       y = "Heat flow (W/g)"
     ) +

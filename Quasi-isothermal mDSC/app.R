@@ -25,9 +25,9 @@ ui <- navbarPage(
       fluidRow(
         column(12, wellPanel(
           selectInput("plot_choice", "Select Plot:", 
-                      choices = c("NRHF", "RHF", "Manual RHF", "RHF and NRHF","Maxima and minima 1", "Maxima and minima prefinal", "Maxima and minima final", 
+                      choices = c("NRHF", "RevCp", "Manual RevCp", "RevCp and NRHF","Maxima and minima 1", "Maxima and minima prefinal", "Maxima and minima final", 
                                   "Original data", "First cleaned up data", "Prefinal cleaned up data", "Final data used for analysis"), 
-                      selected = "RHF"),
+                      selected = "RevCp"),
           fluidRow(  # Use a fluidRow to make sure buttons are side by side
             column(6,
                    HTML("<br>"),
@@ -55,8 +55,8 @@ server <- function(input, output, session) {
   observe({
     # Handle checkboxes
     reactive_inputs$saveNRHFplot <- as.logical(input$saveNRHFplot)
-    reactive_inputs$saveRHFplot <- as.logical(input$saveRHFplot)
-    reactive_inputs$savemanualRHFplot <- as.logical(input$savemanualRHFplot)
+    reactive_inputs$saveRevCpplot <- as.logical(input$saveRevCpplot)
+    reactive_inputs$savemanualRevCpplot <- as.logical(input$savemanualRevCpplot)
     reactive_inputs$saveDatasteps3 <- as.logical(input$saveDatasteps3)
     reactive_inputs$saveExtremadf3 <- as.logical(input$saveExtremadf3)
     reactive_inputs$saveSummaryFT <- as.logical(input$saveSummaryFT)
@@ -96,8 +96,8 @@ server <- function(input, output, session) {
       period = reactive_inputs$period,
       setAmplitude = reactive_inputs$setAmplitude,
       saveNRHFplot = reactive_inputs$saveNRHFplot,
-      saveRHFplot = reactive_inputs$saveRHFplot,
-      savemanualRHFplot = reactive_inputs$savemanualRHFplot,
+      saveRevCpplot = reactive_inputs$saveRevCpplot,
+      savemanualRevCpplot = reactive_inputs$savemanualRevCpplot,
       saveDatasteps3 = reactive_inputs$saveDatasteps3,
       saveExtremadf3 = reactive_inputs$saveExtremadf3,
       saveSummaryFT = reactive_inputs$saveSummaryFT
@@ -128,9 +128,9 @@ server <- function(input, output, session) {
     
     plot_obj <- switch(input$plot_choice,
                        "NRHF" = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveNRHFplot),
-                       "RHF" = RHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveRHFplot),
-                       "Manual RHF" = Manual_RHF_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$savemanualRHFplot),
-                       "RHF and NRHF" = RHF_NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                       "RevCp" = RevCp_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveRevCpplot),
+                       "Manual RevCp" = Manual_RevCp_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$savemanualRevCpplot),
+                       "RevCp and NRHF" = RevCp_NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
                        "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, reactive_inputs$modulations_back, reactive_inputs$fileName),
                        "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`, reactive_inputs$modulations_back, reactive_inputs$fileName),
                        "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveExtremadf3),
