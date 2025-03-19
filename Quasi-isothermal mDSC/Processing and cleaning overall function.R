@@ -78,13 +78,21 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
       fft_result_harm = list({
         n <- length(heat_flow)
         hf_centered <- heat_flow - mean(heat_flow)  # detrend the signal
+        
         # Create a Hanning window:
         hanning <- 0.5 - 0.5 * cos(2 * pi * (0:(n - 1)) / (n - 1))
+        # Compute the coherent gain (i.e. the average of the window):
+        coherent_gain <- mean(hanning)
+        
+        # Apply the window to the detrended signal:
         windowed_signal <- hf_centered * hanning
+        
         # Zero-pad to the next power of 2 for improved frequency resolution:
         padded_length <- 2^(ceiling(log2(n)))
         padded_signal <- c(windowed_signal, rep(0, padded_length - n))
-        fft(padded_signal)
+        
+        # Return both the FFT result and the coherent gain in a list:
+        list(fft = fft(padded_signal), cg = coherent_gain)
       })
     ) %>%
     # Now, compute dt for each group and perform the interpolation:
@@ -96,10 +104,15 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
       # DC component remains unchanged:
       dc_value = map2_dbl(fft_result_dc, n_points, ~ Re(.x[1]) / .y),
       
-      # Compute the first harmonic with quadratic (peak) interpolation.
+      # Compute the first harmonic with quadratic (peak) interpolation,
+      # and correct for the amplitude reduction due to the Hanning window.
       first_harmonic = pmap_dbl(
         list(fft_result_harm, n_points, dt_group),
-        function(fft_h, n_points, dt_group) {
+        function(fft_h_data, n_points, dt_group) {
+          # Extract FFT result and coherent gain:
+          fft_h <- fft_h_data$fft
+          cg <- fft_h_data$cg
+          
           padded_length <- length(fft_h)
           # Build frequency axis using the group-specific dt:
           freqs <- seq(0, padded_length - 1) / (padded_length * dt_group)
@@ -109,7 +122,7 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
           # Find the FFT bin index closest to mod_freq:
           i0 <- which.min(abs(freqs - mod_freq))
           
-          # If i0 is at an edge, return that bin's magnitude:
+          # If i0 is at an edge, use that bin's magnitude:
           if (i0 <= 1 || i0 >= padded_length) {
             amp <- Mod(fft_h[i0])
           } else {
@@ -122,19 +135,18 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
             delta <- ifelse(denominator == 0, 0, 0.5 * (y1 - y3) / denominator)
             amp <- y2 - 0.25 * (y1 - y3) * delta
           }
-          # Multiply by 2 (for the symmetric negative frequencies), multiply by two again to correct for the Hann windowing gain, and normalize by original n_points:
-          2*2 * amp / n_points
+          # Multiply by 2 (for symmetric negative frequencies),
+          # normalize by original n_points, and correct for the window's coherent gain:
+          (2 / cg) * amp / n_points
         }
       ),
       
-    
+  
       # Calculate reversing heat flow:
       reversing_heat_flow = first_harmonic / tempModAmplitude,
       TRef = pattern * step_size + starting_temp
     )
   
-  print(ft_averages$first_harmonic)
-
   
   if (export){
     #3. Manual RevCp calculation
