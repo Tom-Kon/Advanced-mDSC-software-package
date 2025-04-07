@@ -5,7 +5,7 @@ MHFplots <- function(resampled_points) {
   
   # Create each ggplot object with the specified names
   MHF_and_baselinecorr_MHF <- ggplot(resampled_points) +
-    geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHF), color = "blue", size = 1) +
+    geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHFNotEven), color = "blue", size = 1) +
     geom_line(data = resampled_points, aes(x = TRef, y = MHF), color = "red", size = 1.5) +
     labs(title = "Initial modulated heat flow and baseline-corrected modulated heat flow",
          x = "Temperature (°C)",
