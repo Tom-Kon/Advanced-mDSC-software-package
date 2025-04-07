@@ -1,6 +1,5 @@
 source("libraries.R")
-source("configapp.R") 
-
+source("configapp.R")
 
 ui <- navbarPage(
   id = "tabs",
