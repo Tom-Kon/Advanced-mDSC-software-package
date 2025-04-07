@@ -1,10 +1,10 @@
 num_ticks_x <- 10
 num_ticks_y <- 5
 
-ggplots <- function(resampled_points) {
+MHFplots <- function(resampled_points) {
   
   # Create each ggplot object with the specified names
-  MHF_and_baselinecorr_MHF <- ggplot() +
+  MHF_and_baselinecorr_MHF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHF), color = "blue", size = 1) +
     geom_line(data = resampled_points, aes(x = TRef, y = MHF), color = "red", size = 1.5) +
     labs(title = "Initial modulated heat flow and baseline-corrected modulated heat flow",
@@ -28,8 +28,13 @@ ggplots <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
+    
+  return(MHF_and_baselinecorr_MHF)  
+}
+
+overlayplot <- function(resampled_points) {
   
-  Overlay <- ggplot() +
+  Overlay <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessTHF, color = "THF"), size = 1.3) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessRHF, color = "RHF"), size = 1.3) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessNRHF, color = "NRHF"), size = 1.3) +
@@ -57,8 +62,12 @@ ggplots <- function(resampled_points) {
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
   
+  return(Overlay)  
   
-  Smoothed_THF <- ggplot() +
+  }
+
+smoothedTHFplot <- function(resampled_points) {
+  Smoothed_THF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessTHF), color = "blue", size = 1.3) +
     labs(title = "LOESS smoothed Total heat flow",
          x = "Time",
@@ -80,9 +89,14 @@ ggplots <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
+  return(Smoothed_THF)  
+  }
   
+
   
-  Smoothed_RHF <- ggplot() +
+smoothedRHFplot <- function(resampled_points) {
+  
+  Smoothed_RHF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessRHF), color = "blue", size = 1.3) +
     labs(title = "LOESS smoothed Reversing heat flow",
          x = "Time",
@@ -104,9 +118,11 @@ ggplots <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
-  
-  
-  Smoothed_NRHF <- ggplot() +
+  return(Smoothed_RHF)
+}  
+ 
+smoothedNRHFplot <- function(resampled_points) {
+  Smoothed_NRHF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessNRHF), color = "blue", size = 1.3) +
     labs(title = "LOESS smoothed non-reversing heat flow",
          x = "Time",
@@ -128,12 +144,6 @@ ggplots <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
-  
-  
-  # Return the plots as a list with the new names
-  return(list(MHF_and_baselinecorr_MHF = MHF_and_baselinecorr_MHF, 
-              Overlay = Overlay, 
-              Smoothed_THF = Smoothed_THF, 
-              Smoothed_RHF = Smoothed_RHF, 
-              Smoothed_NRHF = Smoothed_NRHF))
-}
+  return(Smoothed_NRHF)
+}  
+
