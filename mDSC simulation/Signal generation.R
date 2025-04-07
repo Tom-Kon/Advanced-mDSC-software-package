@@ -68,8 +68,8 @@ reachedTemps <- numeric(0)
 
 # Initialize signal vector
 signal_vecmelt <- numeric(nrow(df))
-sigma <- 3.33  # Assuming FWHM-based estimate
-meltAmplitude <- MeltEnth * exp(-((TRef - locationMelt[3])^2) / (2 * sigma^2))
+sigmamelt <- (locationMelt[2]-locationMelt[3])/sqrt(2*log(1000))  # Assuming FWHM-based estimate
+meltAmplitude <- MeltEnth/sqrt(2*pi*sigma^2) * exp(-((TRef - locationMelt[3])^2) / (2 * sigmamelt^2))
 
 
 for (i in seq_along(df$modTemp)) {
@@ -81,7 +81,7 @@ for (i in seq_along(df$modTemp)) {
     
     # Compute signal
     if (df$TRef[i] >= locationMelt[1] && df$TRef[i] <= locationMelt[2]) {
-      signal_vecmelt[i] <- min(meltAmplitude[i] * sin((2*pi/periodSignal*df$times[i]) +phase_melt), 0)
+      signal_vecmelt[i] <- min(meltAmplitude[i] * sin((2*pi/periodSignal*df$times[i]) + phase_melt), 0)
     } else {
       signal_vecmelt[i] <- 0
     }
@@ -99,7 +99,7 @@ df <- df %>%
     )
   )
 
-sigmacrystal <- 3.33
+sigmacrystal <- (locationcrystal[2]-locationcrystal[3])/sqrt(2*log(1000))
 signal_vec <- numeric(nrow(df))
 
 
@@ -107,7 +107,7 @@ for (i in seq_along(df$TRef)) {
   # Compute crystallisation signal
   
   if (df$TRef[i] >= locationcrystal[1] && df$TRef[i] <= locationcrystal[2]) {
-    signal_vec[i] <- Crystalenth * exp(-((TRef[i] - locationcrystal[3])^2) / (2 * sigmacrystal^2))
+    signal_vec[i] <- Crystalenth/sqrt(2*pi*sigma^2) * exp(-((TRef[i] - locationcrystal[3])^2) / (2 * sigmacrystal^2))
   } else {
     signal_vec[i] <- 0
   }
@@ -120,14 +120,14 @@ df <- df %>%
     MHF = MHF + signal
   )
 
-sigmaEnthRec <- 3.33
+sigmaEnthRec <- (locationEnthRec[2]-locationEnthRec[3])/sqrt(2*log(1000))
 
 
 for (i in seq_along(df$TRef)) {
   # Compute crystallisation signal
   
   if (df$TRef[i] >= locationEnthRec[1] && df$TRef[i] <= locationEnthRec[2]) {
-    signal_vec[i] <- EnthrecEnth * exp(-((TRef[i] - locationEnthRec[3])^2) / (2 * sigmaEnthRec^2))
+    signal_vec[i] <- EnthrecEnth/sqrt(2*pi*sigma^2) * exp(-((TRef[i] - locationEnthRec[3])^2) / (2 * sigmaEnthRec^2))
   } else {
     signal_vec[i] <- 0
   }
