@@ -6,8 +6,8 @@ savetitle <- "20s period 4 °C_min HR"
 sampling <- 10 #in pts/sec
 startTemp <- 20      # in °C
 endTemp <- 180       # in °C
-period <- 40        # in modulations/sec
-periodSignal <- 40    # in sec
+period <- 40        # in sec
+periodSignal <- 40    # period of the weird melting signal in sec
 heatRate <- 2/60        # in °C/sec
 phase <- -0.2 # in rad
 ws <- period*sampling*1
@@ -49,12 +49,12 @@ locationMelt[3] <- (locationMelt[2]+locationMelt[1])/2
 
 #Crystallisation
 Crystalenth <- 0.05
-locationcrystal <-c(80,100,90) # in °C
+locationcrystal <-c(80,100) # in °C
 locationcrystal[3] <- (locationcrystal[2]+locationcrystal[1])/2
 
 
 #Enthalpy recovery
 EnthrecEnth <- -0.02
-locationEnthRec <-c(30,45,37.5) # in °C
+locationEnthRec <-c(30,45) # in °C
 locationEnthRec[3] <- (locationEnthRec[2]+locationEnthRec[1])/2
 
