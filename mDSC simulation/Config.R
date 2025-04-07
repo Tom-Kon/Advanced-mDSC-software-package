@@ -42,16 +42,19 @@ deltaHFTg <- -0.268*heatRate  # in W/g
 
 
 #Small melting peaks
-MeltEnth <- -0.02
+MeltEnth <- -0.2
 phase_melt <- 0
-locationMelt <- c(134, 154, 144)   # in °C
-
+locationMelt <- c(134, 154)   # in °C
+locationMelt[3] <- (locationMelt[2]+locationMelt[1])/2
 
 #Crystallisation
-Crystalenth <- 0.005
+Crystalenth <- 0.05
 locationcrystal <-c(80,100,90) # in °C
+locationcrystal[3] <- (locationcrystal[2]+locationcrystal[1])/2
 
 
 #Enthalpy recovery
+EnthrecEnth <- -0.02
 locationEnthRec <-c(30,45,37.5) # in °C
-EnthrecEnth <- -0.002
+locationEnthRec[3] <- (locationEnthRec[2]+locationEnthRec[1])/2
+
