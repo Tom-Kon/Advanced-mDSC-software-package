@@ -7,9 +7,7 @@ configUI1<- function() {
       checkboxInput("saveNRHFplot", "Save non-reversing heat flow plot?", FALSE),
       checkboxInput("saveRevCpplot", "Save reversing heat flow plot?", FALSE),
       checkboxInput("savemanualRevCpplot", "Save manually calculated reversing heat flow plot?", FALSE),
-      checkboxInput("saveDatasteps3", "Save final raw data?", FALSE),
-      checkboxInput("saveExtremadf3", "Save final maxima and minima list?", FALSE),
-      checkboxInput("saveSummaryFT", "Save final analysed data", FALSE),
+      checkboxInput("saveExcel", "Save Excel with all the analyses?", TRUE),
       fileInput("Excel_in", "Upload your Excel here"),    
     )
   )
