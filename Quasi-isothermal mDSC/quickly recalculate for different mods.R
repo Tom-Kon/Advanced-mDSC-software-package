@@ -1,4 +1,4 @@
-processDSCrecalc <- function(sample_results, modulations_back, period, setAmplitude) {
+processDSCrecalc <- function(fileName, sample_results, modulations_back, period, setAmplitude, step_size, starting_temp, saveExcel) {
   
   tempModAmplitude <- setAmplitude*2*pi/period
   
@@ -29,13 +29,21 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
       fft_result_harm = list({
         n <- length(heat_flow)
         hf_centered <- heat_flow - mean(heat_flow)  # detrend the signal
+        
         # Create a Hanning window:
         hanning <- 0.5 - 0.5 * cos(2 * pi * (0:(n - 1)) / (n - 1))
+        # Compute the coherent gain (i.e. the average of the window):
+        coherent_gain <- mean(hanning)
+        
+        # Apply the window to the detrended signal:
         windowed_signal <- hf_centered * hanning
+        
         # Zero-pad to the next power of 2 for improved frequency resolution:
         padded_length <- 2^(ceiling(log2(n)))
         padded_signal <- c(windowed_signal, rep(0, padded_length - n))
-        fft(padded_signal)
+        
+        # Return both the FFT result and the coherent gain in a list:
+        list(fft = fft(padded_signal), cg = coherent_gain)
       })
     ) %>%
     # Now, compute dt for each group and perform the interpolation:
@@ -47,10 +55,15 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
       # DC component remains unchanged:
       dc_value = map2_dbl(fft_result_dc, n_points, ~ Re(.x[1]) / .y),
       
-      # Compute the first harmonic with quadratic (peak) interpolation.
+      # Compute the first harmonic with quadratic (peak) interpolation,
+      # and correct for the amplitude reduction due to the Hanning window.
       first_harmonic = pmap_dbl(
         list(fft_result_harm, n_points, dt_group),
-        function(fft_h, n_points, dt_group) {
+        function(fft_h_data, n_points, dt_group) {
+          # Extract FFT result and coherent gain:
+          fft_h <- fft_h_data$fft
+          cg <- fft_h_data$cg
+          
           padded_length <- length(fft_h)
           # Build frequency axis using the group-specific dt:
           freqs <- seq(0, padded_length - 1) / (padded_length * dt_group)
@@ -60,7 +73,7 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
           # Find the FFT bin index closest to mod_freq:
           i0 <- which.min(abs(freqs - mod_freq))
           
-          # If i0 is at an edge, return that bin's magnitude:
+          # If i0 is at an edge, use that bin's magnitude:
           if (i0 <= 1 || i0 >= padded_length) {
             amp <- Mod(fft_h[i0])
           } else {
@@ -73,8 +86,9 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
             delta <- ifelse(denominator == 0, 0, 0.5 * (y1 - y3) / denominator)
             amp <- y2 - 0.25 * (y1 - y3) * delta
           }
-          # Multiply by 2 (for the symmetric negative frequencies) and normalize by original n_points:
-          2 * amp / n_points
+          # Multiply by 2 (for symmetric negative frequencies),
+          # normalize by original n_points, and correct for the window's coherent gain:
+          (2 / cg) * amp / n_points
         }
       ),
       
@@ -82,6 +96,7 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
       reversing_heat_flow = first_harmonic / tempModAmplitude,
       TRef = pattern * step_size + starting_temp
     )
+  
   
     #3. Manual RHF calculation
     # Apply the function to your extrema_df2 data
@@ -109,6 +124,53 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
     sample_results$d_steps_cleaned_3 <- d_steps_cleaned_3
     sample_results$ft_averages <- ft_averages
     sample_results$average_heat_flow_per_pattern <- average_heat_flow_per_pattern
+    
+    
+    if (saveExcel == TRUE) {
+      ft_averagesexport <- data.frame("Step number" = ft_averages$pattern, "Temperature at that modulation" = ft_averages$TRef, "Non-reversing heat flow" = ft_averages$dc_value, "Reversing heat flow" = ft_averages$reversing_heat_flow)
+      
+      
+      config <- data.frame(
+        Parameter = c("Starting temperature (°C)", 
+                      "Period (sec)",
+                      "Step size (°C)", 
+                      "Number of modulations used in calculation",
+                      "Temperature modulation amplitude (°C)", 
+                      "Calculated amplitude of the derived temperature function (°C)"),
+        
+        Value = c(starting_temp,
+                  period*60,
+                  step_size,
+                  modulations_back, 
+                  setAmplitude, 
+                  tempModAmplitude)
+      )
+      
+      
+      fileName <- unlist(strsplit(fileName, "\\."))[1]
+      fileName <- paste0(fileName, " ", modulations_back, " modulations analysed (recalc).xlsx")
+      wb <- createWorkbook(fileName)
+      
+      addWorksheet(wb, "0.Settings")
+      writeData(wb, sheet = "0.Settings", config)
+      
+      addWorksheet(wb, "1.Analysed results")
+      writeData(wb, sheet = "1.Analysed results", ft_averagesexport)
+      
+      addWorksheet(wb, "2.Non-FT calc. RevCp")
+      writeData(wb, sheet = "2.Non-FT calc. RevCp", average_heat_flow_per_pattern)
+      
+      addWorksheet(wb, "7.Data used in final analysis")
+      writeData(wb, sheet = "7.Data used in final analysis", d_steps_cleaned_3)
+      
+      addWorksheet(wb, "8.Extrema of sheet 7")      
+      writeData(wb, sheet = "8.Extrema of sheet 7", extrema_df3)
+      
+      
+      saveWorkbook(wb, fileName, overwrite = TRUE)
+    }
+    
+    
     
   print("Done!")
   return(sample_results)
