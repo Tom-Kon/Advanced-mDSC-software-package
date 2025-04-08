@@ -1,5 +1,5 @@
 processDSC <- function(fileName, Excel, export, starting_temp, step_size,
-           modulations_back, period, setAmplitude, saveNRHFplot, saveRevCpplot, savemanualRevCpplot, 
+           modulations_back, period, isothermLength, setAmplitude, saveNRHFplot, saveRevCpplot, savemanualRevCpplot, 
            saveExcel) {
 
   #Don't touch this unless you know what you're doing----
@@ -140,11 +140,11 @@ processDSC <- function(fileName, Excel, export, starting_temp, step_size,
         }
       ),
       
-  
       # Calculate reversing heat flow:
       reversing_heat_flow = first_harmonic / tempModAmplitude,
       TRef = pattern * step_size + starting_temp
     )
+  
   
   
   if (export){
@@ -178,18 +178,38 @@ processDSC <- function(fileName, Excel, export, starting_temp, step_size,
       ft_averagesexport <- data.frame("Step number" = ft_averages$pattern, "Temperature at that modulation" = ft_averages$TRef, "Non-reversing heat flow" = ft_averages$dc_value, "Reversing heat flow" = ft_averages$reversing_heat_flow)
       
       
-      config <- t(data.frame("Starting temperature" = starting_temp, "period" = period, 
-                             "Step size (°C)" = step_size, "Number of modulations used in calculation" = modulations_back,
-                             "Temperature modulation amplitude" = setAmplitude, 
-                             "Margin for the first cleanup (in between steps) - user input" = temp_margin_first_cleanup,
-                             "Margin for the first cleanup (in between steps) - calculated" = points_distance_minimum_margin,
-                             "Calculated amplitude of the derived temperature function" = tempModAmplitude,
-                             "Sampling interval (pts/sec)" = sampling))
+      config <- data.frame(
+        Parameter = c("Starting temperature (°C)", 
+                      "Period (sec)",
+                      "Isotherm length (min)",
+                      "Step size (°C)", 
+                      "Number of modulations used in calculation",
+                      "Temperature modulation amplitude (°C)", 
+                      "Margin for the first cleanup (in between steps) - user input (°C)", 
+                      "Margin for the first cleanup (in between steps) - calculated (°C)", 
+                      "Calculated amplitude of the derived temperature function (°C)", 
+                      "Sampling interval (pts/sec)"),
+        
+        Value = c(starting_temp, 
+                  period*60,
+                  isothermLength,
+                  step_size, 
+                  modulations_back, 
+                  setAmplitude, 
+                  temp_margin_first_cleanup, 
+                  points_distance_minimum_margin, 
+                  tempModAmplitude, 
+                  sampling)
+      )
+      
       
       fileName <- unlist(strsplit(fileName, "\\."))[1]
-      fileName <- paste0(fileName, " analysed.xlsx")
+      fileName <- paste0(fileName, " ", modulations_back, " modulations analysed.xlsx")
       wb <- createWorkbook(fileName)
 
+      addWorksheet(wb, "0.Settings")
+      writeData(wb, sheet = "0.Settings", config)
+      
       addWorksheet(wb, "1.Analysed results")
       writeData(wb, sheet = "1.Analysed results", ft_averagesexport)
       
@@ -208,8 +228,8 @@ processDSC <- function(fileName, Excel, export, starting_temp, step_size,
       addWorksheet(wb, "6.Extrema of sheet 5")
       writeData(wb, sheet = "6.Extrema of sheet 5", extrema_df2)
       
-      addWorksheet(wb, "7.Delete first mod. of sheet 5")
-      writeData(wb, sheet = "7.Delete first mods. of sheet 5", d_steps_cleaned_3)
+      addWorksheet(wb, "7.Data used in final analysis")
+      writeData(wb, sheet = "7.Data used in final analysis", d_steps_cleaned_3)
       
       addWorksheet(wb, "8.Extrema of sheet 7")      
       writeData(wb, sheet = "8.Extrema of sheet 7", extrema_df3)
@@ -218,31 +238,6 @@ processDSC <- function(fileName, Excel, export, starting_temp, step_size,
       saveWorkbook(wb, fileName, overwrite = TRUE)
     }
 
-  
-    #Save Excels----
-    # if (saveExtremadf1 == TRUE) {
-    #   write.xlsx(extrema_df, paste0(fileName, " extremadf.xlsx"))
-    # }
-    # 
-    # if(saveExtremadf2 == TRUE) {
-    #   write.xlsx(extrema_df2, paste0(fileName, " extremadf2.xlsx"))
-    # }
-    # 
-    # if(saveExtremadf3 == TRUE) {
-    #   write.xlsx(extrema_df3, paste0(fileName, " extremadf3.xlsx"))
-    # }
-    # 
-    # if(saveDatasteps == TRUE) {
-    #   write.xlsx(d_steps_cleaned, paste0(fileName, " data_steps_cleaned.xlsx"))
-    # }
-    # 
-    # if(saveDatasteps2 == TRUE){
-    #   write.xlsx(d_steps_cleaned_2, paste0(fileName, " data_steps_cleaned_2.xlsx"))
-    # }
-    # 
-    # if(saveDatasteps4 == TRUE){
-    #   write.xlsx(d_steps_cleaned_3, paste0(fileName, " data_steps_cleaned_4.xlsx"))
-    # }  
   }
   
   if (nrow(d_steps) - nrow(d_steps_cleaned) > 1000) {
