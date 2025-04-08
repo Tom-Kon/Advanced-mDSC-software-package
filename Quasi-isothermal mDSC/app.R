@@ -55,9 +55,7 @@ server <- function(input, output, session) {
     reactive_inputs$saveNRHFplot <- as.logical(input$saveNRHFplot)
     reactive_inputs$saveRevCpplot <- as.logical(input$saveRevCpplot)
     reactive_inputs$savemanualRevCpplot <- as.logical(input$savemanualRevCpplot)
-    reactive_inputs$saveDatasteps3 <- as.logical(input$saveDatasteps3)
-    reactive_inputs$saveExtremadf3 <- as.logical(input$saveExtremadf3)
-    reactive_inputs$saveSummaryFT <- as.logical(input$saveSummaryFT)
+    reactive_inputs$saveExcel <- as.logical(input$saveExcel)
     
     # Store numerical/text inputs with proper reactive evaluation
     reactive_inputs$period <- eval(parse(text = input$period_in))  # Assuming input is numeric
@@ -83,11 +81,9 @@ server <- function(input, output, session) {
 
     # Call the processing function and store results in reactive value
     sample_results <- processDSC(
-      file = reactive_inputs$fileName,
+      fileName = reactive_inputs$fileName,
       Excel = reactive_inputs$Excel,
       export = TRUE,
-      rangesmin = rangesmin,
-      rangesmax = rangesmax,
       starting_temp = reactive_inputs$startingTemp,
       step_size = reactive_inputs$stepSize,
       modulations_back = reactive_inputs$modulations_back,
@@ -96,9 +92,7 @@ server <- function(input, output, session) {
       saveNRHFplot = reactive_inputs$saveNRHFplot,
       saveRevCpplot = reactive_inputs$saveRevCpplot,
       savemanualRevCpplot = reactive_inputs$savemanualRevCpplot,
-      saveDatasteps3 = reactive_inputs$saveDatasteps3,
-      saveExtremadf3 = reactive_inputs$saveExtremadf3,
-      saveSummaryFT = reactive_inputs$saveSummaryFT
+      saveExcel = reactive_inputs$saveExcel
     )
     
     # Store the processed results in reactiveValues()
