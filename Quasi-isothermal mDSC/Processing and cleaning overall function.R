@@ -1,6 +1,6 @@
-processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp, step_size,
+processDSC <- function(fileName, Excel, export, starting_temp, step_size,
            modulations_back, period, setAmplitude, saveNRHFplot, saveRevCpplot, savemanualRevCpplot, 
-           saveDatasteps3, saveExtremadf3, saveSummaryFT) {
+           saveExcel) {
 
   #Don't touch this unless you know what you're doing----
   temp_margin_first_cleanup <- 0.05
@@ -10,7 +10,6 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
   subtitle <- paste0("Dataset: ", "test")
   tempModAmplitude <- setAmplitude*2*pi/period
   num_ticks <- 10
-  sample_size <- 5.79
 
   source("detailed functions.R")
   
@@ -175,6 +174,51 @@ processDSC <- function(file, Excel, export, rangesmin, rangesmax, starting_temp,
     names(results) <- c("Extrema df1","Extrema df2", "Extrema df3", "Original data", "d_steps_cleaned", "d_steps_cleaned_2", "d_steps_cleaned_3", "ft_averages", "average_heat_flow_per_pattern")
 
     
+    if (saveExcel == TRUE) {
+      ft_averagesexport <- data.frame("Step number" = ft_averages$pattern, "Temperature at that modulation" = ft_averages$TRef, "Non-reversing heat flow" = ft_averages$dc_value, "Reversing heat flow" = ft_averages$reversing_heat_flow)
+      
+      
+      config <- t(data.frame("Starting temperature" = starting_temp, "period" = period, 
+                             "Step size (°C)" = step_size, "Number of modulations used in calculation" = modulations_back,
+                             "Temperature modulation amplitude" = setAmplitude, 
+                             "Margin for the first cleanup (in between steps) - user input" = temp_margin_first_cleanup,
+                             "Margin for the first cleanup (in between steps) - calculated" = points_distance_minimum_margin,
+                             "Calculated amplitude of the derived temperature function" = tempModAmplitude,
+                             "Sampling interval (pts/sec)" = sampling))
+      
+      fileName <- unlist(strsplit(fileName, "\\."))[1]
+      fileName <- paste0(fileName, " analysed.xlsx")
+      wb <- createWorkbook(fileName)
+
+      addWorksheet(wb, "1.Analysed results")
+      writeData(wb, sheet = "1.Analysed results", ft_averagesexport)
+      
+      addWorksheet(wb, "2.Non-FT calc. RevCp")
+      writeData(wb, sheet = "2.Non-FT calc. RevCp", average_heat_flow_per_pattern)
+      
+      addWorksheet(wb, "3.Data with isolated patterns")
+      writeData(wb, sheet = "3.Data with isolated patterns", d_steps_cleaned)
+      
+      addWorksheet(wb, "4.Extrema of sheet 3")
+      writeData(wb, sheet = "4.Extrema of sheet 3", extrema_df1)
+      
+      addWorksheet(wb, "5.Delete last max of sheet 3")
+      writeData(wb, sheet = "5.Delete last max of sheet 3", d_steps_cleaned_2)
+      
+      addWorksheet(wb, "6.Extrema of sheet 5")
+      writeData(wb, sheet = "6.Extrema of sheet 5", extrema_df2)
+      
+      addWorksheet(wb, "7.Delete first mod. of sheet 5")
+      writeData(wb, sheet = "7.Delete first mods. of sheet 5", d_steps_cleaned_3)
+      
+      addWorksheet(wb, "8.Extrema of sheet 7")      
+      writeData(wb, sheet = "8.Extrema of sheet 7", extrema_df3)
+      
+      
+      saveWorkbook(wb, fileName, overwrite = TRUE)
+    }
+
+  
     #Save Excels----
     # if (saveExtremadf1 == TRUE) {
     #   write.xlsx(extrema_df, paste0(fileName, " extremadf.xlsx"))
