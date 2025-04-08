@@ -1,13 +1,9 @@
-source("detailed functions.R")
-source("config.R")
-
-
-
-
 processDSCrecalc <- function(sample_results, modulations_back, period, setAmplitude) {
   
   tempModAmplitude <- setAmplitude*2*pi/period
   
+  source("detailed functions.R")
+
   # Recompute extrema on the cleaned data for the subsequent steps
   extrema_counts2 <- sample_results$d_steps_cleaned_2 %>%
     group_by(pattern) %>%
@@ -15,7 +11,7 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
   
   extrema_df2 <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
-  d_steps_cleaned_3 <- delete_data_until_equil(sample_results$d_steps_cleaned_2, extrema_df2)
+  d_steps_cleaned_3 <- delete_data_until_equil(sample_results$d_steps_cleaned_2, extrema_df2, period, modulations_back)
   TRef <- d_steps_cleaned_3$pattern*step_size+starting_temp
   d_steps_cleaned_3 <- cbind(d_steps_cleaned_3, TRef)
   
@@ -89,7 +85,7 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
   
     #3. Manual RHF calculation
     # Apply the function to your extrema_df2 data
-    extrema_df3 <- delete_extrema_until_equil(extrema_df2, sample_results$d_steps_cleaned_2)
+    extrema_df3 <- delete_extrema_until_equil(extrema_df2, sample_results$d_steps_cleaned_2, period, modulations_back)
     
     # Now average the heat_flow values per pattern
     average_heat_maxima <- extrema_df3 %>%
@@ -104,7 +100,7 @@ processDSCrecalc <- function(sample_results, modulations_back, period, setAmplit
     
     average_amplitude <- (average_heat_maxima-average_heat_minima)*0.5
     
-    RevCpManual <- (average_amplitude$avg_heat_flow)/tempModAmplitude/sample_size
+    RevCpManual <- (average_amplitude$avg_heat_flow)/tempModAmplitude
     Tref <- step_size * average_heat_maxima$pattern + starting_temp
     average_heat_flow_per_pattern <- cbind(average_amplitude, RevCpManual, Tref)
     
