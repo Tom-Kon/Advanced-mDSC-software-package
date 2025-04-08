@@ -88,6 +88,7 @@ server <- function(input, output, session) {
       step_size = reactive_inputs$stepSize,
       modulations_back = reactive_inputs$modulations_back,
       period = reactive_inputs$period,
+      isothermLength = reactive_inputs$isothermLength,
       setAmplitude = reactive_inputs$setAmplitude,
       saveNRHFplot = reactive_inputs$saveNRHFplot,
       saveRevCpplot = reactive_inputs$saveRevCpplot,
@@ -106,10 +107,14 @@ server <- function(input, output, session) {
     reactive_inputs$modulations_back <- eval(parse(text = input$modulations_back_in_new))
     
     reactive_inputs$sample_results <- processDSCrecalc(
+      fileName = reactive_inputs$fileName,
       sample_results = reactive_inputs$sample_results,
       modulations_back = reactive_inputs$modulations_back,
       period = reactive_inputs$period,
-      setAmplitude = reactive_inputs$setAmplitude
+      setAmplitude = reactive_inputs$setAmplitude,
+      starting_temp = reactive_inputs$startingTemp,
+      step_size = reactive_inputs$stepSize,
+      saveExcel = reactive_inputs$saveExcel
     )
   })
   
