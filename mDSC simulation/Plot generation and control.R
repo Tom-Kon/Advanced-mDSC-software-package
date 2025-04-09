@@ -1,19 +1,21 @@
 num_ticks_x <- 10
 num_ticks_y <- 5
 
-MHFplots <- function(resampled_points) {
+MHFplots <- function(resampled_points, subtitle, saveTitle) {
   
   # Create each ggplot object with the specified names
   MHF_and_baselinecorr_MHF <- ggplot(resampled_points) +
-    geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHFNotEven), color = "blue", size = 1) +
-    geom_line(data = resampled_points, aes(x = TRef, y = MHF), color = "red", size = 1.5) +
+    # geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHFNotEven), color = "blue", size = 1) +
+    geom_line(data = resampled_points, aes(x = TRef, y = MHF), color = "blue", size = 1.5) +
     labs(title = "Initial modulated heat flow and baseline-corrected modulated heat flow",
+         subtitle = subtitle,
          x = "Temperature (°C)",
          y = "Modulated Heat Flow (W/g)"
     ) +
     theme_minimal(base_size = 18) +  # Larger base font size for better readability
     theme(
       plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
@@ -28,25 +30,27 @@ MHFplots <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
-    
+  
+  ggsave(paste0(saveTitle, " MHF.png"), dpi = 600, width = 15, height = 10)
   return(MHF_and_baselinecorr_MHF)  
 }
 
-overlayplot <- function(resampled_points) {
+overlayplot <- function(resampled_points, subtitle, saveTitle) {
   
   Overlay <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessTHF, color = "THF"), size = 1.3) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessRHF, color = "RHF"), size = 1.3) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessNRHF, color = "NRHF"), size = 1.3) +
     labs(title = "Overlay of the total, reversing and non-reversing heat flows",
-         x = "Time",
+         subtitle = subtitle,
+         x = "Temperature (°C)",
          y = "Heat flow (W/g)",
          color = "Legend") +  # Change the legend title here
     scale_color_manual(values = c("THF" = "blue", "RHF" = "red", "NRHF" = "darkgreen")) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.subtitle = element_text(size = 12),  # Adjust the size as needed
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.subtitle = element_text(size = 17),  # Adjust the size as needed
+      plot.title = element_text(hjust = 0.5, size = 23, face = "bold", color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
@@ -61,16 +65,19 @@ overlayplot <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
+
+  ggsave(paste0(saveTitle, " overlay.png"), dpi = 600, width = 15, height = 10)
   
   return(Overlay)  
   
   }
 
-smoothedTHFplot <- function(resampled_points) {
+smoothedTHFplot <- function(resampled_points, subtitle, saveTitle) {
   Smoothed_THF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessTHF), color = "blue", size = 1.3) +
     labs(title = "LOESS smoothed Total heat flow",
-         x = "Time",
+         subtitle = subtitle,
+         x = "Temperature (°C)",
          y = "Total heat flow (W/g)") +
     theme_minimal(base_size = 18) +  # Larger base font size for better readability
     theme(
@@ -89,17 +96,21 @@ smoothedTHFplot <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
+
+  ggsave(paste0(saveTitle, " THF.png"), dpi = 600, width = 15, height = 10)
+  
   return(Smoothed_THF)  
   }
   
 
   
-smoothedRHFplot <- function(resampled_points) {
+smoothedRHFplot <- function(resampled_points, subtitle, saveTitle) {
   
   Smoothed_RHF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessRHF), color = "blue", size = 1.3) +
     labs(title = "LOESS smoothed Reversing heat flow",
-         x = "Time",
+         subtitle = subtitle,
+         x = "Temperature (°C)",
          y = "Reversing heat flow (W/g)") +
     theme_minimal(base_size = 18) +  # Larger base font size for better readability
     theme(
@@ -118,14 +129,18 @@ smoothedRHFplot <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
+  
+  ggsave(paste0(saveTitle, " RHF.png"), dpi = 600, width = 15, height = 10)
+  
   return(Smoothed_RHF)
 }  
  
-smoothedNRHFplot <- function(resampled_points) {
+smoothedNRHFplot <- function(resampled_points, subtitle, saveTitle) {
   Smoothed_NRHF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessNRHF), color = "blue", size = 1.3) +
     labs(title = "LOESS smoothed non-reversing heat flow",
-         x = "Time",
+         subtitle = subtitle,
+         x = "Temperature (°C)",
          y = "Non-reversing heat flow (W/g)") +
     theme_minimal(base_size = 18) +  # Larger base font size for better readability
     theme(
@@ -144,6 +159,9 @@ smoothedNRHFplot <- function(resampled_points) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
+  
+  ggsave(paste0(saveTitle, " NRHF.png"), dpi = 600, width = 15, height = 10)
+  
   return(Smoothed_NRHF)
 }  
 
