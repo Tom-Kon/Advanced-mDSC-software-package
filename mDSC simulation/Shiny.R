@@ -31,7 +31,7 @@ ui <- navbarPage(
       fluidRow(
         column(12, wellPanel(
           selectInput("plot_choice", "Select Plot:", 
-                      choices = c("MHF", "Overlay", "THF", "RHF","NRHF"), 
+                      choices = c("MHF", "Overlay", "THF", "RHF","NRHF", "Signal closeup"), 
                       selected = "MHF"),
         ))
       ),
@@ -52,6 +52,7 @@ server <- function(input, output, session) {
   observe({
     # Handle all inputs
     reactive_inputs$savetitle <- input$savetitle
+    reactive_inputs$saveplots <- input$saveplots
     reactive_inputs$sampling <- eval(parse(text = input$sampling))
     reactive_inputs$startTemp <- eval(parse(text = input$startTemp))
     reactive_inputs$endTemp <- eval(parse(text = input$endTemp))
@@ -87,15 +88,23 @@ server <- function(input, output, session) {
     source("Final calculations.R")
     source("Plot generation and control.R")
     
+
+      reactive_inputs$subtitle <- paste0(
+        "Sampling: ", reactive_inputs$sampling, " pts/sec. Period: ", reactive_inputs$period, " sec. ", 
+        "Melting period: ", reactive_inputs$periodSignal, " sec. Heating rate: ", reactive_inputs$heatRate * 60, " °C/min. ",
+        "MHF phase: ", reactive_inputs$phase, " rad. LOESS alpha: ", reactive_inputs$loessAlpha, ".\n Temp. amplitude: ", reactive_inputs$Atemp, " °C.",
+        "Melting amplitude: ", reactive_inputs$MeltEnth, " W/g. Other parameters (such as start temp.) are visible on the plot.")
+
     
-    df1 <<- timegeneration(
+    
+    df1 <- timegeneration(
       sampling = reactive_inputs$sampling,
       startTemp = reactive_inputs$startTemp,
       endTemp = reactive_inputs$endTemp,
       period = reactive_inputs$period,
       heatRate = reactive_inputs$heatRate)
     
-    df2 <<- signalgeneration(    
+    df2 <- signalgeneration(    
       sampling = reactive_inputs$sampling,
       startTemp = reactive_inputs$startTemp,
       endTemp = reactive_inputs$endTemp,
@@ -122,9 +131,10 @@ server <- function(input, output, session) {
       periodSignal = reactive_inputs$periodSignal,
       df1 = df1)
     
+    reactive_inputs$df2 <- df2
     resampled_points <- equalyval(df2 = df2)
     
-    finaldf <<- finalcalc(
+    finaldf <- finalcalc(
       sampling = reactive_inputs$sampling,
       startTemp = reactive_inputs$startTemp,
       endTemp = reactive_inputs$endTemp,
@@ -137,7 +147,14 @@ server <- function(input, output, session) {
       df2 = df2)
     
     reactive_inputs$finaldf <- finaldf
-    
+
+    if (reactive_inputs$saveplots == TRUE) {    
+    MHFplots(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    overlayplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    smoothedTHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    smoothedRHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    smoothedNRHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    }
   })
   
   # Render the plot using the reactive sample_results
@@ -146,11 +163,12 @@ server <- function(input, output, session) {
     res <- reactive_inputs$finaldf
 
     plot_obj <- switch(input$plot_choice,
-                       "MHF" = MHFplots(res),
-                       "Overlay" = overlayplot(res),
-                       "THF" = smoothedTHFplot(res),
-                       "RHF" = smoothedRHFplot(res),
-                       "NRHF" = smoothedNRHFplot(res))
+                       "MHF" = MHFplots(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "Overlay" = overlayplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "THF" = smoothedTHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "RHF" = smoothedRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "NRHF" = smoothedNRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "Signal closeup" = tempsignaloverlay(reactive_inputs$df2, reactive_inputs$subtitle, reactive_inputs$savetitle))
     
     ggplotly(plot_obj, tooltip = c("x", "y", "text"))
   })
