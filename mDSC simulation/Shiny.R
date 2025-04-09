@@ -88,6 +88,14 @@ server <- function(input, output, session) {
     source("Plot generation and control.R")
     
     
+    reactive_inputs$subtitle <- paste0(
+      "Sampling: ", reactive_inputs$sampling, " pts/sec. Period: ", reactive_inputs$period, " sec. ", 
+      "Melting period: ", reactive_inputs$periodSignal, " sec. Heating rate: ", reactive_inputs$heatRate * 60, " °C/min. ",
+      "MHF phase: ", reactive_inputs$phase, " rad. LOESS alpha: ", reactive_inputs$loessAlpha, ".\n Temp. amplitude: ", reactive_inputs$Atemp, " °C.",
+      "Melting amplitude: ", reactive_inputs$MeltEnth, " W/g. Other parameters (such as start temp.) are visible on the plot.")
+  
+    
+    
     df1 <- timegeneration(
       sampling = reactive_inputs$sampling,
       startTemp = reactive_inputs$startTemp,
@@ -138,6 +146,12 @@ server <- function(input, output, session) {
     
     reactive_inputs$finaldf <- finaldf
     
+    MHFplots(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    overlayplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    smoothedTHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    smoothedRHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    smoothedNRHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
+    
   })
   
   # Render the plot using the reactive sample_results
@@ -146,11 +160,11 @@ server <- function(input, output, session) {
     res <- reactive_inputs$finaldf
 
     plot_obj <- switch(input$plot_choice,
-                       "MHF" = MHFplots(res),
-                       "Overlay" = overlayplot(res),
-                       "THF" = smoothedTHFplot(res),
-                       "RHF" = smoothedRHFplot(res),
-                       "NRHF" = smoothedNRHFplot(res))
+                       "MHF" = MHFplots(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "Overlay" = overlayplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "THF" = smoothedTHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "RHF" = smoothedRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                       "NRHF" = smoothedNRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle))
     
     ggplotly(plot_obj, tooltip = c("x", "y", "text"))
   })
