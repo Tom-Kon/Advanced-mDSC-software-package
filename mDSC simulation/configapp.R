@@ -2,6 +2,7 @@ configUI1<- function() {
   tagList(
     column(6,
            textInput("savetitle", "Title of the picture that will be saved", "test"),
+           checkboxInput("saveplots", "Do you want to save the plots?", value= FALSE),
            textInput("sampling", "Sampling rate in points per second", "10"),
            textInput("startTemp", "Starting temperature of the mDSC run (°C)", "20"),
            textInput("endTemp", "Final temperature of the mDSC run (°C)", "180"),

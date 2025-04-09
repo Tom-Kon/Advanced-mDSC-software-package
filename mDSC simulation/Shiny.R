@@ -88,14 +88,14 @@ server <- function(input, output, session) {
     source("Plot generation and control.R")
     
     
-    df1 <- timegeneration(
+    df1 <<- timegeneration(
       sampling = reactive_inputs$sampling,
       startTemp = reactive_inputs$startTemp,
       endTemp = reactive_inputs$endTemp,
       period = reactive_inputs$period,
       heatRate = reactive_inputs$heatRate)
     
-    df2 <- signalgeneration(    
+    df2 <<- signalgeneration(    
       sampling = reactive_inputs$sampling,
       startTemp = reactive_inputs$startTemp,
       endTemp = reactive_inputs$endTemp,
@@ -124,7 +124,7 @@ server <- function(input, output, session) {
     
     resampled_points <- equalyval(df2 = df2)
     
-    finaldf <- finalcalc(
+    finaldf <<- finalcalc(
       sampling = reactive_inputs$sampling,
       startTemp = reactive_inputs$startTemp,
       endTemp = reactive_inputs$endTemp,
