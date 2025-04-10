@@ -64,9 +64,9 @@ server <- function(input, output, session) {
     reactive_inputs$deltaRHFPreTg <- eval(parse(text = input$deltaRHFPreTg))
     reactive_inputs$deltaRHFPostTg <- eval(parse(text = input$deltaRHFPostTg))
     reactive_inputs$StartRHFPreTg <- eval(parse(text = input$StartRHFPreTg))
-    reactive_inputs$deltaHFPreTg <- eval(parse(text = input$deltaHFPreTg))
-    reactive_inputs$deltaHFPostTg <- eval(parse(text = input$deltaHFPostTg))
-    reactive_inputs$StartHFTempPreTg <- eval(parse(text = input$StartHFTempPreTg))
+    reactive_inputs$deltaCpPreTg <- eval(parse(text = input$deltaCpPreTg))
+    reactive_inputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
+    reactive_inputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
     reactive_inputs$locationTgTHF <- as.numeric(eval(parse(text = unlist(trimws(strsplit(input$locationTgTHF, ","))))))
     reactive_inputs$locationTgRHF <- as.numeric(eval(parse(text = unlist(trimws(strsplit(input$locationTgRHF, ","))))))
     reactive_inputs$deltaCpTg <- eval(parse(text = input$deltaCpTg))
@@ -115,9 +115,9 @@ server <- function(input, output, session) {
       deltaRHFPreTg = reactive_inputs$deltaRHFPreTg,
       deltaRHFPostTg = reactive_inputs$deltaRHFPostTg,
       StartRHFPreTg = reactive_inputs$StartRHFPreTg,
-      deltaHFPreTg = reactive_inputs$deltaHFPreTg,
-      deltaHFPostTg = reactive_inputs$deltaHFPostTg,
-      StartHFTempPreTg = reactive_inputs$StartHFTempPreTg,
+      deltaCpPreTg = reactive_inputs$deltaCpPreTg,
+      deltaCpPostTg = reactive_inputs$deltaCpPostTg,
+      StartCpTempPreTg = reactive_inputs$StartCpTempPreTg,
       locationTgTHF = reactive_inputs$locationTgTHF,
       locationTgRHF = reactive_inputs$locationTgRHF,
       deltaCpTg = reactive_inputs$deltaCpTg,
@@ -147,6 +147,8 @@ server <- function(input, output, session) {
       df2 = df2)
     
     reactive_inputs$finaldf <- finaldf
+    
+    write.xlsx(df2, "test.xlsx")
 
     if (reactive_inputs$saveplots == TRUE) {    
     MHFplots(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)

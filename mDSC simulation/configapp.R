@@ -21,9 +21,9 @@ configUI2<- function() {
            textInput("deltaRHFPreTg", "What is the slope of the reversing heat flow before the Tg (J/(g*°C))", "-0.000137"), 
            textInput("deltaRHFPostTg", "What is the slope of the reversing heat flow after the Tg (J/(g*°C))", "-0.000120"),
            textInput("StartRHFPreTg", "What value does your reversing heat flow start at (J/g)", "-0.040"),
-           textInput("deltaHFPreTg", "What is the slope of the total heat flow before the Tg (J/(g*°C))", "-0.000286"),
-           textInput("deltaHFPostTg", "What is the slope of the total heat flow after the Tg (J/(g*°C))", "-0.000068"),
-           textInput("StartHFTempPreTg", "What value does your total heat flow start at (J/g)", "-0.035"),
+           textInput("deltaCpPreTg", "What is the slope of the total heat capacity before the Tg (J/(g*°C))", "0.00858"),
+           textInput("deltaCpPostTg", "What is the slope of the total heat capacity after the Tg (J/(g*°C))", "0.00204"),
+           textInput("StartCpTempPreTg", "What value does your total heat capacity start at (J/g)", "1.05"),
     )
   )
 }
