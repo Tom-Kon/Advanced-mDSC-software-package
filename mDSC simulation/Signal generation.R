@@ -1,14 +1,18 @@
-signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, phase, deltaRHFPreTg, deltaRHFPostTg, StartRHFPreTg, deltaHFPreTg, deltaHFPostTg, StartHFTempPreTg, locationTgTHF, locationTgRHF, deltaCpTg,MeltEnth,phase_melt,locationMelt, Crystalenth,locationcrystal,EnthrecEnth,locationEnthRec, periodSignal, df1){
+signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, phase, deltaRHFPreTg, deltaRHFPostTg, StartRHFPreTg, deltaCpPreTg, deltaCpPostTg, StartCpTempPreTg, locationTgTHF, locationTgRHF, deltaCpTg,MeltEnth,phase_melt,locationMelt, Crystalenth,locationcrystal,EnthrecEnth,locationEnthRec, periodSignal, df1){
   
   times <- df1$times
   groups <- df1$groups
+  
+  deltaHFPreTg <- -deltaCpPreTg*heatRate
+  deltaHFPostTg <- -deltaCpPostTg*heatRate
+  StartHFTempPreTg <- -StartCpTempPreTg*heatRate
+  deltaHFTg <- -0.268*heatRate  # in W/g
   
   
   deltaRevCpTempPreTg <- -deltaRHFPreTg/heatRate
   deltaRevCpTempPostTg <- -deltaRHFPostTg/heatRate
   StartRevCpTempPreTg <- -StartRHFPreTg/heatRate
   
-  deltaHFTg <- -0.268*heatRate  # in W/g
   
   locationMelt[3] <- (locationMelt[2]+locationMelt[1])/2
   locationcrystal[3] <- (locationcrystal[2]+locationcrystal[1])/2
@@ -18,8 +22,8 @@ signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Ate
   modTemp <- Atemp * sin(2*pi/period * times) + heatRate * times
   modTempnoRamp <- Atemp * sin(2*pi/period * times)
   TRef <- startTemp + heatRate * times
-  modTempderiv <- Atemp * 2*pi/period * cos(2*pi/period * times)
-  modTempdervPhase <- Atemp * 2*pi/period * cos(2*pi/period * times + phase)
+  modTempderiv <- Atemp * 2*pi/period * cos(2*pi/period * times) + heatRate
+  modTempdervPhase <- Atemp * 2*pi/period * cos(2*pi/period * times + phase) + heatRate
   
   FinalRevCpPreTg <- StartRevCpTempPreTg + deltaRevCpTempPreTg * locationTgRHF[1]
   StartRevCpTempPostTg <- FinalRevCpPreTg + deltaCpTg
@@ -41,6 +45,7 @@ signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Ate
   
   
   # Create a tibble and assign MHF with proper indexing for whole thermogram without latent effects-------------
+  # This part only takes into account the oscillatory component, so heatRate is not used in the generation of the signal.  
   df <- tibble(
     times = times,
     TRef = TRef,
@@ -56,14 +61,16 @@ signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Ate
     ) %>%
     mutate(
       MHF = case_when(
-        TRef < locationTgRHF[1] ~ (StartRevCpTempPreTg + deltaRevCpTempPreTg * TRef) * modTempdervPhase,
-        isTg ~ RevCpTg * modTempdervPhase,
-        TRef > locationTgRHF[2] ~ (StartRevCpTempPostTg + deltaRevCpTempPostTg * (TRef - locationTgRHF[2])) * modTempdervPhase
+        TRef < locationTgRHF[1] ~ (StartRevCpTempPreTg + deltaRevCpTempPreTg * TRef) * (modTempdervPhase-heatRate),
+        isTg ~ RevCpTg * (modTempdervPhase-heatRate),
+        TRef > locationTgRHF[2] ~ (StartRevCpTempPostTg + deltaRevCpTempPostTg * (TRef - locationTgRHF[2])) * (modTempdervPhase-heatRate)
       )
     ) %>%
     select(-isTg, -tg_index)
   
   #Add baseline to MHF
+  # This is technically nonsensical, physically speaking. Both the oscillatory component and the baseline component should be generated at the same time and with the same Cp values. However, since the aim of this code is to replicate experimental data, the two are split up to allow for different heat capacities to be used.  
+  
   df <- df %>%
     # Identify rows in the Tg region and compute a relative index
     mutate(
@@ -111,7 +118,7 @@ signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Ate
       signal_vecmelt = signal_vecmelt,
       MHF = if_else(
         TRef >= locationMelt[1] & TRef <= locationMelt[2],
-        (StartRevCpTempPostTg + deltaRevCpTempPostTg * (TRef - locationTgRHF[2])) * modTempdervPhase + signal_vecmelt + FinalHFPreTg + deltaHFTg + deltaHFPostTg*(TRef-locationTgTHF[2]),
+        MHF + signal_vecmelt,
         MHF
       )
     )

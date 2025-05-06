@@ -105,7 +105,7 @@ smoothedTHFplot <- function(resampled_points, subtitle, saveTitle) {
 
 tempsignaloverlay <- function(df2, subtitle, saveTitle) {
   Smoothed_THF <- ggplot() +
-    geom_line(data = df2, aes(x = TRef, y = modTempnoRamp, color = "Mod. temp., no ramp"), size = 1.3) +
+    geom_line(data = df2, aes(x = TRef, y = modTemp, color = "modTemp"), size = 1.3) +
     geom_line(data = df2, aes(x = TRef, y = modTempderiv, color = "dT/dt"), size = 1.3) +
     geom_line(data = df2, aes(x = TRef, y = signal_vecmelt, color = "Added signal"), size = 1.3) +
     labs(title = "Physical viability of model",
@@ -114,7 +114,7 @@ tempsignaloverlay <- function(df2, subtitle, saveTitle) {
          y = "Temperature and total heat flow",
          color = "Legend") +
     scale_color_manual(values = c(
-      "Mod. temp., no ramp" = "blue",
+      "modTemp" = "blue",
       "dT/dt" = "red",
       "Added signal" = "darkgreen"
     )) +
