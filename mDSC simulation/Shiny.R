@@ -1,5 +1,5 @@
-source("libraries.R")
-source("configapp.R")
+source("../mDSC simulation/libraries.R")
+source("../mDSC simulation/configapp.R")
 
 ui <- navbarPage(
   id = "tabs",
