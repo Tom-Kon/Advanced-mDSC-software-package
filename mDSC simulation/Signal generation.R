@@ -110,7 +110,6 @@ signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Ate
         reachedTemps <- c(reachedTemps, df$modTemp[i])
         # gauss_weight <- (1 / (sigmamelt * sqrt(2 * pi))) * exp(-((df$TRef[i] - locationMelt[3])^2) / (2 * sigmamelt^2))
         smallGauss <- (1 / (sigmasmallmelt * sqrt(2 * pi))) * exp(-((df$times-df$times[i])^2) / (2 * sigmasmallmelt^2))
-
         signal_vecmelt_raw <- signal_vecmelt_raw + amplitude * 1 * smallGauss
         } 
     } else {
