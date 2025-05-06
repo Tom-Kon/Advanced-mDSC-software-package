@@ -6,7 +6,7 @@ signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Ate
   deltaHFPreTg <- -deltaCpPreTg*heatRate
   deltaHFPostTg <- -deltaCpPostTg*heatRate
   StartHFTempPreTg <- -StartCpTempPreTg*heatRate
-  deltaHFTg <- -0.268*heatRate  # in W/g
+  deltaHFTg <- -deltaCpTg*heatRate  # in W/g
   
   
   deltaRevCpTempPreTg <- -deltaRHFPreTg/heatRate
@@ -69,7 +69,7 @@ signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Ate
     select(-isTg, -tg_index)
   
   #Add baseline to MHF
-  # This is technically nonsensical, physically speaking. Both the oscillatory component and the baseline component should be generated at the same time and with the same Cp values. However, since the aim of this code is to replicate experimental data, the two are split up to allow for different heat capacities to be used.  
+  # This is nonsensical, physically speaking. Both the oscillatory component and the baseline component should be generated at the same time and with the same Cp values. However, since the aim of this code is to replicate experimental data, the two are split up to allow for different heat capacities to be used.  
   
   df <- df %>%
     # Identify rows in the Tg region and compute a relative index
@@ -88,29 +88,44 @@ signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Ate
   
   
   # Track already reached temperatures
-  reachedTemps <- numeric(0)
+  reachedTemps <- c(0)
+
   
   # Initialize signal vector
-  signal_vecmelt <- numeric(nrow(df))
-  sigmamelt <- (locationMelt[2]-locationMelt[3])/sqrt(2*log(1000))  # Assuming FWHM-based estimate
-  meltAmplitude <- MeltEnth/sqrt(2*pi*sigmamelt^2) * exp(-((TRef - locationMelt[3])^2) / (2 * sigmamelt^2))
+  signal_vecmelt_raw <- numeric(nrow(df))  # store unscaled signal
+  smallGauss <- numeric(nrow(df))
+  sigmamelt <- (locationMelt[2] - locationMelt[3]) / sqrt(2 * log(1000))  # Gaussian sigma based on FWHM logic
+  sharpness <- 0.1
+  sigmasmallmelt <- (pi-2*asin(0.5))/(2*pi/period*sqrt(8*log(2)))*sharpness
   
+  # We'll start with amplitude = 1 and scale later
+  #TO DO LATER: how to include phase melt?????????
+  amplitude <- -1  
   
   for (i in seq_along(df$modTemp)) {
-    if (df$modTemp[i] %in% reachedTemps) {
-      signal_vecmelt[i] <- 0  # No new signal
-    } else {
-      # Add new temperature to reached list
-      reachedTemps <- c(reachedTemps, df$modTemp[i])
-      
-      # Compute signal
-      if (df$TRef[i] >= locationMelt[1] && df$TRef[i] <= locationMelt[2]) {
-        signal_vecmelt[i] <- min(meltAmplitude[i] * sin((2*pi/periodSignal*df$times[i]) + phase_melt), 0)
+    if (df$TRef[i] >= locationMelt[1] && df$TRef[i] <= locationMelt[2]) {
+      if (df$modTemp[i] < reachedTemps[length(reachedTemps)]) {
+        signal_vecmelt_raw[i] <- 0
       } else {
-        signal_vecmelt[i] <- 0
-      }
+        reachedTemps <- c(reachedTemps, df$modTemp[i])
+        # gauss_weight <- (1 / (sigmamelt * sqrt(2 * pi))) * exp(-((df$TRef[i] - locationMelt[3])^2) / (2 * sigmamelt^2))
+        smallGauss <- (1 / (sigmasmallmelt * sqrt(2 * pi))) * exp(-((df$times-df$times[i])^2) / (2 * sigmasmallmelt^2))
+
+        signal_vecmelt_raw <- signal_vecmelt_raw + amplitude * 1 * smallGauss
+        } 
+    } else {
+      signal_vecmelt_raw[i] <- 0
     }
   }
+  
+  # Compute area under the curve using trapezoidal integration (non-uniform spacing)
+  area_raw <- trapz(df$times, signal_vecmelt_raw)
+  
+  # Scale factor to match desired melting enthalpy
+  scaling_factor <- MeltEnth / area_raw
+  
+  # Final scaled signal
+  signal_vecmelt <- signal_vecmelt_raw * 1
   
   # Add signal and update MHF
   df <- df %>%
