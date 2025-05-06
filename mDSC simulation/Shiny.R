@@ -32,7 +32,7 @@ ui <- navbarPage(
         column(12, wellPanel(
           selectInput("plot_choice", "Select Plot:", 
                       choices = c("MHF", "Overlay", "THF", "RHF","NRHF", "Signal closeup"), 
-                      selected = "MHF"),
+                      selected = "Overlay"),
         ))
       ),
       fluidRow(
