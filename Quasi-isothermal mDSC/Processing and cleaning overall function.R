@@ -11,7 +11,7 @@ processDSC <- function(fileName, Excel, export, starting_temp, step_size,
   tempModAmplitude <- setAmplitude*2*pi/period
   num_ticks <- 10
 
-  source("detailed functions.R")
+  source("../Quasi-isothermal mDSC/detailed functions.R")
   
     # 1. Load and pre‐process the data -------------------------------
   d <- na.omit(read.xlsx(Excel))
