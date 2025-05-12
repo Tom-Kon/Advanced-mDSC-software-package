@@ -2,7 +2,7 @@
 source("../mDSC simulation/libraries.R")
 source("../mDSC simulation/configapp.R")
 
-mdsc_ui <- function(id) {
+mdsc_sim_ui <- function(id) {
   ns <- NS(id)
   navbarPage(
     id = ns("tabs"),
@@ -46,7 +46,7 @@ mdsc_ui <- function(id) {
   )
 }
 
-mdsc_server <- function(id) {
+mdsc_sim_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     # Create a reactiveValues object to store inputs
     reactive_inputs <- reactiveValues()
