@@ -49,7 +49,7 @@ server <- function(input, output, session) {
   router_server(root_page = "/")
   mdsc_sim_server("mDScSim")
   mdsc_quasiIso_server("quasiisothermal")
-  mdsc_sim_server("analyzer")
+  mdsc_analyzer_server("analyzer")
 
 }
 
