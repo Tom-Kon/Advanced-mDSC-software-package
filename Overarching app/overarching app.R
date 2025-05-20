@@ -1,13 +1,14 @@
 library(shiny)
 library(shiny.router)
 
-setwd("C:/Users/u0155764/OneDrive - KU Leuven/Tom Konings/Software/DSC full app (git clone)/mDSC_apps/Overarching app")
+setwd("C:/Users/Tom/OneDrive/Bureaublad/mDSC_apps/Overarching app")
 
 
 # Source the module
 source("../mDSC simulation/modularized mDSC simulation main menu.R")
 source("../Quasi-isothermal mDSC/modularized_quasiisothermalmDSC_main.R")
 source("../mDSC data analyzer/modularized_generaldatanalyzer.R")
+source("../normal mDSC/Amplitude extractor.R")
 
 
 home_page <- div(
@@ -29,6 +30,11 @@ home_page <- div(
       href = route_link("analyzer"),
       class = "btn btn-primary btn-lg",
       "Launch mDSC data analyser"
+    ),
+    tags$a(
+      href = route_link("normalmDSC"),
+      class = "btn btn-primary btn-lg",
+      "Launch normal mDSC analyser"
     )
   )
 )
@@ -39,8 +45,8 @@ ui <- fluidPage(
     route("mDScSim", mdsc_sim_ui("mDScSim")),
     route("quasiisothermal", quasiIsotherm_ui("quasiisothermal")),
     route("analyzer", mdsc_analyzer_ui("analyzer")),
-    
-  ),
+    route("normalmDSC", normal_mDSC_ui("normalmDSC"))
+  )
 )
 
 # Define the server logic
@@ -50,7 +56,7 @@ server <- function(input, output, session) {
   mdsc_sim_server("mDScSim")
   mdsc_quasiIso_server("quasiisothermal")
   mdsc_analyzer_server("analyzer")
-
+  normal_mDSC_server("normalmDSC")
 }
 
 # Run the Shiny app
