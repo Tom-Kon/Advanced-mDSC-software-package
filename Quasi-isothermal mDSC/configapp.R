@@ -8,7 +8,12 @@ configUI1<- function(ns) {
       checkboxInput(ns("saveRevCpplot"), "Save reversing heat flow plot?", FALSE),
       checkboxInput(ns("savemanualRevCpplot"), "Save manually calculated reversing heat flow plot?", FALSE),
       checkboxInput(ns("saveExcel"), "Save Excel with all the analyses?", TRUE),
-      fileInput(ns("Excel_in"), "Upload your Excel here"),    
+      fileInput(ns("Excel_in"), "Upload your Excel here"),
+      checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
+      conditionalPanel(
+        condition = sprintf("!input['%s']", ns("sheetask")),
+        selectInput(ns("sheet"), "What sheet is it in then?", choices = c("2", "3", "4", "5"))
+      ),    
     )
   )
 }

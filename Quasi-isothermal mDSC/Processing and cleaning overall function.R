@@ -1,4 +1,4 @@
-processDSC <- function(fileName, Excel, export, starting_temp, step_size,
+processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
            modulations_back, period, isothermLength, setAmplitude, saveNRHFplot, saveRevCpplot, savemanualRevCpplot, 
            saveExcel) {
 
@@ -14,11 +14,8 @@ processDSC <- function(fileName, Excel, export, starting_temp, step_size,
   source("../Quasi-isothermal mDSC/detailed functions.R")
   
     # 1. Load and pre‐process the data -------------------------------
-  d <- na.omit(read.xlsx(Excel))
-  d <- d[-1,]
-  d[] <- lapply(d, function(x) if(is.character(x)) as.numeric(gsub(",", ".", x)) else x)
-  names(d) <- c("time", "temperature", "heat_flow")
-  
+  d <- excel_cleaner(Excel, sheet)
+
   # Define the temperature ranges----
   rangesn <- c(0:100)
   rangesmax <- starting_temp + rangesn * step_size + setAmplitude + temp_margin_first_cleanup

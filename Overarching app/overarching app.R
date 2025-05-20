@@ -1,7 +1,8 @@
 library(shiny)
 library(shiny.router)
+library(rstudioapi)
 
-setwd("C:/Users/Tom/OneDrive/Bureaublad/mDSC_apps/Overarching app")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 
 # Source the module

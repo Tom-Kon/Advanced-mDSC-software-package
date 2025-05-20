@@ -58,11 +58,17 @@ mdsc_quasiIso_server <- function(id) {
     
     # This part is separate and independent of your server logic
     observeEvent(input$calculate, {
+      
       # Handle checkboxes
       reactive_inputs$saveNRHFplot <- as.logical(input$saveNRHFplot)
       reactive_inputs$saveRevCpplot <- as.logical(input$saveRevCpplot)
       reactive_inputs$savemanualRevCpplot <- as.logical(input$savemanualRevCpplot)
       reactive_inputs$saveExcel <- as.logical(input$saveExcel)
+      if(input$sheetask) {
+        reactive_inputs$sheet <- 1
+      } else {
+        reactive_inputs$sheet <- input$sheet
+      }
       
       # Store numerical/text inputs with proper reactive evaluation
       reactive_inputs$period <- eval(parse(text = input$period_in))  # Assuming input is numeric
@@ -87,6 +93,7 @@ mdsc_quasiIso_server <- function(id) {
       # Call the processing function and store results in reactive value
       sample_results <- processDSC(
         fileName = reactive_inputs$fileName,
+        sheet = reactive_inputs$sheet,
         Excel = reactive_inputs$Excel,
         export = TRUE,
         starting_temp = reactive_inputs$startingTemp,
