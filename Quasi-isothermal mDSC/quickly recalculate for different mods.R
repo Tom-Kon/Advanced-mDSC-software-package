@@ -7,7 +7,7 @@ processDSCrecalc <- function(fileName, sample_results, modulations_back, period,
   # Recompute extrema on the cleaned data for the subsequent steps
   extrema_counts2 <- sample_results$d_steps_cleaned_2 %>%
     group_by(pattern) %>%
-    summarise(extrema_info = list(locate_extrema_manual(heat_flow, time, temperature)))
+    summarise(extrema_info = list(locate_extrema_manual(modHeatFlow, time, modTemp)))
   
   extrema_df2 <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
@@ -24,11 +24,11 @@ processDSCrecalc <- function(fileName, sample_results, modulations_back, period,
       n_points = n(),
       time_vector = list(time),    # store time data (in minutes)
       # FFT for DC component:
-      fft_result_dc = list(fft(heat_flow)),
+      fft_result_dc = list(fft(modHeatFlow)),
       # For the first harmonic, process the data before FFT:
       fft_result_harm = list({
-        n <- length(heat_flow)
-        hf_centered <- heat_flow - mean(heat_flow)  # detrend the signal
+        n <- length(modHeatFlow)
+        hf_centered <- modHeatFlow - mean(modHeatFlow)  # detrend the signal
         
         # Create a Hanning window:
         hanning <- 0.5 - 0.5 * cos(2 * pi * (0:(n - 1)) / (n - 1))
@@ -106,12 +106,12 @@ processDSCrecalc <- function(fileName, sample_results, modulations_back, period,
     average_heat_maxima <- extrema_df3 %>%
       filter(type == "maxima") %>%
       group_by(pattern) %>%
-      summarise(avg_heat_flow = mean(heat_flow, na.rm = TRUE))
+      summarise(avg_heat_flow = mean(modHeatFlow, na.rm = TRUE))
     
     average_heat_minima <- extrema_df3 %>%
       filter(type == "minima") %>%
       group_by(pattern) %>%
-      summarise(avg_heat_flow = mean(heat_flow, na.rm = TRUE))
+      summarise(avg_heat_flow = mean(modHeatFlow, na.rm = TRUE))
     
     average_amplitude <- (average_heat_maxima-average_heat_minima)*0.5
     

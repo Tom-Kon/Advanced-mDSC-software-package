@@ -186,7 +186,7 @@ Original_data <- function(orgData, modulations_back, fileName) {
   orgDataSlice <- orgData %>% 
     slice(seq(1, n(), by = 50))
   
-  oD <- ggplot(orgDataSlice, aes(x = time, y = heat_flow)) +
+  oD <- ggplot(orgDataSlice, aes(x = time, y = modHeatFlow)) +
     geom_line(color = "black", linewidth = 1) +  
     labs(
       title = "Raw, unmodified modulated total heat flow data", 
@@ -213,7 +213,7 @@ Original_data <- function(orgData, modulations_back, fileName) {
   oD <- plotly::ggplotly(oD, tooltip = "text") %>%
     plotly::style(text = paste0(
       "Time: ", orgDataSlice$time, " min", "<br>",
-      "Heat Flow: ", orgDataSlice$heat_flow, "<br>"
+      "Heat Flow: ", orgDataSlice$modHeatFlow, "<br>"
     ))
   
   return(oD)  
@@ -227,7 +227,7 @@ Datasteps_plot_1 <- function(d_steps_cleaned, modulations_back, fileName) {
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   
-  dStepsCleanedSlice <- ggplot(d_steps_cleanedSlice, aes(x = time, y = heat_flow)) +
+  dStepsCleanedSlice <- ggplot(d_steps_cleanedSlice, aes(x = time, y = modHeatFlow)) +
     geom_line(color = "black", size = 1) +  
     labs(
       title = "Cleaned raw total heat flow data after\nremoving temperatures between steps",
@@ -254,7 +254,7 @@ Datasteps_plot_1 <- function(d_steps_cleaned, modulations_back, fileName) {
   dStepsCleanedSlice <- plotly::ggplotly(dStepsCleanedSlice, tooltip = "text") %>%
     plotly::style(text = paste0(
       "Time: ", d_steps_cleanedSlice$time, " min", "<br>",
-      "Heat Flow: ", d_steps_cleanedSlice$heat_flow, "<br>"
+      "Heat Flow: ", d_steps_cleanedSlice$modHeatFlow, "<br>"
     ))
   
   return(dStepsCleanedSlice)  
@@ -269,7 +269,7 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileNam
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   
-  dStepsCleaned_2Slice <- ggplot(d_steps_cleaned_2Slice, aes(x = time, y = heat_flow)) +
+  dStepsCleaned_2Slice <- ggplot(d_steps_cleaned_2Slice, aes(x = time, y = modHeatFlow)) +
     geom_line(color = "black", size = 1) +  
     labs(
       title = "Cleaned raw total heat flow data after\nremoving noisy pattern at the end of each step",
@@ -296,7 +296,7 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileNam
   dStepsCleaned_2Slice <- plotly::ggplotly(dStepsCleaned_2Slice, tooltip = "text") %>%
     plotly::style(text = paste0(
       "Time: ", d_steps_cleaned_2Slice$time, " min", "<br>",
-      "Heat Flow: ", d_steps_cleaned_2Slice$heat_flow, "<br>"
+      "Heat Flow: ", d_steps_cleaned_2Slice$modHeatFlow, "<br>"
     ))
   
   return(dStepsCleaned_2Slice)  
@@ -311,7 +311,7 @@ Datasteps_plot_final <- function(d_steps_cleaned_3, modulations_back, fileName) 
   plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
-  dStepsCleaned_3Slice <- ggplot(d_steps_cleaned_3Slice, aes(x = time, y = heat_flow)) +
+  dStepsCleaned_3Slice <- ggplot(d_steps_cleaned_3Slice, aes(x = time, y = modHeatFlow)) +
     geom_line(color = "black", size = 1) +  
     labs(
       title = plottitledStepsCleaned_3Slice,
@@ -338,7 +338,7 @@ Datasteps_plot_final <- function(d_steps_cleaned_3, modulations_back, fileName) 
   dStepsCleaned_3Slice <- plotly::ggplotly(dStepsCleaned_3Slice, tooltip = "text") %>%
     plotly::style(text = paste0(
       "Time: ", d_steps_cleaned_3Slice$time, " min", "<br>",
-      "Heat Flow: ", d_steps_cleaned_3Slice$heat_flow, "<br>",
+      "Heat Flow: ", d_steps_cleaned_3Slice$modHeatFlow, "<br>",
       "TRef: ", d_steps_cleaned_3Slice$TRef
     ))
   
@@ -352,7 +352,7 @@ Maxima_minima <- function(extramadf, modulations_back, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
-  Max_min <- ggplot(extramadf, aes(x = time, y = heat_flow)) +
+  Max_min <- ggplot(extramadf, aes(x = time, y = modHeatFlow)) +
     geom_point(color = "black", size = 1) +  
     labs(
       title = "Maxima and minima of oscillations\nafter removing temperatures in between temperature steps",
@@ -383,7 +383,7 @@ Maxima_minima_1 <- function(extramadf2, modulations_back, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
-  Max_min_1 <- ggplot(extramadf2, aes(x = time, y = heat_flow)) +
+  Max_min_1 <- ggplot(extramadf2, aes(x = time, y = modHeatFlow)) +
     geom_point(color = "black", size = 1) +  
     labs(
       title = "Maxima and minima of oscillations after 2 cleaning steps\n(removing noise after the last maximum + initial cleaning) ",
@@ -414,7 +414,7 @@ Maxima_minima_2 <- function(extramadf3, modulations_back, fileName) {
   plottitlemaxmin2 <- paste0("Maxima and minima of oscillations used in calculations, ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
-  Max_min_2 <- ggplot(extramadf3, aes(x = time, y = heat_flow)) +
+  Max_min_2 <- ggplot(extramadf3, aes(x = time, y = modHeatFlow)) +
     geom_point(color = "black", size = 1) +  
     labs(
       title = plottitlemaxmin2,

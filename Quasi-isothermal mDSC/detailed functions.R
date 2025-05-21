@@ -5,34 +5,36 @@ excel_cleaner <- function(Excel, sheet) {
   headers <- as.vector(unlist(Excel[row_idx, ]))
   Excel <- na.omit(Excel)
   
-  
   # Excel <- Excel[-(1:2), ]
-  test <- sapply(headers, function(x) strsplit(x, " "))
+  temp <- sapply(headers, function(x) strsplit(x, " "))
   
-  idxtime <- which(vapply(test, function(x) any(tolower(x) %in% "time"), logical(1)) )
+  idxtime <- which(vapply(temp, function(x) any(tolower(x) %in% "time"), logical(1)) )
   headers[idxtime] <- "time"
   
-  idxtemp <- which(vapply(test, function(x) any(tolower(x) %in% "temperature"), logical(1)) )
+  idxtemp <- which(vapply(temp, function(x) any(tolower(x) %in% "temperature"), logical(1)) )
   headers[idxtemp] <- "temperature"
   
-  idxmodtemp <- which(vapply(test, function(x) {all(c("temperature", "modulated") %in% tolower(x))}, logical(1)))
+  idxmodtemp <- which(vapply(temp, function(x) {all(c("temperature", "modulated") %in% tolower(x))}, logical(1)))
   headers[idxmodtemp] <- "modTemp"
   
-  idxhf <- which(vapply(test, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
+  idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
   headers[idxhf] <- "heat_flow"
   
-  idxModhf <- which(vapply(test, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
-  headers[idxModhf] <- "mod_heat_flow"
+  idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
+  headers[idxModhf] <- "modHeatFlow"
   
-  if(length(idxhf) > 0) {print("There is something wrong with your input!")} 
+  if(length(idxhf) > 1) {print("There is something wrong with your input!")} 
   
   Excel <- Excel %>%
+    mutate(across(everything(), ~ {
+      # Replace commas with dots, then convert to numeric
+      if (is.character(.)) as.numeric(gsub(",", ".", .)) else .
+    })) %>%
     setNames(headers) %>%                          # rename columns
-    filter(if_all(everything(), ~ !grepl("[A-Za-z]", .x)) ) %>%  # drop rows with letters
-    mutate(across(everything(), as.numeric))
-  
-  Excel[] <- lapply(Excel, function(x) if(is.character(x)) as.numeric(gsub(",", ".", x)) else x)
-  
+    mutate(across(everything(), as.numeric)) %>% # Ensure all columns are numeric
+    drop_na()
+
+  return(Excel)
 }
 
 
@@ -42,11 +44,11 @@ excel_cleaner <- function(Excel, sheet) {
 filter_duplicates <- function(data_steps) {
   # Create a new column 'neighbor_temp' which holds the temperature of the previous row
   data_steps <- data_steps %>%
-    mutate(neighbor_temp = lag(temperature)) # lag shifts the vector to the previous row
+    mutate(neighbor_temp = lag(modTemp)) # lag shifts the vector to the previous row
   
   # Remove rows where the temperature is the same as the previous one
   filtered_data <- data_steps %>%
-    filter(temperature != neighbor_temp | is.na(neighbor_temp)) %>%
+    filter(modTemp != neighbor_temp | is.na(neighbor_temp)) %>%
     select(-neighbor_temp) # Remove the 'neighbor_temp' column as it's no longer needed
   
   return(filtered_data)
@@ -98,8 +100,8 @@ locate_extrema_manual <- function(heat_flow_values, time_values, temperature_val
     type = c(rep("maxima", length(maxima_indices)), rep("minima", length(minima_indices))),
     index = c(maxima_indices, minima_indices),
     time = c(maxima_times, minima_times),
-    temperature = c(maxima_temps, minima_temps),
-    heat_flow = c(maxima_HFs, minima_HFs)
+    modTemp = c(maxima_temps, minima_temps),
+    modHeatFlow = c(maxima_HFs, minima_HFs)
   )
   
   return(extrema_df)
@@ -133,9 +135,9 @@ delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df, step_
     
     # Get the time and temperature of the last maximum and last minimum
     max_time <- last_maximum$time
-    max_temp <- last_maximum$temperature
+    max_temp <- last_maximum$modTemp
     min_time <- last_minimum$time
-    min_temp <- last_minimum$temperature
+    min_temp <- last_minimum$modTemp
     
     # Calculate the reference temperature Tref for this pattern
     Tref_for_pattern <- step_size * pattern_id + starting_temp
@@ -188,7 +190,7 @@ delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df, step_
     # Apply the 180 points condition
     if (num_points_between < (sampling*period*60)/2 - points_distance_minimum_margin) {
       # Print temperature where this condition is met
-      print(paste("Deleting data after second-to-last maximum at temperature:", second_last_maximum$temperature))
+      print(paste("Deleting data after second-to-last maximum at temperature:", second_last_maximum$modTemp))
       
       # Remove data after the second-to-last maximum
       data_steps_cleaned_2 <- data_steps_cleaned_2 %>%
@@ -249,7 +251,7 @@ delete_data_until_equil <- function(data_steps_cleaned_3, extrema_df2, period, m
     # Get the time and temperature of the last minimum
     max_time <- last_maximum$time
     target_time <- max_time-(period*modulations_back)
-    max_temp <- last_maximum$temperature
+    max_temp <- last_maximum$modTemp
     
     
     # Find the row in pattern_extrema whose time is closest to the target time

@@ -24,7 +24,7 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
   
   # Filter based on temperature ranges
   d_filtered <- d %>%
-    filter(sapply(temperature, function(temp) any(temp >= rangesmin & temp <= rangesmax)))
+    filter(sapply(modTemp, function(temp) any(temp >= rangesmin & temp <= rangesmax)))
   
   # Remove duplicate time points
   d_unique <- d_filtered %>%
@@ -32,7 +32,7 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
   
   # Assign each data point to a pattern
   d_steps <- d_unique %>%
-    mutate(pattern = floor((temperature - starting_temp + setAmplitude + temp_margin_first_cleanup)/ step_size))
+    mutate(pattern = floor((modTemp - starting_temp + setAmplitude + temp_margin_first_cleanup)/ step_size))
   
   # Apply your duplicate-filtering function (already defined in your code)
   d_steps_cleaned <- filter_duplicates(d_steps)
@@ -41,7 +41,7 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
   #Generate extrema_df1
   extrema_df1 <- d_steps_cleaned %>% 
     group_by(pattern) %>% 
-    summarise(extrema_info = list(locate_extrema_manual(heat_flow, time, temperature))) %>% 
+    summarise(extrema_info = list(locate_extrema_manual(modHeatFlow, time, modTemp))) %>% 
     unnest(cols = c(extrema_info))
   
   # Then proceed with your cleaning steps – note that you must run your functions that delete data etc.
@@ -51,7 +51,7 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
   # Recompute extrema on the cleaned data for the subsequent steps
   extrema_counts2 <- d_steps_cleaned_2 %>%
     group_by(pattern) %>%
-    summarise(extrema_info = list(locate_extrema_manual(heat_flow, time, temperature)))
+    summarise(extrema_info = list(locate_extrema_manual(modHeatFlow, time, modTemp)))
   
   extrema_df2 <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
@@ -69,11 +69,11 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
       n_points = n(),
       time_vector = list(time),    # store time data (in minutes)
       # FFT for DC component:
-      fft_result_dc = list(fft(heat_flow)),
+      fft_result_dc = list(fft(modHeatFlow)),
       # For the first harmonic, process the data before FFT:
       fft_result_harm = list({
-        n <- length(heat_flow)
-        hf_centered <- heat_flow - mean(heat_flow)  # detrend the signal
+        n <- length(modHeatFlow)
+        hf_centered <- modHeatFlow - mean(modHeatFlow)  # detrend the signal
         
         # Create a Hanning window:
         hanning <- 0.5 - 0.5 * cos(2 * pi * (0:(n - 1)) / (n - 1))
@@ -153,12 +153,12 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
     average_heat_maxima <- extrema_df3 %>%
       filter(type == "maxima") %>%
       group_by(pattern) %>%
-      summarise(avg_heat_flow = mean(heat_flow, na.rm = TRUE))
+      summarise(avg_heat_flow = mean(modHeatFlow, na.rm = TRUE))
 
     average_heat_minima <- extrema_df3 %>%
       filter(type == "minima") %>%
       group_by(pattern) %>%
-      summarise(avg_heat_flow = mean(heat_flow, na.rm = TRUE))
+      summarise(avg_heat_flow = mean(modHeatFlow, na.rm = TRUE))
 
     average_amplitude <- (average_heat_maxima-average_heat_minima)/2
     
