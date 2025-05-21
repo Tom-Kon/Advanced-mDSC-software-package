@@ -1,5 +1,47 @@
+excel_cleaner <- function(Excel, sheet) {
+  sheet <- as.numeric(sheet)
+  Excel <- read_excel(Excel, sheet, col_names = FALSE)
+  row_idx <- match(TRUE, apply(Excel, 1, function(r) any(tolower(r) == "time")))
+  headers <- as.vector(unlist(Excel[row_idx, ]))
+  Excel <- na.omit(Excel)
+  
+  # Excel <- Excel[-(1:2), ]
+  temp <- sapply(headers, function(x) strsplit(x, " "))
+  
+  idxtime <- which(vapply(temp, function(x) any(tolower(x) %in% "time"), logical(1)) )
+  headers[idxtime] <- "time"
+  
+  idxtemp <- which(vapply(temp, function(x) any(tolower(x) %in% "temperature"), logical(1)) )
+  headers[idxtemp] <- "temperature"
+  
+  idxmodtemp <- which(vapply(temp, function(x) {all(c("temperature", "modulated") %in% tolower(x))}, logical(1)))
+  headers[idxmodtemp] <- "modTemp"
+  
+  idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
+  headers[idxhf] <- "heatFlow"
+  
+  idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
+  headers[idxModhf] <- "modHeatFlow"
+  
+  if(length(idxhf) > 1) {print("There is something wrong with your input!")} 
+  
+  print(headers)
+  
+  Excel <- Excel %>%
+    mutate(across(everything(), ~ {
+      # Replace commas with dots, then convert to numeric
+      if (is.character(.)) as.numeric(gsub(",", ".", .)) else .
+    })) %>%
+    setNames(headers) %>%                          # rename columns
+    mutate(across(everything(), as.numeric)) %>% # Ensure all columns are numeric
+    drop_na()
+  
+  return(Excel)
+}
+
+
 # Define the function to locate maxima and minima and output their indices and values
-locate_extrema_manual <- function(heat_flow_values, time_values, temperature_values) {
+locate_extrema_manual <- function(modHeatFlow_values, time_values, temperature_values) {
   window_size <- 50  # Number of surrounding points to check
   
   maxima_indices <- c()
@@ -11,21 +53,21 @@ locate_extrema_manual <- function(heat_flow_values, time_values, temperature_val
   maxima_HFs <- c()
   minima_HFs <- c()
   
-  for (i in (window_size + 1):(length(heat_flow_values) - window_size)) {
-    local_window <- heat_flow_values[(i - window_size):(i + window_size)]
+  for (i in (window_size + 1):(length(modHeatFlow_values) - window_size)) {
+    local_window <- modHeatFlow_values[(i - window_size):(i + window_size)]
     
     if (i == (i - window_size) + which.max(local_window) - 1) {  # Ensure unique max
       maxima_indices <- c(maxima_indices, i)
       maxima_times <- c(maxima_times, time_values[i])
       maxima_temps <- c(maxima_temps, temperature_values[i])
-      maxima_HFs <- c(maxima_HFs, heat_flow_values[i])
+      maxima_HFs <- c(maxima_HFs, modHeatFlow_values[i])
     } 
     
     if (i == (i - window_size) + which.min(local_window) - 1) {  # Ensure unique min
       minima_indices <- c(minima_indices, i)
       minima_times <- c(minima_times, time_values[i])
       minima_temps <- c(minima_temps, temperature_values[i])  # Fixed this line
-      minima_HFs <- c(minima_HFs, heat_flow_values[i])
+      minima_HFs <- c(minima_HFs, modHeatFlow_values[i])
     }
   }
   
@@ -34,7 +76,7 @@ locate_extrema_manual <- function(heat_flow_values, time_values, temperature_val
     index = c(maxima_indices, minima_indices),
     time = c(maxima_times, minima_times),
     temperature = c(maxima_temps, minima_temps),
-    heat_flow = c(maxima_HFs, minima_HFs)
+    modHeatFlow = c(maxima_HFs, minima_HFs)
   )
   
   return(extrema_df)
@@ -82,8 +124,8 @@ HFcalc <- function(extrema_df, heat_amplitude, heating_rate) {
   maxima <- maxima[-(1:7),]
   minima <- minima[-(1:7),]
   
-  diffsHF <- maxima$heat_flow-minima$heat_flow
-  THF <- (maxima$heat_flow+minima$heat_flow)/2
+  diffsHF <- maxima$modHeatFlow-minima$modHeatFlow
+  THF <- (maxima$modHeatFlow+minima$modHeatFlow)/2
   temp <- maxima$temperature+minima$temperature
   
   meantemp <- temp/2
