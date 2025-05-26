@@ -206,5 +206,38 @@ smoothedNRHFplot <- function(resampled_points, subtitle, saveTitle) {
   ggsave(paste0(saveTitle, " NRHF.png"), dpi = 600, width = 15, height = 10)
   
   return(Smoothed_NRHF)
-}  
+} 
+
+RHFnoFT <- function(res2) {
+  
+  # Create each ggplot object with the specified names
+  RHFextracalc <- ggplot(res2) +
+    # geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHFNotEven), color = "blue", size = 1) +
+    geom_line(data = res2, aes(x = meantemp, y = RHF), color = "blue", size = 1.5) +
+    labs(title = "Test",
+         subtitle = "subtitle",
+         x = "Temperature (°C)",
+         y = "Reversing Heat Flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  # Larger base font size for better readability
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.subtitle = element_text(size = 12),  # Adjust the size as needed
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
+      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      panel.grid.minor = element_blank(),  # Minor grid lines removed
+      plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
+      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+    ) +
+    scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks_x)) +  # Set the number of x-axis ticks
+    scale_y_continuous(
+      expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
+      breaks = scales::pretty_breaks(n = num_ticks_y)
+    )  # This ensures the y-axis covers the full range of your data with extra space at the top
+  
+  return(RHFextracalc)  
+}
 
