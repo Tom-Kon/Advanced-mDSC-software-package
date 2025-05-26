@@ -1,11 +1,25 @@
 source("../Quasi-isothermal mDSC/libraries.R")
 source("../Quasi-isothermal mDSC/configapp.R")
+source("../Quasi-isothermal mDSC/error handling.R")
+
 
 quasiIsotherm_ui <- function(id) {
   ns <- NS(id)
   ui <- navbarPage(
     id = ns("tabs"),
     title = "Quasi-isothermal mDSC data analyzer",
+    tags$style(HTML("
+    .error-text {
+      font-size: 18px;
+      font-weight: bold;
+      padding: 10px;
+      width: 150%;
+      color: #e04f30;
+    }
+    ")
+    ),
+
+    
     # theme = bs_theme(preset = "lumen"),
     inverse = FALSE,  # if you want a dark navbar style; remove if not needed
     tabPanel(
@@ -53,6 +67,7 @@ quasiIsotherm_ui <- function(id) {
 
 mdsc_quasiIso_server <- function(id) {
   moduleServer(id, function(input, output, session) {
+    
     # Create a reactiveValues object to store inputs
     reactive_inputs <- reactiveValues()
     
@@ -86,6 +101,21 @@ mdsc_quasiIso_server <- function(id) {
       reactive_inputs$Excel <- input$Excel_in$datapath
       reactive_inputs$fileName <- input$Excel_in$name
       
+      # Call error_handling with the actual input value
+      msg <- error_handling(reactive_inputs)
+      
+      # Update the error message output (this triggers UI update)
+      output$errorMessage <- renderText({
+        if (!is.null(msg)) msg else ""
+      })
+      
+      # If there is an error message, stop further processing
+      if (!is.null(msg)) {
+        return(NULL)
+      }
+      
+      req(is.null(msg))  # Exit here if there's an error
+      
       # Source necessary scripts
       source("../Quasi-isothermal mDSC/Processing and cleaning overall function.R")
       source("../Quasi-isothermal mDSC/plots.R")
@@ -117,6 +147,22 @@ mdsc_quasiIso_server <- function(id) {
       source("../Quasi-isothermal mDSC/quickly recalculate for different mods.R")
       
       reactive_inputs$modulations_back <- eval(parse(text = input$modulations_back_in_new))
+      
+      if (is.null(reactive_inputs$modulations_back)){
+        msg <- "Error: the new value for the number of modulations is missing"
+      }
+      
+      # Update the error message output (this triggers UI update)
+      output$errorMessage <- renderText({
+        if (!is.null(msg)) msg else ""
+      })
+      
+      # If there is an error message, stop further processing
+      if (!is.null(msg)) {
+        return(NULL)
+      }
+      
+      req(is.null(msg))  # Exit here if there's an error
       
       reactive_inputs$sample_results <- processDSCrecalc(
         fileName = reactive_inputs$fileName,
