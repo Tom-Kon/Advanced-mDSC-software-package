@@ -35,15 +35,22 @@ finalcalc <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, res
     return(amplitude_at_user_freq)
   }, by = 1, fill = NA, align = "center")
   
+  finaldf$TRef <- finaldf$time*heatRate + startTemp
+  
+  source("../normal mDSC/functions.R")
+  
+  Atemp <- 2*pi*Atemp/period
+  extrema_df <-locate_extrema_manual(finaldf$MHF, finaldf$time, finaldf$TRef)
+  counts <- count_extrema(extrema_df)
+  noFTcalc <- HFcalc(extrema_df, Atemp, heatRate)
+  
+
   # Add the rolling amplitude to the data frame
-  RHF <- rolling_amplitude/(2*pi*Atemp/period)*(-heatRate)
+  RHF <- rolling_amplitude/Atemp*(-heatRate)
   finaldf$RHF <- RHF
   NRHF <- finaldf$rollmean - finaldf$RHF
   finaldf$NRHF <- NRHF
   names(finaldf)[names(finaldf) == "rollmean"] <- "THF"
-  finaldf$TRef <- finaldf$time*heatRate + startTemp
-  
-  print(loessAlpha)
   
   loess_model_RHF <- loess(RHF ~ time, data = finaldf, span = loessAlpha)
   finaldf$loessRHF <- predict(loess_model_RHF, newdata = finaldf$time)
@@ -54,5 +61,6 @@ finalcalc <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, res
   loess_model_NRHF <- loess(NRHF ~ time, data = finaldf, span = loessAlpha)
   finaldf$loessNRHF <- predict(loess_model_NRHF, newdata = finaldf$time)
   
-  return(finaldf)
+  results <- list(finaldf, noFTcalc)
+  return(results)
 }
