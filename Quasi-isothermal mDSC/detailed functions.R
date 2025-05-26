@@ -23,8 +23,25 @@ excel_cleaner <- function(Excel, sheet) {
   idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
   headers[idxModhf] <- "modHeatFlow"
   
-  if(length(idxhf) > 1) {print("There is something wrong with your input!")} 
   
+  
+  if (length(idxhf) > 1) {
+    msg <- "Error: there are multiple columns containing the terms \"heat flow\" in your selected Excel sheet"
+  }
+  
+  if (is.null(headers[idxmodtemp])) {
+    msg <- "Error: there is no modulated temperature column in your selected Excel sheet"
+  }
+  
+  if (is.null(headers[idxtime])) {
+    msg <- "Error: there is no modulated time column in your selected Excel sheet."
+  }
+  
+  if (is.null(headers[idxModhf])) {
+    msg <- "Error: there is no modulated heat flow column in your selected Excel sheet"
+  }
+  
+
   Excel <- Excel %>%
     mutate(across(everything(), ~ {
       # Replace commas with dots, then convert to numeric
