@@ -113,8 +113,7 @@ HFcalc <- function(extrema_df, heat_amplitude, heating_rate) {
     filter(type == "minima")
   
   diff <- abs(nrow(maxima)-nrow(minima))
-  print(maxima)
-  
+
   if(nrow(maxima) > nrow(minima)) {
     maxima <- maxima[-(nrow(maxima)-diff+1:nrow(maxima)),]
   } else if(nrow(maxima) < nrow(minima)) {
