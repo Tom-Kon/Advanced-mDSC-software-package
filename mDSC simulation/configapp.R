@@ -1,4 +1,4 @@
-configUI1 <- function(ns) {
+configUIsim1 <- function(ns) {
   tagList(
     column(6,
            textInput(ns("savetitle"), "Title of the picture that will be saved", "test"),
@@ -15,7 +15,7 @@ configUI1 <- function(ns) {
   )
 }
 
-configUI2 <- function(ns) {
+configUIsim2 <- function(ns) {
   tagList(
     column(4,
            textInput(ns("deltaRHFPreTg"), "What is the slope of the reversing heat flow before the Tg (J/(g*°C))", "-0.000137"),
@@ -28,7 +28,7 @@ configUI2 <- function(ns) {
   )
 }
 
-configUI3 <- function(ns) {
+configUIsim3 <- function(ns) {
   tagList(
     column(4,
            textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "28.46, 39.13, 33.77"),
@@ -42,7 +42,7 @@ configUI3 <- function(ns) {
   )
 }
 
-configUI4 <- function(ns) {
+configUIsim4 <- function(ns) {
   tagList(
     column(4,
            textInput(ns("Crystalenth"), "What is the crystallisation enthalpy (J/g)", "0.05"),
@@ -53,7 +53,7 @@ configUI4 <- function(ns) {
   )
 }
 
-configUI5 <- function(ns) {
+configUIsim5 <- function(ns) {
   tagList(
     HTML("<br>"),
     HTML("<br>"),
