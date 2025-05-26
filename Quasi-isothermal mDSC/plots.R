@@ -270,7 +270,7 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileNam
   
   
   dStepsCleaned_2Slice <- ggplot(d_steps_cleaned_2Slice, aes(x = time, y = modHeatFlow)) +
-    geom_line(color = "black", size = 1) +  
+    geom_line(color = "black", linewidth = 1) +  
     labs(
       title = "Cleaned raw total heat flow data after\nremoving noisy pattern at the end of each step",
       subtitle = subtitle, 
@@ -281,17 +281,16 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileNam
     theme(
       plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 20)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", size = 0.5),
       panel.grid.major = element_line(color = "gray", size = 0.25),
       panel.grid.minor = element_blank(),
-      plot.margin = margin(320, 20, 20, 20),
+      plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", size = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
-    scale_y_continuous(expand = c(0, 0))
-  
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) 
+
   # Convert to plotly and add hover text
   dStepsCleaned_2Slice <- plotly::ggplotly(dStepsCleaned_2Slice, tooltip = "text") %>%
     plotly::style(text = paste0(
