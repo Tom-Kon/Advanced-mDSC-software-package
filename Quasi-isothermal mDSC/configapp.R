@@ -1,6 +1,7 @@
 
 options(shiny.maxRequestSize = 100 * 1024^2)  # 100 MB limit
 
+
 configUI1<- function(ns) {
   tagList(
     column(6,
@@ -13,7 +14,13 @@ configUI1<- function(ns) {
       conditionalPanel(
         condition = sprintf("!input['%s']", ns("sheetask")),
         selectInput(ns("sheet"), "What sheet is it in then?", choices = c("2", "3", "4", "5"))
-      ),    
+      ),
+      mainPanel(
+        div(
+          class = "error-text",
+          textOutput(ns("errorMessage"))
+        )    
+      )   
     )
   )
 }
@@ -41,7 +48,6 @@ configUI3<- function(ns) {
     )
   )
 }
-
 
 
 
