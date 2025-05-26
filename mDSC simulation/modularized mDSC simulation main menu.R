@@ -13,7 +13,7 @@ mdsc_sim_ui <- function(id) {
       title = "Parameter Input",
       id = ns("paraminput"),
       icon = icon("gears", class = "fa-solid"),
-      fluidPage(configUI1(ns))
+      fluidPage(configUIsim1(ns))
     ),
     
     tabPanel(
@@ -21,7 +21,7 @@ mdsc_sim_ui <- function(id) {
       id = ns("expresinput"),
       icon = icon("gears", class = "fa-solid"),
       fluidPage(
-        fluidRow(configUI2(ns), configUI3(ns), configUI4(ns)),configUI5(ns)
+        fluidRow(configUIsim2(ns), configUIsim3(ns), configUIsim4(ns)),configUIsim5(ns)
       )
     ),
     
@@ -34,7 +34,7 @@ mdsc_sim_ui <- function(id) {
         fluidRow(
           column(12, wellPanel(
             selectInput(ns("plot_choice"), "Select Plot:",
-                        choices = c("MHF", "Overlay", "THF", "RHF", "NRHF", "Signal closeup"),
+                        choices = c("MHF", "Overlay", "THF", "RHF", "RHF no FT", "NRHF", "Signal closeup"),
                         selected = "MHF")
           ))
         ),
@@ -132,7 +132,7 @@ mdsc_sim_server <- function(id) {
       reactive_inputs$df2 <- df2
       resampled_points <- equalyval(df2 = df2)
       
-      finaldf <- finalcalc(
+      results <- finalcalc(
         sampling = reactive_inputs$sampling,
         startTemp = reactive_inputs$startTemp,
         endTemp = reactive_inputs$endTemp,
@@ -144,7 +144,9 @@ mdsc_sim_server <- function(id) {
         df1 = df1,
         df2 = df2)
       
-      reactive_inputs$finaldf <- finaldf
+      reactive_inputs$finaldf <- results[[1]]
+      reactive_inputs$noFTcalc <- results[[2]]
+      
       
       write.xlsx(df2, "test.xlsx")
       
@@ -160,13 +162,16 @@ mdsc_sim_server <- function(id) {
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({
       req(reactive_inputs$finaldf)  # Ensure results exist
+      req(reactive_inputs$noFTcalc)
       res <- reactive_inputs$finaldf
+      res2 <- reactive_inputs$noFTcalc
       
       plot_obj <- switch(input$plot_choice,
                          "MHF" = MHFplots(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
                          "Overlay" = overlayplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
                          "THF" = smoothedTHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
                          "RHF" = smoothedRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                         "RHF no FT" = RHFnoFT(res2),
                          "NRHF" = smoothedNRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
                          "Signal closeup" = tempsignaloverlay(reactive_inputs$df2, reactive_inputs$subtitle, reactive_inputs$savetitle))
       
