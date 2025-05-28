@@ -136,3 +136,50 @@ HFcalc <- function(extrema_df, heat_amplitude, heating_rate) {
   
   return(RHFdf)
 }
+
+
+
+fftCalc <- function(period, d, heat_amplitude, heating_rate){
+  
+  print("hello")
+  dt <- mean(diff(d$time*60))
+  freq <- 1/period
+  
+  
+  # output <- fftfunc(period, dt, resampled_points)
+  window_size <- period/dt
+  finaldf <- data.frame(time = d$time, temperature = d$temperature)
+  finaldf$rollmean <- rollmean(d$modHeatFlow, k = window_size, fill = NA, align = "center")
+  finaldf$baselinecorrHF <- d$modHeatFlow - finaldf$rollmean
+  print("hello")
+  
+  
+  # Perform rolling FFT and extract the amplitude at the user-defined frequency
+  finaldf$amplitude <- rollapply(finaldf$baselinecorrHF, width = window_size, FUN = function(x) {
+    
+    # Perform the Fast Fourier Transform (FFT) on the window
+    fft_result <- fft(x)
+    
+    # Compute the frequencies corresponding to the FFT result
+    n <- length(x)
+    frequencies <- (0:(n - 1)) * (1 / (n * dt))
+    
+    # Calculate the amplitude (modulus) of the FFT result
+    amplitude_spectrum <- Mod(fft_result)
+    
+    # Find the index of the closest frequency to the user-defined frequency
+    bin <- which.min(abs(frequencies - freq))
+    
+    # Extract AC component as the amplitude at the first harmonic
+    amplitude_at_user_freq <- 2 * Mod(fft_result[bin]) / n  # Normalize
+    
+    return(amplitude_at_user_freq)
+  }, by = 1, fill = NA, align = "center")
+  
+  print("hello")
+  
+  finaldf$RHF <- finaldf$amplitude/heat_amplitude*(-heating_rate/60)
+  
+  return(finaldf)
+}
+

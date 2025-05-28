@@ -3,6 +3,8 @@ library(ggplot2)
 library(dplyr)
 library(shiny)
 library(plotly)
+library(zoo)
+
 
 source("../normal mDSC/functions.R")
 
@@ -56,7 +58,7 @@ normal_mDSC_ui <- function(id) {
         fluidRow(
           column(12, wellPanel(
             selectInput(ns("plot_choice"), "Select Plot:", 
-                        choices = c("THF", "RHF","NRHF"), 
+                        choices = c("THF", "RHF","NRHF", "THF FT", "RHF FT"), 
                         selected = "THF"),
           ))
         ),
@@ -101,11 +103,15 @@ normal_mDSC_server <- function(id) {
       # Read data from Excel sheets
       d <- excel_cleaner(reactive_inputs$ExcelmDSC, reactive_inputs$sheet)
       
-      #Apply functions
+      #Apply functions for non-FT calculation
       extrema_df <-locate_extrema_manual(d$modHeatFlow, d$time, d$temperature)
       counts <- count_extrema(extrema_df)
       RHFdf <- HFcalc(extrema_df, reactive_inputs$heat_amplitude, reactive_inputs$heating_rate)
       reactive_inputs$RHFdf <- RHFdf
+      
+      #Apply functions for FT calculation
+      reactive_inputs$fftCalc <- fftCalc(reactive_inputs$period, d, reactive_inputs$heat_amplitude, reactive_inputs$heating_rate)
+      
       
       #Compare with DSC
       if(reactive_inputs$compare == TRUE) {
@@ -138,7 +144,10 @@ normal_mDSC_server <- function(id) {
       plot_obj <- switch(input$plot_choice,
                          "RHF" = RHFplot(reactive_inputs$RHFdf),
                          "THF" = THFplot(reactive_inputs$RHFdf),
-                         "NRHF" = NRHFplot(reactive_inputs$RHFdf))
+                         "NRHF" = NRHFplot(reactive_inputs$RHFdf),
+                         "THF FT" = THFplotFT(reactive_inputs$fftCalc),
+                         "RHF FT" = RHFplotFT(reactive_inputs$fftCalc),
+      )
       
       ggplotly(plot_obj)
       
