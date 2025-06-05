@@ -115,10 +115,7 @@ mdsc_quasiIso_server <- function(id) {
         if (!is.null(msg)) msg else ""
       })
       
-      # If there is an error message, stop further processing
-      if (!is.null(msg)) {
-        return(NULL)
-      }
+      if (!is.null(msg)) hidePageSpinner()
       
       req(is.null(msg))  # Exit here if there's an error
       
@@ -141,6 +138,25 @@ mdsc_quasiIso_server <- function(id) {
         savemanualRevCpplot = reactive_inputs$savemanualRevCpplot,
         saveExcel = reactive_inputs$saveExcel
       )
+      
+      if(typeof(sample_results) == "character") {
+        msg <- sample_results
+        # Update the error message output (this triggers UI update)
+        output$errorMessage <- renderText({
+          if (!is.null(msg)) msg else ""
+        })
+        
+        if (!is.null(msg)) hidePageSpinner()
+        
+        req(is.null(msg))  # Exit here if there's an error
+        
+      }
+      
+      if(!is.null(attr(sample_results, "comment"))) {
+        output$errorMessage <- renderText({
+          attr(sample_results, "comment")
+        })        
+      }
       
       # Store the processed results in reactiveValues()
       reactive_inputs$sample_results <- sample_results

@@ -23,33 +23,58 @@ excel_cleaner <- function(Excel, sheet) {
   idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
   headers[idxModhf] <- "modHeatFlow"
   
-  
-  
   if (length(idxhf) > 1) {
     msg <- "Error: there are multiple columns containing the terms \"heat flow\" in your selected Excel sheet"
+    return(msg)
   }
   
-  if (is.null(headers[idxmodtemp])) {
+  if (length(headers[idxmodtemp]) == 0) {
     msg <- "Error: there is no modulated temperature column in your selected Excel sheet"
+    return(msg)
   }
   
-  if (is.null(headers[idxtime])) {
+  if (length(headers[idxtime]) == 0) {
     msg <- "Error: there is no modulated time column in your selected Excel sheet."
+    return(msg)
+    
   }
   
-  if (is.null(headers[idxModhf])) {
+  if (length(headers[idxModhf]) == 0) {
     msg <- "Error: there is no modulated heat flow column in your selected Excel sheet"
+    return(msg)
   }
   
+  suppressWarnings(
+    Excel <- Excel %>%
+      mutate(across(everything(), ~ {
+        # Replace commas with dots, then convert to numeric
+        if (is.character(.)) as.numeric(gsub(",", ".", .)) else .
+      })) %>%
+      setNames(headers) %>%                          # rename columns
+      mutate(across(everything(), as.numeric)) %>% # Ensure all columns are numeric
+      drop_na()
+  )
 
-  Excel <- Excel %>%
-    mutate(across(everything(), ~ {
-      # Replace commas with dots, then convert to numeric
-      if (is.character(.)) as.numeric(gsub(",", ".", .)) else .
-    })) %>%
-    setNames(headers) %>%                          # rename columns
-    mutate(across(everything(), as.numeric)) %>% # Ensure all columns are numeric
-    drop_na()
+  
+  
+  for(i in seq_along(Excel)) {
+    tempcol <- Excel[[i]]
+    tempcheck <- tempcol[1]
+    tempcheck <- gsub("\\.", "", tempcol[1])
+    
+    if (nchar(tempcheck) < 5) {
+      if(i == 1) {errorSigFig <- "Warning: less than 5 significant figures were detected in your time data. This might affect the quality of the results"
+      }
+      if(i == 2) {errorSigFig <- "Warning: less than 5 significant figures were detected in your modulated temperature data. This might affect the quality of the results"
+      }
+      if(i == 3) {errorSigFig <- "Warning: less than 5 significant figures were detected in your modulated heat flow data. This might affect the quality of the results"
+      }
+      attr(Excel, "comment") <- errorSigFig
+      break
+    } 
+
+  }
+  
 
   return(Excel)
 }

@@ -57,11 +57,11 @@ RevCp_plot <- function(sample_results, modulations_back, fileName, saveRevCpplot
         axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
         axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
         axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-        axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-        panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+        axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+        panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
         panel.grid.minor = element_blank(),  # Minor grid lines removed
         plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-        axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+        axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
       ) +
       scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
       scale_y_continuous(
@@ -95,11 +95,11 @@ Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, f
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
     scale_y_continuous(
@@ -202,11 +202,11 @@ Original_data <- function(orgData, modulations_back, fileName) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
@@ -243,11 +243,11 @@ Datasteps_plot_1 <- function(d_steps_cleaned, modulations_back, fileName) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
@@ -285,11 +285,11 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileNam
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 20)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) 
 
@@ -326,11 +326,11 @@ Datasteps_plot_final <- function(d_steps_cleaned_3, modulations_back, fileName) 
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
@@ -367,11 +367,11 @@ Maxima_minima <- function(extramadf, modulations_back, fileName) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
@@ -398,11 +398,11 @@ Maxima_minima_1 <- function(extramadf2, modulations_back, fileName) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
@@ -429,11 +429,11 @@ Maxima_minima_2 <- function(extramadf3, modulations_back, fileName) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))

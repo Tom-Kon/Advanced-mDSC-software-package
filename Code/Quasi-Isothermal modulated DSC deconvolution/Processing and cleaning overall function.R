@@ -13,6 +13,9 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
   
     # 1. Load and pre‐process the data -------------------------------
   d <- excel_cleaner(Excel, sheet)
+  if(typeof(d) == "character") {
+    return(d)
+  }
 
   # Define the temperature ranges----
   rangesn <- c(0:(((round(d$modTemp[length(d$modTemp)]))/step_size)+10))
@@ -235,10 +238,9 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
 
   }
   
-  if (nrow(d_steps) - nrow(d_steps_cleaned) > 1000) {
-    signfigerror <<- "⚠️ WARNING: More than 1000 duplicate neighbours removed! Did you ensure your input Excel has enough significant figures?!⚠️"
+  if(!is.null(attr(d, "comment"))) {
+    attr(results, "comment") <- attr(d, "comment")
   }
   
-  print("Done!")
   return(results)
 }
