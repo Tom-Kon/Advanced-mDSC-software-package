@@ -1,33 +1,21 @@
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("router_setup.R")
+source("HTML styling.R")
 
 
 home_page <- div(
-  titlePanel("Home page"),
-  p("Welcome to the mDSC simulator app."),
-    tags$style(HTML("
-      .card {
-        background-color: #e6f0fa;
-        padding: 20px;
-        margin: 10px;
-        border-radius: 10px;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-        height: 100%;
-      }
-      .card h4 {
-        margin-top: 0;
-      }
-      .card-content {
-        font-size: 14px;
-      }
-      .btn-title {
-        margin-bottom: 15px;
-        width: 100%;
-        text-align: left;
-        font-weight: bold;
-      }
-    ")
+  tags$div(
+    titlePanel("Home page"),
+    class = "main-header"
   ),
+  HTML("<br>", "<br>"),
+  tags$div(
+    style = "font-weight: bold",
+    p("Welcome to the mDSC assistant app! If you are not familiar with this software or with mDSC in general, please navigate to the tutorial tab above. Otherwise, please click one of the navigation buttons below. To return to the homepage, click the rotating arrow at the top of each page."),
+    class = "card-content",
+  ),  
+  HTML("<br>"),
+
   fluidRow(
     column(6,
            div(class = "card",
@@ -36,9 +24,10 @@ home_page <- div(
                  href = route_link("mDScSim"),
                  "Go to modulated DSC deconvolution simulation"
                ),
+               HTML("<br>", "<br>"),
                div(
                  class = "card-content",
-                 "Lorem ipsum lorem ipsum."
+                 "This app generates a modulated DSC signal based on known data and simulates its deconvolution based on different parameters. If you want to know how your output changes for a different heating rate, try it here!"
                )
            )
     ),
@@ -49,9 +38,10 @@ home_page <- div(
                  href = route_link("quasiisothermal"),
                  "Go to Quasi-Isothermal modulated DSC deconvolution"
                ),
+               HTML("<br>", "<br>"),
                div(
                  class = "card-content",
-                 "Lorem ipsum lorem ipsum."
+                 "This app helps with analyzing quasi-isothermal modulated DSC data. If you are not familiar with this technique, it is explained in this app's tutorial. To use this app, you need to have an Excel file with exported mDSC data."
                )
            )
     )
@@ -64,9 +54,10 @@ home_page <- div(
                  href = route_link("analyzer"),
                  "Go to DSC descriptive statistics"
                ),
+               HTML("<br>", "<br>"),
                div(
                  class = "card-content",
-                 "Lorem ipsum lorem ipsum."
+                 "If you have analyzed your data in TRIOS and exported the resulting files as word documents, this software helps with rapidly calculating means, standard deviations, and relative standard deviations."
                )
            )
     ),
@@ -77,9 +68,10 @@ home_page <- div(
                  href = route_link("normalmDSC"),
                  "Go to regular modulated DSC deconvolution"
                ),
+               HTML("<br>", "<br>"),
                div(
                  class = "card-content",
-                 "Lorem ipsum lorem ipsum."
+                 "For certain analyses, you might be worried that the deconvolution procedure commonly used in DSC could introduce artifacts. This app recalculates the different signals in different ways in order to let you view the output differently. To use this application, you need an Excel file with exported DSC data."
                )
            )
     )

@@ -25,7 +25,7 @@ mdsc_analyzer_ui<- function(id) {
       
       tags$head(
         tags$style(
-          source("../DSC descriptive statistics/HTML styling.R")
+          source("HTML styling.R")
         )
       ),
       

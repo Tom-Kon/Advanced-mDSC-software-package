@@ -19,7 +19,13 @@ HTML("
           font-size: 18px;
           color: #3c8dbc; /* Dark gray color */
           font-weight: bold;
-        }
+          }
+        
+          .regular-text{
+          font-size: medium; 
+          text-align: left; 
+          color: #333;
+          }
   
           .ordered-list {
           font-size: medium;
@@ -161,4 +167,28 @@ HTML("
               .nested-list-container {
           padding-bottom: 20px; 
         }
+        
+        .card {
+        background-color: #e6f0fa;
+        padding: 20px;
+        margin: 10px;
+        border-radius: 10px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        height: 100%;
+      }
+      .card h4 {
+        margin-top: 0;
+      }
+      .card-content {
+          font-size: medium; 
+          text-align: left; 
+          color: #333;
+      }
+      
+      .btn-title {
+        margin-bottom: 15px;
+        width: 100%;
+        text-align: left;
+        font-weight: bold;
+      }
         ")
