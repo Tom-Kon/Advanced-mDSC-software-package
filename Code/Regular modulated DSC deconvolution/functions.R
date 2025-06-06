@@ -9,21 +9,21 @@ excel_cleaner <- function(Excel, sheet) {
   temp <- sapply(headers, function(x) strsplit(x, " "))
   
   idxtime <- which(vapply(temp, function(x) any(tolower(x) %in% "time"), logical(1)) )
-  headers[idxtime] <- "time"
-  
-  idxtemp <- which(vapply(temp, function(x) any(tolower(x) %in% "temperature"), logical(1)) )
-  headers[idxtemp] <- "temperature"
+  temp[idxtime] <- "time"
   
   idxmodtemp <- which(vapply(temp, function(x) {all(c("temperature", "modulated") %in% tolower(x))}, logical(1)))
-  headers[idxmodtemp] <- "modTemp"
+  temp[idxmodtemp] <- "modTemp"
   
-  idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
-  headers[idxhf] <- "heatFlow"
+  idxtemp <- which(vapply(temp, function(x) any(tolower(x) %in% "temperature"), logical(1)) )
+  temp[idxtemp] <- "temperature"
   
   idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
-  headers[idxModhf] <- "modHeatFlow"
+  temp[idxModhf] <- "modHeatFlow"
   
-  if(length(idxhf) > 1) {print("There is something wrong with your input!")} 
+  idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
+  temp[idxhf] <- "heatFlow"
+  
+  headers <- unlist(temp)
   
   Excel <- Excel %>%
     mutate(across(everything(), ~ {
@@ -129,12 +129,30 @@ HFcalc <- function(extrema_df, heat_amplitude, heating_rate) {
   amplitudes <- diffsHF/2
   RHF <- -amplitudes/heat_amplitude*heating_rate/60
   NRHF <- THF-RHF 
+
   RHFdf <- data.frame(meantemp, RHF, THF, NRHF)
-  
   
   return(RHFdf)
 }
 
+HFcalc2 <- function(extrema_df, heat_amplitude, heating_rate, d){
+  
+  maxima <- extrema_df %>%
+    filter(type == "maxima")
+  
+  filtered <- d %>% 
+    filter(time %in% maxima$time)
+  
+  THF <- filtered$heatFlow
+  
+  amplitudes <- filtered$modHeatFlow - THF
+  RHF <- -amplitudes/heat_amplitude*heating_rate/60
+  NRHF <- filtered$heatFlow-RHF 
+  temperature <- filtered$temperature
+  RHFdf2 <- data.frame(temperature, RHF, THF, NRHF)
+  
+  return(RHFdf2)
+}
 
 
 fftCalc <- function(period, d, heat_amplitude, heating_rate){

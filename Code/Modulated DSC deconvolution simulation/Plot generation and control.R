@@ -19,11 +19,11 @@ MHFplots <- function(resampled_points, subtitle, saveTitle) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) +
     scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks_x)) +  # Set the number of x-axis ticks
     scale_y_continuous(
@@ -54,11 +54,11 @@ overlayplot <- function(resampled_points, subtitle, saveTitle) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks_x)) +  # Set the number of x-axis ticks
     scale_y_continuous(
@@ -85,11 +85,11 @@ smoothedTHFplot <- function(resampled_points, subtitle, saveTitle) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) +
     scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks_x)) +  # Set the number of x-axis ticks
     scale_y_continuous(
@@ -124,11 +124,11 @@ tempsignaloverlay <- function(df2, subtitle, saveTitle) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", size = 0.5),
-      panel.grid.major = element_line(color = "gray", size = 0.25),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
       panel.grid.minor = element_blank(),
       plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", size = 0.5)
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
     scale_x_continuous(
       expand = c(0.005, 0.005),
@@ -161,11 +161,11 @@ smoothedRHFplot <- function(resampled_points, subtitle, saveTitle) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) +
     scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks_x)) +  # Set the number of x-axis ticks
     scale_y_continuous(
@@ -191,11 +191,11 @@ smoothedNRHFplot <- function(resampled_points, subtitle, saveTitle) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) +
     scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks_x)) +  # Set the number of x-axis ticks
     scale_y_continuous(
@@ -226,11 +226,11 @@ RHFnoFT <- function(res2) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) +
     scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks_x)) +  # Set the number of x-axis ticks
     scale_y_continuous(
