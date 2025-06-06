@@ -5,23 +5,30 @@ excel_cleaner <- function(Excel, sheet) {
   headers <- as.vector(unlist(Excel[row_idx, ]))
   Excel <- na.omit(Excel)
   
-  # Excel <- Excel[-(1:2), ]
   temp <- sapply(headers, function(x) strsplit(x, " "))
   
   idxtime <- which(vapply(temp, function(x) any(tolower(x) %in% "time"), logical(1)) )
-  headers[idxtime] <- "time"
-  
-  idxtemp <- which(vapply(temp, function(x) any(tolower(x) %in% "temperature"), logical(1)) )
-  headers[idxtemp] <- "temperature"
+  temp[idxtime] <- "time"
   
   idxmodtemp <- which(vapply(temp, function(x) {all(c("temperature", "modulated") %in% tolower(x))}, logical(1)))
-  headers[idxmodtemp] <- "modTemp"
+  temp[idxmodtemp] <- "modTemp"
   
-  idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
-  headers[idxhf] <- "heat_flow"
+  idxtemp <- which(vapply(temp, function(x) any(tolower(x) %in% "temperature"), logical(1)) )
+  temp[idxtemp] <- "temperature"
   
   idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
-  headers[idxModhf] <- "modHeatFlow"
+  temp[idxModhf] <- "modHeatFlow"
+  
+  idxRevhf <- which(vapply(temp, function(x) {all(c("reversing", "heat", "flow") %in% tolower(x))}, logical(1)))
+  temp[idxRevhf] <- "RevmodHeatFlow"
+  
+  idxNonRevhf <- which(vapply(temp, function(x) {all(c("non-reversing","heat", "flow") %in% tolower(x))}, logical(1)))
+  temp[idxNonRevhf] <- "NonRevmodHeatFlow"
+  
+  idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
+  temp[idxhf] <- "heatFlow"
+  
+  headers <- unlist(temp)
   
   if (length(idxhf) > 1) {
     msg <- "Error: there are multiple columns containing the terms \"heat flow\" in your selected Excel sheet"
