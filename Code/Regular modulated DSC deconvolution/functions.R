@@ -1,11 +1,10 @@
-excel_cleaner <- function(Excel, sheet) {
+excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
   sheet <- as.numeric(sheet)
   Excel <- read_excel(Excel, sheet, col_names = FALSE)
   row_idx <- match(TRUE, apply(Excel, 1, function(r) any(tolower(r) == "time")))
   headers <- as.vector(unlist(Excel[row_idx, ]))
   Excel <- na.omit(Excel)
   
-  # Excel <- Excel[-(1:2), ]
   temp <- sapply(headers, function(x) strsplit(x, " "))
   
   idxtime <- which(vapply(temp, function(x) any(tolower(x) %in% "time"), logical(1)) )
@@ -20,19 +19,94 @@ excel_cleaner <- function(Excel, sheet) {
   idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
   temp[idxModhf] <- "modHeatFlow"
   
+  idxRevhf <- which(vapply(temp, function(x) {all(c("reversing", "heat", "flow") %in% tolower(x))}, logical(1)))
+  temp[idxRevhf] <- "RevmodHeatFlow"
+  
+  idxNonRevhf <- which(vapply(temp, function(x) {all(c("non-reversing","heat", "flow") %in% tolower(x))}, logical(1)))
+  temp[idxNonRevhf] <- "NonRevmodHeatFlow"
+  
   idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
   temp[idxhf] <- "heatFlow"
   
   headers <- unlist(temp)
   
-  Excel <- Excel %>%
-    mutate(across(everything(), ~ {
-      # Replace commas with dots, then convert to numeric
-      if (is.character(.)) as.numeric(gsub(",", ".", .)) else .
-    })) %>%
-    setNames(headers) %>%                          # rename columns
-    mutate(across(everything(), as.numeric)) %>% # Ensure all columns are numeric
-    drop_na()
+  
+  if (length(idxhf) > 1) {
+    msg <- "Error: there are multiple columns containing the terms \"heat flow\" in your selected Excel sheet."
+    return(msg)
+  }
+  
+  if(import == 1) {
+    if(HFcalcextra) {
+      
+      if (length(headers[idxhf]) == 0) {
+        msg <- "Error: there is no total heat flow column in your Excel sheet."
+        return(msg)
+      }
+      
+      if (length(headers[idxtemp]) == 0) {
+        msg <- "Error: there is no temperature column in your Excel sheet."
+        return(msg)
+      }      
+    
+    }
+  }
+  
+  if(import == 2) {
+    if(compare) {
+     if (length(headers[idxhf]) == 0) {
+        msg <- "Error: there is no total heat flow column in your Excel sheet."
+        return(msg)
+      }
+      
+      if (length(headers[idxtemp]) == 0) {
+        msg <- "Error: there is no temperature column in your Excel sheet."
+        return(msg)
+      } 
+    }    
+  }
+  
+
+  
+  if (length(headers[idxtime]) == 0) {
+    msg <- "Error: there is no time column in your selected Excel sheet."
+    return(msg)
+    
+  }
+  
+  if (length(headers[idxModhf]) == 0) {
+    msg <- "Error: there is no modulated heat flow column in your selected Excel sheet"
+    return(msg)
+  }
+  
+  
+  suppressWarnings(
+    Excel <- Excel %>%
+      mutate(across(everything(), ~ {
+        # Replace commas with dots, then convert to numeric
+        if (is.character(.)) as.numeric(gsub(",", ".", .)) else .
+      })) %>%
+      setNames(headers) %>%                          # rename columns
+      mutate(across(everything(), as.numeric)) %>% # Ensure all columns are numeric
+      drop_na()
+  )
+  
+  for(i in seq_along(Excel)) {
+    tempcol <- Excel[[i]]
+    tempcheck <- tempcol[1]
+    tempcheck <- gsub("\\.", "", tempcol[1])
+    
+    if (nchar(tempcheck) < 5) {
+      if(i == 1) {errorSigFig <- "Warning: less than 5 significant figures were detected in your time data. This might affect the quality of the results"
+      }
+      if(i == 2) {errorSigFig <- "Warning: less than 5 significant figures were detected in your modulated temperature data. This might affect the quality of the results"
+      }
+      if(i == 3) {errorSigFig <- "Warning: less than 5 significant figures were detected in your modulated heat flow data. This might affect the quality of the results"
+      }
+      attr(Excel, "comment") <- errorSigFig
+      break
+    } 
+  }
   
   return(Excel)
 }
@@ -194,4 +268,28 @@ fftCalc <- function(period, d, heat_amplitude, heating_rate){
   
   return(finaldf)
 }
+
+funcMatchingDSCMDSC <- function(DSC, extrema_df, heat_amplitude, heating_rate) {
+  
+  matchingDSCmDSC <- extrema_df %>%
+    filter(type == "maxima") %>%
+    rowwise() %>%
+    mutate(
+      closest_index = which.min(abs(DSC$temperature - temperature)),
+      heat_flowDSC = DSC$heatFlow[closest_index],
+      temperatureDSC = DSC$temperature[closest_index],
+      amplitudes =  modHeatFlow - DSC$heatFlow[closest_index]
+    ) %>%
+    ungroup()
+  
+  THF <- matchingDSCmDSC$heat_flowDSC
+  RHF <- -matchingDSCmDSC$amplitudes/heat_amplitude*heating_rate/60
+  NRHF <- matchingDSCmDSC$heat_flowDSC-RHF 
+  temperature <- matchingDSCmDSC$temperatureDSC
+  
+  DSCdf <- data.frame(temperature, THF, RHF, NRHF)
+  
+  return(DSCdf)
+}
+
 
