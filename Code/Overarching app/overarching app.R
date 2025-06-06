@@ -1,4 +1,16 @@
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+if (requireNamespace("rstudioapi", quietly = TRUE) &&
+    rstudioapi::isAvailable()) {
+  tryCatch({
+    setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+  }, error = function(e) {
+    setwd(normalizePath("."))
+  })
+} else {
+  setwd(normalizePath("."))
+}
+
+
+
 source("router_setup.R")
 source("HTML styling.R")
 
