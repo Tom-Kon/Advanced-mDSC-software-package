@@ -442,3 +442,144 @@ Maxima_minima_2 <- function(extramadf3, modulations_back, fileName) {
   return(Max_min_2)  
 }
 
+#***--------------------------------Data to accommodate export-----------------------**#
+Original_dataggplot <- function(orgData, modulations_back, fileName) {
+  
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]
+  
+  orgDataSlice <- orgData %>% 
+    slice(seq(1, n(), by = 50))
+  
+  oD <- ggplot(orgDataSlice, aes(x = time, y = modHeatFlow)) +
+    geom_line(color = "black", linewidth = 1) +  
+    labs(
+      title = "Raw, unmodified modulated total heat flow data", 
+      subtitle = subtitle, 
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  return(oD)  
+}
+
+
+Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulations_back, fileName) {
+  d_steps_cleanedSlice <- d_steps_cleaned %>% 
+    slice(seq(1, n(), by = 50))
+  
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
+  
+  
+  dStepsCleanedSlice <- ggplot(d_steps_cleanedSlice, aes(x = time, y = modHeatFlow)) +
+    geom_line(color = "black", size = 1) +  
+    labs(
+      title = "Cleaned raw total heat flow data after\nremoving temperatures between steps",
+      subtitle = subtitle, 
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  
+  return(dStepsCleanedSlice)  
+}
+
+
+
+Datasteps_plot_prefinalggplot <- function(d_steps_cleaned_2, modulations_back, fileName) {
+  d_steps_cleaned_2Slice <- d_steps_cleaned_2 %>% 
+    slice(seq(1, n(), by = 50))
+  
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
+  
+  
+  dStepsCleaned_2Slice <- ggplot(d_steps_cleaned_2Slice, aes(x = time, y = modHeatFlow)) +
+    geom_line(color = "black", linewidth = 1) +  
+    labs(
+      title = "Cleaned raw total heat flow data after\nremoving noisy pattern at the end of each step",
+      subtitle = subtitle, 
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 20)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) 
+  
+  
+  return(dStepsCleaned_2Slice)  
+}
+
+
+
+Datasteps_plot_finalggplot <- function(d_steps_cleaned_3, modulations_back, fileName) {
+  d_steps_cleaned_3Slice <- d_steps_cleaned_3 %>% 
+    slice(seq(1, n(), by = 1))
+  
+  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulations_back, " modulations")
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
+  
+  dStepsCleaned_3Slice <- ggplot(d_steps_cleaned_3Slice, aes(x = time, y = modHeatFlow)) +
+    geom_line(color = "black", size = 1) +  
+    labs(
+      title = plottitledStepsCleaned_3Slice,
+      subtitle = subtitle,
+      x = "Time (min)",
+      y = "Heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +  
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.text = element_text(size = 18, color = "black"),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
+      panel.grid.minor = element_blank(),
+      plot.margin = margin(20, 20, 20, 20),
+      axis.ticks = element_line(color = "black", linewidth = 0.5)
+    ) +
+    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  
+  return(dStepsCleaned_3Slice)  
+}
+
+

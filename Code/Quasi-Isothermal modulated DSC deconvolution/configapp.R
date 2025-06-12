@@ -67,26 +67,33 @@ configUI4 <- function(ns) {
                  downloadButton(ns("excelDownload"), "Download the Excel sheet with all the analyses", class = "btn-primary btn-lg")
                )
       ),
-      br(), br(), br(),
+      br(), br(),
       fluidRow(
                tags$div(
                  style = "text-align: center;",
                  downloadButton(ns("NRHFdownload"), "Download the non-reversing heat flow plot", class = "btn-primary btn-lg")
            )
       ),
-      br(), br(), br(),
+      br(), br(),
       fluidRow(
                tags$div(
                  style = "text-align: center;",
                  downloadButton(ns("RevCpdownload"), "Download the reversing heat capacity plot", class = "btn-primary btn-lg")
                )
         ),
-      br(), br(), br(),
+      br(), br(),
       fluidRow(
                tags$div(
                  style = "text-align: center;",
                  downloadButton(ns("nonFTrevCpdownload"), "Download the reversing heat capacity plot calculated without FT", class = "btn-primary btn-lg")
                )
+      ),
+      br(), br(),
+      fluidRow(
+        tags$div(
+          style = "text-align: center;",
+          downloadButton(ns("allPlotsDownload"), "Download all plots at once in a single .zip file", class = "btn-primary btn-lg")
+        )
       ),
       br(), br(), br(),
       div(

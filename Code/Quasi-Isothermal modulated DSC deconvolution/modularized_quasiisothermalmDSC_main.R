@@ -327,6 +327,142 @@ output$excelDownload <- downloadHandler(
       }
     )
     
+    output$allPlotsDownload <- downloadHandler(
+      filename = function() {
+        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        Title <- "Plots based on FT analysis"
+        paste0(subtitle, " ", Title, ".zip")  # Must be .zip
+      },
+      content = function(file) {
+        showPageSpinner()
+        res <- reactive_inputs$sample_results
+        
+        tmpdir <- tempdir()
+        
+        # Output files for the plots
+        plot1_file <- file.path(tmpdir, paste0("NRHF plot", input$extension))
+        plot2_file <- file.path(tmpdir, paste0("RevCp plot.png", input$extension))
+        plot3_file <- file.path(tmpdir, paste0("Manual RevCp plot.png", input$extension))
+        # plot4_file <- file.path(tmpdir, "Overlay plot.png")
+        plot5_file <- file.path(tmpdir, paste0("Maxima and minima 1.png", input$extension))
+        plot6_file <- file.path(tmpdir, paste0("Maxima and minima prefinal.png", input$extension))
+        plot7_file <- file.path(tmpdir, paste0("Maxima and minima final.png", input$extension))
+        plot8_file <- file.path(tmpdir, paste0("Original data.png", input$extension))
+        plot9_file <- file.path(tmpdir, paste0("First cleaned up data.png", input$extension))
+        plot10_file <- file.path(tmpdir, paste0("Prefinal cleaned up data.png", input$extension))
+        plot11_file <- file.path(tmpdir, paste0("Final data used for analysis.png", input$extension))
+        
+        
+        
+        
+        # Save each plot to its file
+        ggsave(
+          filename = plot1_file,
+          plot = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveNRHFplot),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot2_file,
+          plot = RevCp_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveRevCpplot),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot3_file,
+          plot = Manual_RevCp_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$savemanualRevCpplot),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        # ggsave(
+        #   filename = plot4_file,
+        #   plot = RevCp_NRHF_plotggplot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
+        #   dpi = as.numeric(input$exportDpi),
+        #   width = as.numeric(input$exportWidth),
+        #   height = as.numeric(input$exportHeight),
+        #   units = "cm"
+        # )
+        
+        ggsave(
+          filename = plot5_file,
+          plot = Maxima_minima(res$`Extrema df1`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot6_file,
+          plot = Maxima_minima_1(res$`Extrema df2`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot7_file,
+          plot = Maxima_minima_2(res$`Extrema df3`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot8_file,
+          plot = Original_dataggplot(res$`Original data`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot9_file,
+          plot = Datasteps_plot_1ggplot(res$d_steps_cleaned, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot10_file,
+          plot = Datasteps_plot_prefinalggplot(res$d_steps_cleaned_2, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot11_file,
+          plot = Datasteps_plot_finalggplot(res$d_steps_cleaned_3, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        # Bundle into a zip file
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file ,plot5_file, plot6_file, plot7_file, plot8_file, plot9_file, plot10_file, plot11_file), flags = "-j")
+        
+        hidePageSpinner()
+        
+      }
+    )
+    
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({
       req(reactive_inputs$sample_results)  # Ensure results exist
