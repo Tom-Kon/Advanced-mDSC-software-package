@@ -265,6 +265,7 @@ fftCalc <- function(period, d, heat_amplitude, heating_rate){
   }, by = 1, fill = NA, align = "center")
   
   finaldf$RHF <- finaldf$amplitude/heat_amplitude*(-heating_rate/60)
+  finaldf$NRHF <- finaldf$rollmean-finaldf$RHF
   
   return(finaldf)
 }
