@@ -120,7 +120,7 @@ mdsc_quasiIso_server <- function(id) {
       
       # Store file input
       reactive_inputs$Excel <- input$Excel_in$datapath
-      reactive_inputs$fileName <- input$Excel_in$name
+      reactive_inputs$fileName <- as.character(input$Excel_in$name)
       
       # Call error_handling with the actual input value
       msg <- error_handling_quasiIso(reactive_inputs)
@@ -244,7 +244,6 @@ output$excelDownload <- downloadHandler(
     hidePageSpinner()
     
   }
-  
 )
     
     output$NRHFdownload <- downloadHandler(
