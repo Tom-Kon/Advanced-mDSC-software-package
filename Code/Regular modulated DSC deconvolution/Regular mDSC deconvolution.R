@@ -1,6 +1,9 @@
 source("../Regular modulated DSC deconvolution/functions.R")
 source("../Regular modulated DSC deconvolution/Libraries.R")
 source("../Regular modulated DSC deconvolution/error handling.R")
+source("../Regular modulated DSC deconvolution/downloads.R")
+source("../Regular modulated DSC deconvolution/plots regular mDSC.R")
+
 
 
 normal_mDSC_ui <- function(id) {
@@ -58,7 +61,7 @@ normal_mDSC_ui <- function(id) {
         fluidRow(
           column(12, wellPanel(
             selectInput(ns("plot_choice"), "Select Plot:", 
-                        choices = c("THF", "RHF","NRHF", "THF FT", "RHF FT", 
+                        choices = c("THF", "RHF","NRHF", "THF FT", "RHF FT", "NRHF FT",
                                     "THF TRIOS", "RHF based on THF TRIOS", "NRHF based on THF TRIOS", 
                                     "THF unmodulated DSC", "RHF based on unmodulated DSC", "NRHF based on unmodulated DSC"), 
                         selected = "THF"),
@@ -68,7 +71,71 @@ normal_mDSC_ui <- function(id) {
           column(12, plotlyOutput(ns("plot"), height = "90vh"))
         ), 
       )
-    )
+    ),
+    tabPanel(
+      id = ns("downloads"),
+      title = "Downloads",
+      icon = icon("download", class = "fa-solid"),
+      fluidPage(
+        sidebarLayout(
+          sidebarPanel(
+            h4("Plot export settings"),
+            selectInput(ns("extension"), "What should the plot's extension be?", c(".png", ".jpg", ".tiff")), 
+            textInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
+            textInput(ns("exportWidth"), "What should the plot width be in cm?",  value= 20),
+            textInput(ns("exportHeight"), "What should the plot height be in cm?", value= 20)
+          ),
+          
+          mainPanel(
+            fluidRow(
+              tags$div(
+                style = "text-align: center;",
+                downloadButton(ns("excelDownload"), "Download the Excel sheet with all the analyses", class = "btn-primary btn-lg")
+              )
+            ),
+            br(), br(),
+            fluidRow(
+              tags$div(
+                style = "text-align: center;",
+                downloadButton(ns("MaxMinAnalysisDownload"), "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and minima", class = "btn-primary btn-lg")
+              )
+            ),
+            br(), br(),
+            fluidRow(
+              tags$div(
+                style = "text-align: center;",
+                downloadButton(ns("FTAnalysisDownload"), "Download the 3 plots (THF, RHF, NRHF) based on the FT analysis", class = "btn-primary btn-lg")
+              )
+            ),
+            br(), br(),
+            fluidRow(
+              tags$div(
+                style = "text-align: center;",
+                downloadButton(ns("MaxTHFAnalysisDownload"), "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and the THF", class = "btn-primary btn-lg")
+              )
+            ),
+            br(), br(),
+            fluidRow(
+              tags$div(
+                style = "text-align: center;",
+                downloadButton(ns("MaxDSCAnalysisDownload"), "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and the unmodulated DSC", class = "btn-primary btn-lg")
+              )
+            ),
+            br(), br(), br(),
+            div(
+              class = "succes-text",
+              textOutput(ns("downloadMessage"))
+            )
+          )
+        )
+      )
+    ), 
+    tabPanel(
+      id = ns("tutorial"),
+      title = "Tutorial",
+      icon = icon("book", class = "fa-solid"),
+      fluidPage()
+    ), 
   )
 }
 
@@ -88,9 +155,12 @@ normal_mDSC_server <- function(id) {
       reactive_inputs$setAmplitude <- as.numeric(input$setAmplitude)
       reactive_inputs$compare <- input$compare
       reactive_inputs$ExcelmDSC <- input$Excel_mDSC$datapath
-      reactive_inputs$fileName <- input$Excel_in$name
+      reactive_inputs$fileName <- as.character(input$Excel_mDSC$name)
       reactive_inputs$HFcalcextra <- input$HFcalcextra
       reactive_inputs$compare <- input$compare
+      
+      toggleState(id = "MaxTHFAnalysisDownload", condition = reactive_inputs$HFcalcextra)
+      toggleState(id = "MaxDSCAnalysisDownload", condition = reactive_inputs$compare)
       
       
       if(input$sheetask) {
@@ -149,11 +219,13 @@ normal_mDSC_server <- function(id) {
       extrema_df <-locate_extrema_manual(d$modHeatFlow, d$time, d$temperature)
       counts <- count_extrema(extrema_df)
       RHFdf <- HFcalc(extrema_df, reactive_inputs$heat_amplitude, reactive_inputs$heating_rate)
+      
+      reactive_inputs$extrema_df <- extrema_df
       reactive_inputs$RHFdf <- RHFdf
       
       
       if(reactive_inputs$HFcalcextra) {
-        RHFdf2 <- HFcalc2(extrema_df, reactive_inputs$heat_amplitude, reactive_inputs$heating_rate, d)
+        RHFdf2 <- HFcalc2(reactive_inputs$extrema_df, reactive_inputs$heat_amplitude, reactive_inputs$heating_rate, d)
         reactive_inputs$RHFdf2 <- RHFdf2
       }
 
@@ -212,10 +284,233 @@ normal_mDSC_server <- function(id) {
 
     })
     
+    output$excelDownload <- downloadHandler(
+      filename = function() {
+        fileName <- unlist(strsplit(reactive_inputs$fileName, "\\."))[1]
+        paste0(fileName, ".xlsx")
+      },
+      content = function(file) {
+        showPageSpinner()
+        wb <- downloadExcelRegmDSC(reactive_inputs)
+        saveWorkbook(wb, file = file, overwrite = TRUE)
+        hidePageSpinner()
+        
+      }
+    )
+    
+    
+    output$MaxMinAnalysisDownload <- downloadHandler(
+      filename = function() {
+        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        Title <- "Plots based on Max-Min analysis of MHF"
+        paste0(subtitle, " ", Title, ".zip")  # Must be .zip
+      },
+      content = function(file) {
+        showPageSpinner()
+        
+        tmpdir <- tempdir()
+        
+        # Output files for the plots
+        plot1_file <- file.path(tmpdir, "RHF_plot.png")
+        plot2_file <- file.path(tmpdir, "THF_plot.png")
+        plot3_file <- file.path(tmpdir, "NRHF_plot.png")
+        
+        # Save each plot to its file
+        ggsave(
+          filename = plot1_file,
+          plot = RHFplot(reactive_inputs$RHFdf),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot2_file,
+          plot = THFplot(reactive_inputs$RHFdf),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot3_file,
+          plot = NRHFplot(reactive_inputs$RHFdf),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        # Bundle into a zip file
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
+        
+        hidePageSpinner()
+        
+      }
+    )
+    
+    output$FTAnalysisDownload <- downloadHandler(
+      filename = function() {
+        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        Title <- "Plots based on FT analysis"
+        paste0(subtitle, " ", Title, ".zip")  # Must be .zip
+      },
+      content = function(file) {
+        showPageSpinner()
+        
+        tmpdir <- tempdir()
+        
+        # Output files for the plots
+        plot1_file <- file.path(tmpdir, "RHF_plot.png")
+        plot2_file <- file.path(tmpdir, "THF_plot.png")
+        plot3_file <- file.path(tmpdir, "NRHF_plot.png")
+        
+        # Save each plot to its file
+        ggsave(
+          filename = plot1_file,
+          plot = RHFplotFT(reactive_inputs$fftCalc),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot2_file,
+          plot = THFplotFT(reactive_inputs$fftCalc),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot3_file,
+          plot = NRHFplotFT(reactive_inputs$fftCalc),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        # Bundle into a zip file
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
+        
+        hidePageSpinner()
+        
+      }
+    )
+    
+    
+    output$MaxTHFAnalysisDownload <- downloadHandler(
+      filename = function() {
+        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        Title <- "Plots based analysis of maxima and THF"
+        paste0(subtitle, " ", Title, ".zip")  # Must be .zip
+      },
+      content = function(file) {
+        showPageSpinner()
+        
+        tmpdir <- tempdir()
+        
+        # Output files for the plots
+        plot1_file <- file.path(tmpdir, "RHF_plot.png")
+        plot2_file <- file.path(tmpdir, "THF_plot.png")
+        plot3_file <- file.path(tmpdir, "NRHF_plot.png")
+        
+        # Save each plot to its file
+        ggsave(
+          filename = plot1_file,
+          plot = RHFplotTRIOS(reactive_inputs$RHFdf2),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot2_file,
+          plot = THFplotTRIOS(reactive_inputs$RHFdf2),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot3_file,
+          plot = NRHFplotTRIOS(reactive_inputs$RHFdf2),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        # Bundle into a zip file
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
+        
+        hidePageSpinner()
+        
+      }
+    )
+    
+    output$MaxDSCAnalysisDownload <- downloadHandler(
+      filename = function() {
+        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        Title <- "Plots based on analysis of maxima and DSC"
+        paste0(subtitle, " ", Title, ".zip")  # Must be .zip
+      },
+      content = function(file) {
+        showPageSpinner()
+        
+        tmpdir <- tempdir()
+        
+        # Output files for the plots
+        plot1_file <- file.path(tmpdir, "RHF_plot.png")
+        plot2_file <- file.path(tmpdir, "THF_plot.png")
+        plot3_file <- file.path(tmpdir, "NRHF_plot.png")
+        
+        # Save each plot to its file
+        ggsave(
+          filename = plot1_file,
+          plot = RHFplotDSC(reactive_inputs$DSCdf),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot2_file,
+          plot = THFplotDSC(reactive_inputs$DSCdf),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot3_file,
+          plot = NRHFplotDSC(reactive_inputs$DSCdf),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        # Bundle into a zip file
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
+        
+        hidePageSpinner()
+      }
+    )
+    
+    
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({
       req(reactive_inputs$fftCalc)
-      source("../Regular modulated DSC deconvolution/plots.R")
       
       plot_obj <- switch(input$plot_choice,
                          "RHF" = RHFplot(reactive_inputs$RHFdf),
@@ -223,6 +518,7 @@ normal_mDSC_server <- function(id) {
                          "NRHF" = NRHFplot(reactive_inputs$RHFdf),
                          "THF FT" = THFplotFT(reactive_inputs$fftCalc),
                          "RHF FT" = RHFplotFT(reactive_inputs$fftCalc),
+                         "NRHF FT" = NRHFplotFT(reactive_inputs$fftCalc),
                          "THF TRIOS" = {
                            validate(need(input$HFcalcextra, "Please check 'Do you want to calculate RHF and NRHF using the THF as well?' to show THF TRIOS plots."))
                            THFplotTRIOS(reactive_inputs$RHFdf2)
