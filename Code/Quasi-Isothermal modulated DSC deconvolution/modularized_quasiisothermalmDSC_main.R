@@ -216,28 +216,36 @@ mdsc_quasiIso_server <- function(id) {
       
     })
     
-    observeEvent(input$excelDownload, {
-      showPageSpinner()
-      req(reactive_inputs$sample_results)
-      
-      
-      downloadExcel(
-        sample_results = reactive_inputs$sample_results,
-        fileName = reactive_inputs$fileName,
-        modulations_back = reactive_inputs$modulations_back,
-        period = reactive_inputs$period,
-        setAmplitude = reactive_inputs$setAmplitude,
-        starting_temp = reactive_inputs$startingTemp,
-        step_size = reactive_inputs$stepSize,
-        isothermLength = reactive_inputs$isothermLength,
-        sampling = reactive_inputs$sampling
-      )
-      output$downloadMessage <- renderText({
-        "Download complete"
-      })
-      hidePageSpinner()
-      
-    })
+
+    
+output$excelDownload <- downloadHandler(
+  filename = function() {
+    fileName <- unlist(strsplit(reactive_inputs$fileName, "\\."))[1]
+    paste0(fileName, " ", reactive_inputs$modulations_back, " modulations analysed.xlsx")
+  },
+  
+  content = function(file) {
+    showPageSpinner()
+    
+    wb <- downloadExcel(
+      sample_results = reactive_inputs$sample_results,
+      fileName = reactive_inputs$fileName,
+      modulations_back = reactive_inputs$modulations_back,
+      period = reactive_inputs$period,
+      setAmplitude = reactive_inputs$setAmplitude,
+      starting_temp = reactive_inputs$startingTemp,
+      step_size = reactive_inputs$stepSize,
+      isothermLength = reactive_inputs$isothermLength,
+      sampling = reactive_inputs$sampling
+    )   
+    
+    saveWorkbook(wb, file = file, overwrite = TRUE)
+    
+    hidePageSpinner()
+    
+  }
+  
+)
     
     output$NRHFdownload <- downloadHandler(
       filename = function() {

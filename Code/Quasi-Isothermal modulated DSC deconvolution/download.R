@@ -75,6 +75,7 @@ downloadExcel <- function(fileName, sample_results, modulations_back, period, se
       writeData(wb, sheet = "8.Extrema of sheet 7", extrema_df3)
       
       
-      saveWorkbook(wb, fileName, overwrite = TRUE)
+return(wb)
+      
 }
 

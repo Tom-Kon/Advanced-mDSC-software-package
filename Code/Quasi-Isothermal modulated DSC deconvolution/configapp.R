@@ -64,7 +64,7 @@ configUI4 <- function(ns) {
       fluidRow(
                tags$div(
                  style = "text-align: center;",
-                 actionButton(ns("excelDownload"), "Download the Excel sheet with all the analyses", class = "btn-primary btn-lg")
+                 downloadButton(ns("excelDownload"), "Download the Excel sheet with all the analyses", class = "btn-primary btn-lg")
                )
       ),
       br(), br(), br(),
