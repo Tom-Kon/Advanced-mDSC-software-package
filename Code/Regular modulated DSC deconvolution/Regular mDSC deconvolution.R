@@ -141,13 +141,19 @@ normal_mDSC_ui <- function(id) {
 
 normal_mDSC_server <- function(id) {
   moduleServer(id, function(input, output, session) {
+    disable("excelDownload")
+    disable("MaxMinAnalysisDownload")
+    disable("FTAnalysisDownload")
+    disable("MaxTHFAnalysisDownload")
+    disable("MaxDSCAnalysisDownload")
+    
+    
 
     # Create a reactiveValues object to store inputs
     reactive_inputs <- reactiveValues()
 
     observeEvent(input$analyze,{
       showPageSpinner()
-      
       
       # Extraction
       reactive_inputs$period <- as.numeric(input$period)
@@ -280,6 +286,11 @@ normal_mDSC_server <- function(id) {
    
       }
       
+      enable("excelDownload")
+      enable("MaxMinAnalysisDownload")
+      enable("FTAnalysisDownload")
+      enable("MaxTHFAnalysisDownload")
+      enable("MaxDSCAnalysisDownload")
       hidePageSpinner()
 
     })
@@ -311,9 +322,9 @@ normal_mDSC_server <- function(id) {
         tmpdir <- tempdir()
         
         # Output files for the plots
-        plot1_file <- file.path(tmpdir, "RHF_plot.png")
-        plot2_file <- file.path(tmpdir, "THF_plot.png")
-        plot3_file <- file.path(tmpdir, "NRHF_plot.png")
+        plot1_file <- file.path(tmpdir, paste0("RHF_plot", input$extension))
+        plot2_file <- file.path(tmpdir, paste0("THF_plot", input$extension))
+        plot3_file <- file.path(tmpdir, paste0("NRHF_plot", input$extension))
         
         # Save each plot to its file
         ggsave(
@@ -346,6 +357,7 @@ normal_mDSC_server <- function(id) {
         # Bundle into a zip file
         zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
         
+        
         hidePageSpinner()
         
       }
@@ -363,9 +375,9 @@ normal_mDSC_server <- function(id) {
         tmpdir <- tempdir()
         
         # Output files for the plots
-        plot1_file <- file.path(tmpdir, "RHF_plot.png")
-        plot2_file <- file.path(tmpdir, "THF_plot.png")
-        plot3_file <- file.path(tmpdir, "NRHF_plot.png")
+        plot1_file <- file.path(tmpdir, paste0("RHF_plot", input$extension))
+        plot2_file <- file.path(tmpdir, paste0("THF_plot", input$extension))
+        plot3_file <- file.path(tmpdir, paste0("NRHF_plot", input$extension))
         
         # Save each plot to its file
         ggsave(
@@ -416,9 +428,9 @@ normal_mDSC_server <- function(id) {
         tmpdir <- tempdir()
         
         # Output files for the plots
-        plot1_file <- file.path(tmpdir, "RHF_plot.png")
-        plot2_file <- file.path(tmpdir, "THF_plot.png")
-        plot3_file <- file.path(tmpdir, "NRHF_plot.png")
+        plot1_file <- file.path(tmpdir, paste0("RHF_plot", input$extension))
+        plot2_file <- file.path(tmpdir, paste0("THF_plot", input$extension))
+        plot3_file <- file.path(tmpdir, paste0("NRHF_plot", input$extension))
         
         # Save each plot to its file
         ggsave(

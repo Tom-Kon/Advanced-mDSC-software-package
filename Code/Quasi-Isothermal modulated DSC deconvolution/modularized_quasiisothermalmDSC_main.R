@@ -84,12 +84,18 @@ quasiIsotherm_ui <- function(id) {
 
 mdsc_quasiIso_server <- function(id) {
   moduleServer(id, function(input, output, session) {
+    disable("excelDownload")
+    disable("NRHFdownload")
+    disable("RevCpdownload")
+    disable("nonFTrevCpdownload")
+    disable("allPlotsDownload")
     
     # Create a reactiveValues object to store inputs
     reactive_inputs <- reactiveValues()
     
     # This part is separate and independent of your server logic
     observeEvent(input$calculate, {
+      
       showPageSpinner()
       
       
@@ -174,6 +180,14 @@ mdsc_quasiIso_server <- function(id) {
       
       # Store the processed results in reactiveValues()
       reactive_inputs$sample_results <- sample_results
+      
+      enable("excelDownload")
+      enable("NRHFdownload")
+      enable("RevCpdownload")
+      enable("nonFTrevCpdownload")
+      enable("allPlotsDownload")
+      
+      
       hidePageSpinner()
       
     })
@@ -341,16 +355,16 @@ output$excelDownload <- downloadHandler(
         
         # Output files for the plots
         plot1_file <- file.path(tmpdir, paste0("NRHF plot", input$extension))
-        plot2_file <- file.path(tmpdir, paste0("RevCp plot.png", input$extension))
-        plot3_file <- file.path(tmpdir, paste0("Manual RevCp plot.png", input$extension))
+        plot2_file <- file.path(tmpdir, paste0("RevCp plot", input$extension))
+        plot3_file <- file.path(tmpdir, paste0("Manual RevCp plot", input$extension))
         # plot4_file <- file.path(tmpdir, "Overlay plot.png")
-        plot5_file <- file.path(tmpdir, paste0("Maxima and minima 1.png", input$extension))
-        plot6_file <- file.path(tmpdir, paste0("Maxima and minima prefinal.png", input$extension))
-        plot7_file <- file.path(tmpdir, paste0("Maxima and minima final.png", input$extension))
-        plot8_file <- file.path(tmpdir, paste0("Original data.png", input$extension))
-        plot9_file <- file.path(tmpdir, paste0("First cleaned up data.png", input$extension))
-        plot10_file <- file.path(tmpdir, paste0("Prefinal cleaned up data.png", input$extension))
-        plot11_file <- file.path(tmpdir, paste0("Final data used for analysis.png", input$extension))
+        plot5_file <- file.path(tmpdir, paste0("Maxima and minima 1", input$extension))
+        plot6_file <- file.path(tmpdir, paste0("Maxima and minima prefinal", input$extension))
+        plot7_file <- file.path(tmpdir, paste0("Maxima and minima final", input$extension))
+        plot8_file <- file.path(tmpdir, paste0("Original data", input$extension))
+        plot9_file <- file.path(tmpdir, paste0("First cleaned up data", input$extension))
+        plot10_file <- file.path(tmpdir, paste0("Prefinal cleaned up data", input$extension))
+        plot11_file <- file.path(tmpdir, paste0("Final data used for analysis", input$extension))
         
         
         

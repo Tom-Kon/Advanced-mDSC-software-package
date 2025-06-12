@@ -10,7 +10,6 @@ if (requireNamespace("rstudioapi", quietly = TRUE) &&
 }
 
 
-
 source("router_setup.R")
 source("HTML styling.R")
 
