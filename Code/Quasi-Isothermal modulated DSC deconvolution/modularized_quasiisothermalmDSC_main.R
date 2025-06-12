@@ -1,9 +1,11 @@
 source("../Quasi-Isothermal modulated DSC deconvolution/libraries.R")
 source("../Quasi-Isothermal modulated DSC deconvolution/configapp.R")
-source("../Quasi-Isothermal modulated DSC deconvolution/error handling.R")
+source("../Quasi-Isothermal modulated DSC deconvolution/error_handling.R")
 source("../Quasi-Isothermal modulated DSC deconvolution/Processing and cleaning overall function.R")
 source("../Quasi-Isothermal modulated DSC deconvolution/plots.R")
 source("../Quasi-Isothermal modulated DSC deconvolution/quickly recalculate for different mods.R")
+source("../Quasi-Isothermal modulated DSC deconvolution/download.R")
+
 
 
 quasiIsotherm_ui <- function(id) {
@@ -61,7 +63,19 @@ quasiIsotherm_ui <- function(id) {
           column(12, plotlyOutput(ns("plot"), height = "90vh"))
         )
       )
-    )
+    ), 
+    tabPanel(
+      id = ns("downloads"),
+      title = "Downloads",
+      icon = icon("download", class = "fa-solid"),
+      fluidPage(configUI4(ns))
+    ), 
+    tabPanel(
+      id = ns("tutorial"),
+      title = "Tutorial",
+      icon = icon("book", class = "fa-solid"),
+      fluidPage()
+    ), 
     
     
   )
@@ -98,6 +112,7 @@ mdsc_quasiIso_server <- function(id) {
       reactive_inputs$modulations_back <- eval(parse(text = input$modulations_back_in))
       reactive_inputs$setAmplitude <- eval(parse(text = input$setAmplitude_in))
       reactive_inputs$sampling <- eval(parse(text = input$sampling))
+      reactive_inputs$recalc <- 1
       
     
     # Update reactive values when calculate button is pressed
@@ -108,8 +123,8 @@ mdsc_quasiIso_server <- function(id) {
       reactive_inputs$fileName <- input$Excel_in$name
       
       # Call error_handling with the actual input value
-      msg <- error_handling(reactive_inputs)
-      
+      msg <- error_handling_quasiIso(reactive_inputs)
+
       # Update the error message output (this triggers UI update)
       output$errorMessage <- renderText({
         if (!is.null(msg)) msg else ""
@@ -125,7 +140,6 @@ mdsc_quasiIso_server <- function(id) {
         fileName = reactive_inputs$fileName,
         sheet = reactive_inputs$sheet,
         Excel = reactive_inputs$Excel,
-        export = TRUE,
         starting_temp = reactive_inputs$startingTemp,
         step_size = reactive_inputs$stepSize,
         modulations_back = reactive_inputs$modulations_back,
@@ -197,9 +211,114 @@ mdsc_quasiIso_server <- function(id) {
         step_size = reactive_inputs$stepSize,
         saveExcel = reactive_inputs$saveExcel
       )
+      
       hidePageSpinner()
       
     })
+    
+    observeEvent(input$excelDownload, {
+      showPageSpinner()
+      req(reactive_inputs$sample_results)
+      
+      
+      downloadExcel(
+        sample_results = reactive_inputs$sample_results,
+        fileName = reactive_inputs$fileName,
+        modulations_back = reactive_inputs$modulations_back,
+        period = reactive_inputs$period,
+        setAmplitude = reactive_inputs$setAmplitude,
+        starting_temp = reactive_inputs$startingTemp,
+        step_size = reactive_inputs$stepSize,
+        isothermLength = reactive_inputs$isothermLength,
+        sampling = reactive_inputs$sampling
+      )
+      output$downloadMessage <- renderText({
+        "Download complete"
+      })
+      hidePageSpinner()
+      
+    })
+    
+    output$NRHFdownload <- downloadHandler(
+      filename = function() {
+        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        plotTitleNRHF <- paste0("NRHF based on FT (frequency = 0), ", reactive_inputs$modulations_back, " modulations")
+        paste0(subtitle, " ", plotTitleNRHF, input$extension)
+      },
+      content = function(file) {
+        source("../Quasi-Isothermal modulated DSC deconvolution/plots.R")
+        res <- reactive_inputs$sample_results
+        
+        NRHF_plot(
+          res$ft_averages,
+          reactive_inputs$modulations_back,
+          reactive_inputs$fileName,
+          FALSE
+        )
+        
+        ggsave(
+          filename = file,
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+      }
+    )
+    
+    output$RevCpdownload <- downloadHandler(
+      filename = function() {
+        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        plotTitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", reactive_inputs$modulations_back, " modulations")
+        paste0(subtitle, " ", plotTitleRevCp, input$extension)
+      },
+      content = function(file) {
+        source("../Quasi-Isothermal modulated DSC deconvolution/plots.R")
+        res <- reactive_inputs$sample_results
+        
+        RevCp_plot(
+          res$ft_averages,
+          reactive_inputs$modulations_back,
+          reactive_inputs$fileName,
+          FALSE
+        )
+        
+        ggsave(
+          filename = file,
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+      }
+    )
+    
+    output$nonFTrevCpdownload <- downloadHandler(
+      filename = function() {
+        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        plottitleRevCpmanual <- paste0("RevCp calculated manually, ", reactive_inputs$modulations_back, " modulations")
+        paste0(subtitle, " ", plottitleRevCpmanual, input$extension)
+      },
+      content = function(file) {
+        source("../Quasi-Isothermal modulated DSC deconvolution/plots.R")
+        res <- reactive_inputs$sample_results
+        
+        Manual_RevCp_plot(
+          res$ft_averages,
+          reactive_inputs$modulations_back,
+          reactive_inputs$fileName,
+          FALSE
+        )
+        
+        ggsave(
+          filename = file,
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+      }
+    )
     
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({

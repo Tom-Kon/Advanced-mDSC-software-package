@@ -4,7 +4,6 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
 
   #Intermediate calculations for later----
   temp_margin_first_cleanup <- 0.05
-  tempModAmplitude <- setAmplitude*2*pi/period
   points_distance_minimum_margin <- (sampling*period*60)/2/10
   subtitle <- paste0("Dataset: ", "test")
   tempModAmplitude <- setAmplitude*2*pi/period
@@ -144,8 +143,6 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
     )
   
   
-  
-  if (export){
     #3. Manual RevCp calculation
     # Apply the function to your extrema_df2 data
     extrema_df3 <- delete_extrema_until_equil(extrema_df2, d_steps_cleaned_2, period, modulations_back)
@@ -171,72 +168,6 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
     results <- list(extrema_df1, extrema_df2, extrema_df3,d, d_steps_cleaned, d_steps_cleaned_2, d_steps_cleaned_3, ft_averages, average_heat_flow_per_pattern)
     names(results) <- c("Extrema df1","Extrema df2", "Extrema df3", "Original data", "d_steps_cleaned", "d_steps_cleaned_2", "d_steps_cleaned_3", "ft_averages", "average_heat_flow_per_pattern")
 
-    
-    if (saveExcel == TRUE) {
-      ft_averagesexport <- data.frame("Step number" = ft_averages$pattern, "Temperature at that modulation" = ft_averages$TRef, "Non-reversing heat flow" = ft_averages$dc_value, "Reversing heat flow" = ft_averages$reversing_heat_flow)
-      
-      
-      config <- data.frame(
-        Parameter = c("Starting temperature (°C)", 
-                      "Period (sec)",
-                      "Isotherm length (min)",
-                      "Step size (°C)", 
-                      "Number of modulations used in calculation",
-                      "Temperature modulation amplitude (°C)", 
-                      "Margin for the first cleanup (in between steps) - user input (°C)", 
-                      "Margin for the first cleanup (in between steps) - calculated (°C)", 
-                      "Calculated amplitude of the derived temperature function (°C)", 
-                      "Sampling interval (pts/sec)"),
-        
-        Value = c(starting_temp, 
-                  period*60,
-                  isothermLength,
-                  step_size, 
-                  modulations_back, 
-                  setAmplitude, 
-                  temp_margin_first_cleanup, 
-                  points_distance_minimum_margin, 
-                  tempModAmplitude, 
-                  sampling)
-      )
-      
-      
-      fileName <- unlist(strsplit(fileName, "\\."))[1]
-      fileName <- paste0(fileName, " ", modulations_back, " modulations analysed.xlsx")
-      wb <- createWorkbook(fileName)
-
-      addWorksheet(wb, "0.Settings")
-      writeData(wb, sheet = "0.Settings", config)
-      
-      addWorksheet(wb, "1.Analysed results")
-      writeData(wb, sheet = "1.Analysed results", ft_averagesexport)
-      
-      addWorksheet(wb, "2.Non-FT calc. RevCp")
-      writeData(wb, sheet = "2.Non-FT calc. RevCp", average_heat_flow_per_pattern)
-      
-      addWorksheet(wb, "3.Data with isolated patterns")
-      writeData(wb, sheet = "3.Data with isolated patterns", d_steps_cleaned)
-      
-      addWorksheet(wb, "4.Extrema of sheet 3")
-      writeData(wb, sheet = "4.Extrema of sheet 3", extrema_df1)
-      
-      addWorksheet(wb, "5.Delete last max of sheet 3")
-      writeData(wb, sheet = "5.Delete last max of sheet 3", d_steps_cleaned_2)
-      
-      addWorksheet(wb, "6.Extrema of sheet 5")
-      writeData(wb, sheet = "6.Extrema of sheet 5", extrema_df2)
-      
-      addWorksheet(wb, "7.Data used in final analysis")
-      writeData(wb, sheet = "7.Data used in final analysis", d_steps_cleaned_3)
-      
-      addWorksheet(wb, "8.Extrema of sheet 7")      
-      writeData(wb, sheet = "8.Extrema of sheet 7", extrema_df3)
-      
-      
-      saveWorkbook(wb, fileName, overwrite = TRUE)
-    }
-
-  }
   
   if(!is.null(attr(d, "comment"))) {
     attr(results, "comment") <- attr(d, "comment")
