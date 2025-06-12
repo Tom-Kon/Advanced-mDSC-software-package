@@ -91,6 +91,7 @@ home_page <- div(
 )
 
 ui <- fluidPage(
+  useShinyjs(),
   router_ui(
     route("/", home_page),
     route("mDScSim", mdsc_sim_ui("mDScSim")),
