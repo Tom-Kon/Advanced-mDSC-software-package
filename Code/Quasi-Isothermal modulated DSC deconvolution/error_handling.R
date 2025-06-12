@@ -1,6 +1,6 @@
 # Function only returns message
 
-error_handling <- function(reactive_inputs) {
+error_handling_quasiIso <- function(reactive_inputs) {
   
   msg <- NULL
   
@@ -21,7 +21,7 @@ error_handling <- function(reactive_inputs) {
     msg <- "Error: one of the inputs is missing"
   }
 
-  return(msg)  # No error  
+  return(msg)  
 
 }
 
