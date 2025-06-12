@@ -33,7 +33,7 @@ NRHF_plot <- function(sample_results, modulations_back, fileName, saveNRHFplot) 
           )  # This ensures the y-axis covers the full range of your data with extra space at the top
 
   if(saveNRHFplot == TRUE){
-    ggsave(paste0(subtitle, " ", plotTitleTHF, ".png"), dpi = 600, width = 10, height = 10)
+    ggsave(paste0(subtitle, " ", plotTitleTHF, ".png"), dpi = 600, width = 10, height = 10, units = "cm")
   }
  return(NRHF_p)  # <--- Ensure the function returns the ggplot object
  }
@@ -105,6 +105,7 @@ Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, f
     scale_y_continuous(
       expand = c(0, 0)  # Remove space between plot and y-axis
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
+  
   if(savemanualRevCpplot == TRUE){
     ggsave(paste0(fileName, plottitleRevCpmanual, ".png"), dpi = 600, width = 10, height = 10)
   }
