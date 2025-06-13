@@ -1,5 +1,7 @@
 source("../DSC descriptive statistics/libraries.R")
 source("../DSC descriptive statistics/functions.R")
+source("../DSC descriptive statistics/analysisandExcel.R")
+
 
 mdsc_analyzer_ui<- function(id) {
   ns <- NS(id)
@@ -64,70 +66,88 @@ mdsc_analyzer_server <- function(id) {
   
   moduleServer(id, function(input, output, session) {
     ns <- session$ns  # make sure ns is defined for use in dynamicui.R
-    
+    extraInput <- list()
     source("../DSC descriptive statistics/dynamicui.R", local= TRUE)
     
+
       observeEvent(input$Next, {
         updateNavbarPage(session, "tabs", selected = "outputInputTab")
       })
-    
-      observeEvent(input$runAnalysis, {
-
-        #------------------------------------------------------------------------------------------------------------------------------------
-        # Reset outputmessages in case user runs multiple analyses and one of them results in an error
-        #------------------------------------------------------------------------------------------------------------------------------------
+      
+      #This file will now *define* a function
+      ns <- session$ns
+      
+      # Define reactive values inside the scope
+      numTables <- reactiveVal(NULL)
+      colTitles <- reactiveVal(NULL)
+      
+      
+      
+      output$tablesDropdowns <- renderUI({
         
-        output$errorMessage <- renderText({
-          NULL
-        })
-        
-        output$analysisMessage <- renderText({
-          NULL
-        })
-        
-        #------------------------------------------------------------------------------------------------------------------------------------
-        # Extract variables: include files, numCycles, tableTitle, outputLocation, outputExcel, outputSheet, Number of pans, outputSheetRaw
-        #------------------------------------------------------------------------------------------------------------------------------------
-        
-        
-        # Extract uploaded files and get their paths
-        files <- input$files
-        filePaths <- files$datapath
-        
-        # Counting given files and assigning file path to file1, file2, or file3 based on the loop iteration
-        fileCounter <- 0
-        for (i in seq_along(filePaths)) {
-          filePath <- filePaths[i]
-          inputName <- paste0("file", i)
-          assign(inputName, filePath)
-          fileCounter <- fileCounter + 1
-        }
-        
-        # Extract other input data
         numCycles <- as.numeric(input$heatingCycle)
-        tableTitle <- input$sampleName
-        outputLocation <- input$outputPath
-        outputExcel <- input$excelName
-        outputSheet <- input$excelSheet
-        pans <- as.numeric(input$pans)
-        outputSheetRaw <- input$excelName2
         
-        # Set rounding of the values according to the user input
-        if (input$round1 == FALSE) {
-          round <- 2
-        } else {
-          round <- as.numeric(input$round)
-        }
-        
-        source("../DSC descriptive statistics/errorhandling.R", local= TRUE)
-
-        source("../DSC descriptive statistics/analysisandExcel.R", local= TRUE)
-        
-        
-        #The users see this text if the analysis worked well. 
-        output$analysisMessage <- renderText({
-          "Analysis completed! Your file is now available in the directory you chose :)"
+        lapply(1:numCycles, function(i) {
+          selectInput(ns(paste0("tables_cycle", i)),
+                      paste("How many tables do you have in your", ordinalSuffix(i), "heating cycle?"),
+                      choices = 1:10
+          )
         })
       })
+      
+      
+      observe({
+        req(input$heatingCycle)  
+        
+        numCycles <- as.numeric(input$heatingCycle)
+        
+        numTables(sapply(1:numCycles, function(i) {
+          as.numeric(input[[paste0("tables_cycle", i)]])  # Correct dynamic evaluation
+        }))
+        
+        extraInput$numTables <<- numTables()
+        
+      })
+      
+    
+      # observeEvent(input$runAnalysis, {
+      #   
+      # 
+      #   #------------------------------------------------------------------------------------------------------------------------------------
+      #   # Reset outputmessages in case user runs multiple analyses and one of them results in an error
+      #   #------------------------------------------------------------------------------------------------------------------------------------
+      #   
+      #   output$errorMessage <- renderText({
+      #     NULL
+      #   })
+      #   
+      #   output$analysisMessage <- renderText({
+      #     NULL
+      #   })
+      #   
+      # 
+      #   data_ready(TRUE)
+      #   
+      #   #The users see this text if the analysis worked well. 
+      #   output$analysisMessage <- renderText({
+      #     "Analysis completed! Your file is now available in the directory you chose :)"
+      #   })
+      # })
+      
+      
+      output$excelDownload <- downloadHandler(
+        filename = function() {
+          paste0(input$excelName, ".xlsx")
+        },
+        content = function(file) {
+          showPageSpinner()
+          source("../DSC descriptive statistics/dynamicui.R", local= TRUE)
+          wb <- analysisAndExcel(input, extraInput)
+          saveWorkbook(wb, file = file, overwrite = TRUE)
+          hidePageSpinner()
+        }
+      )
+ 
+      
   })
 }

@@ -15,13 +15,13 @@ if (is.null(files)) {
 }
 
 # Check if output location was given
-if (is.null(outputLocation) || outputLocation == "") {
-  print("Error: Output location not specified. Please provide the output folder path.")
-  output$errorMessage <- renderText({
-    "Error: Output location not specified. Please provide the output folder path."
-  })
-  return(NULL)
-}
+# if (is.null(outputLocation) || outputLocation == "") {
+#   print("Error: Output location not specified. Please provide the output folder path.")
+#   output$errorMessage <- renderText({
+#     "Error: Output location not specified. Please provide the output folder path."
+#   })
+#   return(NULL)
+# }
 
 #Check if uploaded files are indeed word documents 
 for (p in 1:pans) {
@@ -38,15 +38,15 @@ for (p in 1:pans) {
 }
 
 # Set working directory for excel files
-if (dir.exists(outputLocation)) {
-  setwd(outputLocation)
-  cat("Changed working directory to:", outputLocation, "\n")
-} else {
-  output$errorMessage <- renderText({
-    "Error: Excel file output directory does not exist or cannot be accessed."
-  })
-  return(NULL)
-}
+# if (dir.exists(outputLocation)) {
+#   setwd(outputLocation)
+#   cat("Changed working directory to:", outputLocation, "\n")
+# } else {
+#   output$errorMessage <- renderText({
+#     "Error: Excel file output directory does not exist or cannot be accessed."
+#   })
+#   return(NULL)
+# }
 
 
 # Check if outputExcel was given

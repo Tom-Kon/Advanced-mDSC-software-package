@@ -35,7 +35,8 @@ fluidPage(
     column(
       12,
       mainPanel(
-        actionButton(ns("runAnalysis"), "Run Analysis")
+        # actionButton(ns("runAnalysis"), "Run Analysis"),
+        downloadButton(ns("excelDownload"), "Download Results")
       ),
     )
   ),
