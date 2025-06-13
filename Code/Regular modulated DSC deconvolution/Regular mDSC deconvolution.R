@@ -165,9 +165,6 @@ normal_mDSC_server <- function(id) {
       reactive_inputs$HFcalcextra <- input$HFcalcextra
       reactive_inputs$compare <- input$compare
       
-      toggleState(id = "MaxTHFAnalysisDownload", condition = reactive_inputs$HFcalcextra)
-      toggleState(id = "MaxDSCAnalysisDownload", condition = reactive_inputs$compare)
-      
       
       if(input$sheetask) {
         reactive_inputs$sheet <- 1
@@ -289,8 +286,9 @@ normal_mDSC_server <- function(id) {
       enable("excelDownload")
       enable("MaxMinAnalysisDownload")
       enable("FTAnalysisDownload")
-      enable("MaxTHFAnalysisDownload")
-      enable("MaxDSCAnalysisDownload")
+      toggleState(id = "MaxTHFAnalysisDownload", condition = reactive_inputs$HFcalcextra)
+      toggleState(id = "MaxDSCAnalysisDownload", condition = reactive_inputs$compare)
+      
       hidePageSpinner()
 
     })
