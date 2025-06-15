@@ -1,8 +1,6 @@
 configUIsim1 <- function(ns) {
   tagList(
     column(6,
-           textInput(ns("savetitle"), "Title of the picture that will be saved", "test"),
-           checkboxInput(ns("saveplots"), "Do you want to save the plots?", value = FALSE),
            textInput(ns("sampling"), "Sampling rate in points per second", "10"),
            textInput(ns("startTemp"), "Starting temperature of the mDSC run (°C)", "20"),
            textInput(ns("endTemp"), "Final temperature of the mDSC run (°C)", "180"),

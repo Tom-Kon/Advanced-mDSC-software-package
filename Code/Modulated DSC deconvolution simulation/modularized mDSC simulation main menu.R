@@ -1,8 +1,6 @@
 # mdsc_module.R
 source("../Modulated DSC deconvolution simulation/libraries.R")
 source("../Modulated DSC deconvolution simulation/configapp.R")
-source("../Modulated DSC deconvolution simulation/downloadsDSCSim.R")
-
 
 mdsc_sim_ui <- function(id) {
   ns <- NS(id)
@@ -36,7 +34,7 @@ mdsc_sim_ui <- function(id) {
         fluidRow(
           column(12, wellPanel(
             selectInput(ns("plot_choice"), "Select Plot:",
-                        choices = c("MHF", "Overlay", "THF", "RHF", "RHF no FT", "NRHF"),
+                        choices = c("MHF", "Overlay", "THF", "RHF", "RHF no FT", "NRHF", "Signal closeup"),
                         selected = "MHF")
           ))
         ),
@@ -44,69 +42,18 @@ mdsc_sim_ui <- function(id) {
           column(12, plotlyOutput(ns("plot"), height = "90vh"))
         )
       )
-    ),
-    tabPanel(
-      id = ns("downloads"),
-      title = "Downloads",
-      icon = icon("download", class = "fa-solid"),
-      fluidPage(
-        sidebarLayout(
-          sidebarPanel(
-            h4("Plot export settings"),
-            selectInput(ns("extension"), "What should the plot's extension be?", c(".png", ".jpg", ".tiff")), 
-            textInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
-            textInput(ns("exportWidth"), "What should the plot width be in cm?",  value= 20),
-            textInput(ns("exportHeight"), "What should the plot height be in cm?", value= 20)
-          ),
-          mainPanel(
-            br(), br(),br(), br(), br(), br(),
-
-            fluidRow(
-              tags$div(
-                style = "text-align: center;",
-                downloadButton(ns("excelDownload"), "Download the Excel sheet with all the analyses", class = "btn-primary btn-lg")
-              )
-            ),
-            br(), br(),br(), br(), br(),
-            fluidRow(
-              tags$div(
-                style = "text-align: center;",
-                downloadButton(ns("allPlotsDownload"), "Download all plots (MHF, THF, RHF, NRHF, and RHF without FT)", class = "btn-primary btn-lg")
-              )
-            ),
-            br(), br(), br(),
-            div(
-              class = "succes-text",
-              textOutput(ns("downloadMessage"))
-            )
-          )
-        )
-      )
-    ), 
-    tabPanel(
-      id = ns("tutorial"),
-      title = "Tutorial",
-      icon = icon("book", class = "fa-solid"),
-      fluidPage()
-    ), 
+    )
   )
 }
 
 mdsc_sim_server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    disable("excelDownload")
-    disable("allPlotsDownload")
-    
-    
     # Create a reactiveValues object to store inputs
     reactive_inputs <- reactiveValues()
     
     observeEvent(input$calculate, {
       showPageSpinner()
       
-      
-      reactive_inputs$savetitle <- input$savetitle
-      reactive_inputs$saveplots <- input$saveplots
       reactive_inputs$sampling <- eval(parse(text = input$sampling))
       reactive_inputs$startTemp <- eval(parse(text = input$startTemp))
       reactive_inputs$endTemp <- eval(parse(text = input$endTemp))
@@ -142,9 +89,9 @@ mdsc_sim_server <- function(id) {
       
       reactive_inputs$subtitle <- paste0(
         "Sampling: ", reactive_inputs$sampling, " pts/sec. Period: ", reactive_inputs$period, " sec. ", 
-        "Heating rate: ", reactive_inputs$heatRate * 60, " °C/min. ",
+        "Melting period: ", reactive_inputs$periodSignal, " sec. Heating rate: ", reactive_inputs$heatRate * 60, " °C/min. ",
         "MHF phase: ", reactive_inputs$phase, " rad. LOESS alpha: ", reactive_inputs$loessAlpha, ".\n Temp. amplitude: ", reactive_inputs$Atemp, " °C.",
-        "Other parameters (such as start temp.) are visible on the plot.")
+        "Melting amplitude: ", reactive_inputs$MeltEnth, " W/g. Other parameters (such as start temp.) are visible on the plot.")
       
       
       
@@ -201,121 +148,9 @@ mdsc_sim_server <- function(id) {
       reactive_inputs$noFTcalc <- results[[2]]
       
       
-      if (reactive_inputs$saveplots == TRUE) {    
-        MHFplots(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
-        overlayplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
-        smoothedTHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
-        smoothedRHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
-        smoothedNRHFplot(reactive_inputs$finaldf, reactive_inputs$subtitle, reactive_inputs$savetitle)
-      }
-      
-      enable("excelDownload")
-      enable("allPlotsDownload")
-      
       hidePageSpinner()
       
-      
     })
-    
-    output$excelDownload <- downloadHandler(
-      filename = function() {
-        fileName <- "Analysis Excel"
-        paste0(Sys.Date(), " ", fileName, ".xlsx")
-      },
-      content = function(file) {
-        showPageSpinner()
-        wb <- downloadExcelSimDSC(reactive_inputs)
-        saveWorkbook(wb, file = file, overwrite = TRUE)
-        hidePageSpinner()
-      }
-    )
-    
-    output$allPlotsDownload <- downloadHandler(
-
-      filename = function() {
-        Title <- "Export plots mDSC simulation"
-        paste0(Sys.Date(), " ", Title, ".zip")  # Must be .zip
-      },
-      
-      content = function(file) {
-        showPageSpinner()
-        res <- reactive_inputs$finaldf
-        res2 <- reactive_inputs$noFTcalc
-
-        tmpdir <- tempdir()
-        
-        # Output files for the plots
-        plot1_file <- file.path(tmpdir, paste0("MHF plot", input$extension))
-        plot2_file <- file.path(tmpdir, paste0("Overlay plot", input$extension))
-        plot3_file <- file.path(tmpdir, paste0("THF plot", input$extension))
-        plot4_file <- file.path(tmpdir, paste0("RHF plot", input$extension))
-        plot5_file <- file.path(tmpdir, paste0("RHF without FT plot", input$extension))
-        plot6_file <- file.path(tmpdir, paste0("NRHF plot", input$extension))
-        
-        
-        # Save each plot to its file
-        ggsave(
-          filename = plot1_file,
-          plot = MHFplots(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
-          dpi = as.numeric(input$exportDpi),
-          width = as.numeric(input$exportWidth),
-          height = as.numeric(input$exportHeight),
-          units = "cm"
-        )
-        
-        ggsave(
-          filename = plot2_file,
-          plot = overlayplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
-          dpi = as.numeric(input$exportDpi),
-          width = as.numeric(input$exportWidth),
-          height = as.numeric(input$exportHeight),
-          units = "cm"
-        )
-        
-        ggsave(
-          filename = plot3_file,
-          plot = smoothedTHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
-          dpi = as.numeric(input$exportDpi),
-          width = as.numeric(input$exportWidth),
-          height = as.numeric(input$exportHeight),
-          units = "cm"
-        )
-        
-        ggsave(
-          filename = plot4_file,
-          plot = smoothedRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
-          dpi = as.numeric(input$exportDpi),
-          width = as.numeric(input$exportWidth),
-          height = as.numeric(input$exportHeight),
-          units = "cm"
-        )
-        
-        ggsave(
-          filename = plot5_file,
-          plot = RHFnoFT(res2),
-          dpi = as.numeric(input$exportDpi),
-          width = as.numeric(input$exportWidth),
-          height = as.numeric(input$exportHeight),
-          units = "cm"
-        )
-        
-        ggsave(
-          filename = plot6_file,
-          plot = smoothedNRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
-          dpi = as.numeric(input$exportDpi),
-          width = as.numeric(input$exportWidth),
-          height = as.numeric(input$exportHeight),
-          units = "cm"
-        )
-        
-        # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file, plot4_file, plot5_file, plot6_file), flags = "-j")
-        
-        
-        hidePageSpinner()
-        
-      }
-    )
     
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({
@@ -325,12 +160,13 @@ mdsc_sim_server <- function(id) {
       res2 <- reactive_inputs$noFTcalc
       
       plot_obj <- switch(input$plot_choice,
-                         "MHF" = MHFplots(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
-                         "Overlay" = overlayplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
-                         "THF" = smoothedTHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
-                         "RHF" = smoothedRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle),
+                         "MHF" = MHFplots(res, reactive_inputs$subtitle),
+                         "Overlay" = overlayplot(res, reactive_inputs$subtitle),
+                         "THF" = smoothedTHFplot(res, reactive_inputs$subtitle),
+                         "RHF" = smoothedRHFplot(res, reactive_inputs$subtitle),
                          "RHF no FT" = RHFnoFT(res2),
-                         "NRHF" = smoothedNRHFplot(res, reactive_inputs$subtitle, reactive_inputs$savetitle))
+                         "NRHF" = smoothedNRHFplot(res, reactive_inputs$subtitle),
+                         "Signal closeup" = tempsignaloverlay(reactive_inputs$df2, reactive_inputs$subtitle))
       
       ggplotly(plot_obj, tooltip = c("x", "y", "text"))
     })

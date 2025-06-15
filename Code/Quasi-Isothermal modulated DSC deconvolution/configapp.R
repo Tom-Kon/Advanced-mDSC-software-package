@@ -5,10 +5,6 @@ options(shiny.maxRequestSize = 100 * 1024^2)  # 100 MB limit
 configUI1<- function(ns) {
   tagList(
     column(6,
-      checkboxInput(ns("saveNRHFplot"), "Save non-reversing heat flow plot?", FALSE),
-      checkboxInput(ns("saveRevCpplot"), "Save reversing heat flow plot?", FALSE),
-      checkboxInput(ns("savemanualRevCpplot"), "Save manually calculated reversing heat flow plot?", FALSE),
-      checkboxInput(ns("saveExcel"), "Save Excel with all the analyses?", TRUE),
       fileInput(ns("Excel_in"), "Upload your Excel here"),
       checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
       conditionalPanel(

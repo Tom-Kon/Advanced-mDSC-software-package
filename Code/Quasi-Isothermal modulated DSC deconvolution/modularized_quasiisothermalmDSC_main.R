@@ -100,10 +100,6 @@ mdsc_quasiIso_server <- function(id) {
       
       
       # Handle checkboxes
-      reactive_inputs$saveNRHFplot <- as.logical(input$saveNRHFplot)
-      reactive_inputs$saveRevCpplot <- as.logical(input$saveRevCpplot)
-      reactive_inputs$savemanualRevCpplot <- as.logical(input$savemanualRevCpplot)
-      reactive_inputs$saveExcel <- as.logical(input$saveExcel)
       if(input$sheetask) {
         reactive_inputs$sheet <- 1
       } else {
@@ -152,11 +148,7 @@ mdsc_quasiIso_server <- function(id) {
         period = reactive_inputs$period,
         isothermLength = reactive_inputs$isothermLength,
         setAmplitude = reactive_inputs$setAmplitude,
-        sampling = reactive_inputs$sampling,
-        saveNRHFplot = reactive_inputs$saveNRHFplot,
-        saveRevCpplot = reactive_inputs$saveRevCpplot,
-        savemanualRevCpplot = reactive_inputs$savemanualRevCpplot,
-        saveExcel = reactive_inputs$saveExcel
+        sampling = reactive_inputs$sampling
       )
       
       if(typeof(sample_results) == "character") {
@@ -223,7 +215,6 @@ mdsc_quasiIso_server <- function(id) {
         setAmplitude = reactive_inputs$setAmplitude,
         starting_temp = reactive_inputs$startingTemp,
         step_size = reactive_inputs$stepSize,
-        saveExcel = reactive_inputs$saveExcel
       )
       
       hidePageSpinner()
@@ -372,7 +363,7 @@ output$excelDownload <- downloadHandler(
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
-          plot = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveNRHFplot),
+          plot = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -381,7 +372,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot2_file,
-          plot = RevCp_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveRevCpplot),
+          plot = RevCp_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -390,7 +381,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot3_file,
-          plot = Manual_RevCp_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$savemanualRevCpplot),
+          plot = Manual_RevCp_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -483,9 +474,9 @@ output$excelDownload <- downloadHandler(
       res <- reactive_inputs$sample_results
       
       plot_obj <- switch(input$plot_choice,
-                         "NRHF" = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveNRHFplot),
-                         "RevCp" = RevCp_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$saveRevCpplot),
-                         "Manual RevCp" = Manual_RevCp_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName, reactive_inputs$savemanualRevCpplot),
+                         "NRHF" = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                         "RevCp" = RevCp_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
+                         "Manual RevCp" = Manual_RevCp_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName),
                          "RevCp and NRHF" = RevCp_NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
                          "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, reactive_inputs$modulations_back, reactive_inputs$fileName),
                          "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`, reactive_inputs$modulations_back, reactive_inputs$fileName),

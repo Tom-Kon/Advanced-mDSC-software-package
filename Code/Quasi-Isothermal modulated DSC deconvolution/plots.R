@@ -2,7 +2,7 @@ num_ticks <- 10
 
 #***--------------------------------Normal resulting plots------------------------**#
 
-NRHF_plot <- function(sample_results, modulations_back, fileName, saveNRHFplot) {
+NRHF_plot <- function(sample_results, modulations_back, fileName) {
   
   plotTitleTHF <- paste0("NRHF based on FT (frequency = 0), ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
@@ -32,13 +32,10 @@ NRHF_plot <- function(sample_results, modulations_back, fileName, saveNRHFplot) 
             expand = c(0.0002, 0.0002) # Remove space between plot and y-axis
           )  # This ensures the y-axis covers the full range of your data with extra space at the top
 
-  if(saveNRHFplot == TRUE){
-    ggsave(paste0(subtitle, " ", plotTitleTHF, ".png"), dpi = 600, width = 10, height = 10, units = "cm")
-  }
  return(NRHF_p)  # <--- Ensure the function returns the ggplot object
  }
 
-RevCp_plot <- function(sample_results, modulations_back, fileName, saveRevCpplot) {
+RevCp_plot <- function(sample_results, modulations_back, fileName) {
   
   plottitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
@@ -68,15 +65,12 @@ RevCp_plot <- function(sample_results, modulations_back, fileName, saveRevCpplot
         expand = c(0.0002, 0.0002) # Remove space between plot and y-axis
       )  # This ensures the y-axis covers the full range of your data with extra space at the top
 
-  if(saveRevCpplot == TRUE) {
-    ggsave(paste0(fileName, plottitleRevCp, ".png"), dpi = 600, width = 10, height = 10)
-  }
   return(RevCp_p)  # <--- Ensure the function returns the ggplot object
     
 } 
 
 
-Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, fileName, savemanualRevCpplot) {
+Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, fileName) {
   
   plottitleRevCpmanual <- paste0("RevCp calculated manually, ", modulations_back, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
@@ -106,9 +100,6 @@ Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, f
       expand = c(0, 0)  # Remove space between plot and y-axis
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
   
-  if(savemanualRevCpplot == TRUE){
-    ggsave(paste0(fileName, plottitleRevCpmanual, ".png"), dpi = 600, width = 10, height = 10)
-  }
   return(manRevCp_p)  # <--- Ensure the function returns the ggplot object
 }
 
@@ -121,64 +112,92 @@ Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, f
 
 RevCp_NRHF_plot <- function(sample_results, modulations_back, fileName) {
   plottitleoverlay <- paste0("Overlay of RevCp and NRHF, ", modulations_back, " modulations")
+  subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
   plot_ly(sample_results) %>%
     add_lines(
       x = ~TRef, 
       y = ~reversing_heat_flow, 
       name = "Reversing Heat Flow",
-      line = list(color = "black", width = 1.2),
+      line = list(color = "black", width = 3),  # Line width matches ggplot linewidth = 1.2 (~3 px)
       yaxis = "y"
     ) %>%
     add_lines(
       x = ~TRef, 
       y = ~dc_value, 
-      name = "DC Value",
-      line = list(color = "red", width = 1.2),
+      name = "NRHF",
+      line = list(color = "red", width = 3),  # Match line width for consistency
       yaxis = "y2"
     ) %>%
     layout(
       title = list(
-        text = plottitleoverlay,
-        x = 0.5,  # Center title
-        font = list(size = 20, family = "Arial", color = "black", weight = "bold")
+        text = paste0(
+          "<span style='font-size:20px; font-weight:bold'>", plottitleoverlay, "</span>",
+          "<br><span style='font-size:18px;'>", subtitle, "</span>"
+        ),
+        x = 0.5,
+        xanchor = "center",
+        yanchor = "top"
       ),
       xaxis = list(
         title = "Temperature (°C)",
-        titlefont = list(size = 18, family = "Arial", color = "black", weight = "bold"),
+        titlefont = list(size = 18, family = "Arial", color = "black", bold = TRUE),
         tickfont = list(size = 18, family = "Arial", color = "black"),
         linecolor = "black", 
-        linewidth = 0.5,
-        mirror = TRUE
-      ),
-      yaxis = list(
-        title = "Reversing Heat Capacity (J/g)",
-        titlefont = list(size = 18, family = "Arial", color = "black", weight = "bold"),
-        tickfont = list(size = 18, family = "Arial", color = "black"),
-        linecolor = "black", 
-        linewidth = 0.5,
+        linewidth = 2,  # Axis line width matches ggplot axis.line (0.5 pt ~ 2 px)
+        mirror = FALSE,
+        ticks = "outside",
         showgrid = TRUE,
         gridcolor = "gray",
-        gridwidth = 0.25
+        gridwidth = 1  # Matches ggplot panel.grid.major = 0.25 (scaled to px)
+      ),
+      yaxis = list(
+        title = paste0(
+          c(rep("&nbsp;", 10), 
+            "Reversing Heat Capacity (J/g)", 
+            rep("&nbsp;", 10)), 
+          collapse = ""
+        ),
+        titlefont = list(size = 18, family = "Arial", color = "black", bold = TRUE),
+        tickfont = list(size = 18, family = "Arial", color = "black"),
+        linecolor = "black",
+        linewidth = 2,
+        mirror = TRUE,
+        ticks = "outside",
+        showgrid = TRUE,
+        gridcolor = "gray",
+        gridwidth = 1,
+        tickangle = 0,
+        ticklen = 5,
+        tickwidth = 1,
+        tickcolor = "black"
       ),
       yaxis2 = list(
-        title = "DC Value",
-        titlefont = list(size = 18, family = "Arial", color = "black", weight = "bold"),
+        title = "Non-reversing heat flow (W/g)",
+        titlefont = list(size = 18, family = "Arial", color = "black", bold = TRUE),
         tickfont = list(size = 18, family = "Arial", color = "black"),
         overlaying = "y",
         side = "right",
-        showgrid = FALSE
+        showgrid = FALSE,
+        zeroline = FALSE,
+        ticklen = 5,
+        tickwidth = 1,
+        tickcolor = "black",
+        standoff = 500    # <-- Same fix for the right y-axis
       ),
       legend = list(
-        x = 0,  # Position legend at the top-left
+        x = 1.02,             # Just right of the plot area
         y = 1,
-        xanchor = "left",  # Anchor to the left of the plot
-        yanchor = "top",  # Anchor to the top of the plot
+        xanchor = "left",     # Anchor the LEFT side of the legend box at x = 1.02
+        yanchor = "top",
         font = list(size = 16, family = "Arial", color = "black")
       ),
-      margin = list(t = 100, r = 100, b = 100, l = 100)  # Padding around the plot
+      margin = list(t = 80, r = 200, b = 80, l = 200),
+      plot_bgcolor = "white",
+      paper_bgcolor = "white"
     )
 }
+
 
 #***--------------------------------Raw data------------------------**#
 

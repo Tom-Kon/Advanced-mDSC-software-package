@@ -1,6 +1,5 @@
 processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
-           modulations_back, period, isothermLength, setAmplitude, sampling, saveNRHFplot, saveRevCpplot, savemanualRevCpplot, 
-           saveExcel) {
+           modulations_back, period, isothermLength, setAmplitude, sampling) {
 
   #Intermediate calculations for later----
   temp_margin_first_cleanup <- 0.05

@@ -1,7 +1,7 @@
 num_ticks_x <- 10
 num_ticks_y <- 5
 
-MHFplots <- function(resampled_points, subtitle, saveTitle) {
+MHFplots <- function(resampled_points, subtitle) {
   
   # Create each ggplot object with the specified names
   MHF_and_baselinecorr_MHF <- ggplot(resampled_points) +
@@ -31,11 +31,10 @@ MHFplots <- function(resampled_points, subtitle, saveTitle) {
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
   
-  ggsave(paste0(saveTitle, " MHF.png"), dpi = 600, width = 15, height = 10)
   return(MHF_and_baselinecorr_MHF)  
 }
 
-overlayplot <- function(resampled_points, subtitle, saveTitle) {
+overlayplot <- function(resampled_points, subtitle) {
   
   Overlay <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessTHF, color = "THF"), linewidth = 1.3) +
@@ -66,13 +65,11 @@ overlayplot <- function(resampled_points, subtitle, saveTitle) {
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
 
-  ggsave(paste0(saveTitle, " overlay.png"), dpi = 600, width = 15, height = 10)
-  
   return(Overlay)  
   
   }
 
-smoothedTHFplot <- function(resampled_points, subtitle, saveTitle) {
+smoothedTHFplot <- function(resampled_points, subtitle) {
   Smoothed_THF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessTHF), color = "blue", linewidth = 1.3) +
     labs(title = "LOESS smoothed Total heat flow",
@@ -97,13 +94,11 @@ smoothedTHFplot <- function(resampled_points, subtitle, saveTitle) {
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
 
-  ggsave(paste0(saveTitle, " THF.png"), dpi = 600, width = 15, height = 10)
-  
   return(Smoothed_THF)  
 }
 
 
-tempsignaloverlay <- function(df2, subtitle, saveTitle) {
+tempsignaloverlay <- function(df2, subtitle) {
   Smoothed_THF <- ggplot() +
     geom_line(data = df2, aes(x = TRef, y = modTemp, color = "modTemp"), linewidth = 1.3) +
     geom_line(data = df2, aes(x = TRef, y = modTempderiv, color = "dT/dt"), linewidth = 1.3) +
@@ -139,15 +134,13 @@ tempsignaloverlay <- function(df2, subtitle, saveTitle) {
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )
   
-  ggsave(paste0(saveTitle, " temperatures and signal.png"), dpi = 600, width = 15, height = 10)
-  
   return(Smoothed_THF)
 }
 
   
 
   
-smoothedRHFplot <- function(resampled_points, subtitle, saveTitle) {
+smoothedRHFplot <- function(resampled_points, subtitle) {
   
   Smoothed_RHF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessRHF), color = "blue", linewidth = 1.3) +
@@ -172,13 +165,11 @@ smoothedRHFplot <- function(resampled_points, subtitle, saveTitle) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
-  
-  ggsave(paste0(saveTitle, " RHF.png"), dpi = 600, width = 15, height = 10)
-  
+
   return(Smoothed_RHF)
 }  
  
-smoothedNRHFplot <- function(resampled_points, subtitle, saveTitle) {
+smoothedNRHFplot <- function(resampled_points, subtitle) {
   Smoothed_NRHF <- ggplot(resampled_points) +
     geom_line(data = resampled_points, aes(x = TRef, y = loessNRHF), color = "blue", linewidth = 1.3) +
     labs(title = "LOESS smoothed non-reversing heat flow",
@@ -202,8 +193,6 @@ smoothedNRHFplot <- function(resampled_points, subtitle, saveTitle) {
       expand = c(0.0002, 0.0002), # Remove space between plot and y-axis
       breaks = scales::pretty_breaks(n = num_ticks_y)
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
-  
-  ggsave(paste0(saveTitle, " NRHF.png"), dpi = 600, width = 15, height = 10)
   
   return(Smoothed_NRHF)
 } 
