@@ -125,10 +125,11 @@ analysisAndExcel <- function(input, extraInput) {
         }
       }
       
+      print(tempDf)
       # Clean and convert the values in tables
-      tempDf <- as.numeric(lapply(tempDf, cleanAndConvert))
+      tempDf <- lapply(tempDf, cleanAndConvert)
       tempDf <- as.numeric(lapply(tempDf, as.numeric))
-      
+
       
       if (j == 1) {
         # Create a df if it's the first table
@@ -220,6 +221,7 @@ analysisAndExcel <- function(input, extraInput) {
       names(allCycles) <- paste("col", 1:ncol(allCycles), sep = "")
       allCycles <- rbind(allCycles, df)
     }
+    
     
     # Create dataFrameCycle df if it's the first heating cycle
     dataFrameCycle <- data.frame()
@@ -443,7 +445,6 @@ analysisAndExcel <- function(input, extraInput) {
   
   # Save raw data to the Excel sheet: this code is very similar to the code above but without the descriptive statistics. 
   if (input$saveRaw == TRUE) {
-    wb <- loadWorkbook(paste(outputExcel, ".xlsx", sep = ""))
     addWorksheet(wb, outputSheetRaw)
     
     sumVal <- 0
