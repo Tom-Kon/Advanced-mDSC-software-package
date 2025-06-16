@@ -1,4 +1,34 @@
-signalgeneration <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, phase, deltaRHFPreTg, deltaRHFPostTg, StartRHFPreTg, deltaCpPreTg, deltaCpPostTg, StartCpTempPreTg, locationTgTHF, locationTgRHF, deltaCpTg,MeltEnth,phase_melt,locationMelt, Crystalenth,locationcrystal,EnthrecEnth,locationEnthRec, periodSignal, df1){
+signalgeneration <- function(reactive_inputs, df1){
+  
+  sampling <- reactive_inputs$sampling
+  startTemp <- reactive_inputs$startTemp
+  endTemp <- reactive_inputs$endTemp
+  period <- reactive_inputs$period
+  heatRate <- reactive_inputs$heatRate
+  Atemp <- reactive_inputs$Atemp
+  phase <- reactive_inputs$phase
+  deltaRHFPreTg <- reactive_inputs$deltaRHFPreTg
+  deltaRHFPostTg <- reactive_inputs$deltaRHFPostTg
+  StartRHFPreTg <- reactive_inputs$StartRHFPreTg
+  deltaCpPreTg <- reactive_inputs$deltaCpPreTg
+  deltaCpPostTg <- reactive_inputs$deltaCpPostTg
+  StartCpTempPreTg <- reactive_inputs$StartCpTempPreTg
+  
+  gaussianNumber <- reactive_inputs$gaussianNumber
+  tgNumber <- reactive_inputs$tgNumber
+  
+  locationTgTHF <- reactive_inputs$locationTgTHF
+  locationTgRHF <- reactive_inputs$locationTgRHF
+  deltaCpTg <- reactive_inputs$deltaCpTg
+  MeltEnth <- reactive_inputs$MeltEnth
+  phase_melt <- reactive_inputs$phase_melt
+  locationMelt <- reactive_inputs$locationMelt
+  Crystalenth <- reactive_inputs$Crystalenth
+  locationcrystal <- reactive_inputs$locationcrystal
+  EnthrecEnth <- reactive_inputs$EnthrecEnth
+  locationEnthRec <- reactive_inputs$locationEnthRec
+  periodSignal <- reactive_inputs$periodSignal
+
   
   times <- df1$times
   groups <- df1$groups

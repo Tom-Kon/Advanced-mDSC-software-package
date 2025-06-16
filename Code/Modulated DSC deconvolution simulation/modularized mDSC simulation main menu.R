@@ -13,15 +13,43 @@ mdsc_sim_ui <- function(id) {
       title = "Parameter Input",
       id = ns("paraminput"),
       icon = icon("gears", class = "fa-solid"),
-      fluidPage(configUIsim1(ns))
+      fluidPage(
+        configUIsim1(ns),
+        fluidRow(
+          column(6, 
+                 selectInput(inputId = ns("gaussianNumber"), label ="How many Gaussian-shaped events do you want to add?", choices = c(1:10)),
+                 selectInput(inputId = ns("tgNumber"), label ="How many glass transitions do you want to add?", choices = c(1:10)),
+                 configUIsim5(ns)
+          ),
+        )
+      )
     ),
     
     tabPanel(
-      title = "Experimental results Input",
-      id = ns("expresinput"),
+      title = "Test",
+      id = ns("Test"),
       icon = icon("gears", class = "fa-solid"),
       fluidPage(
-        fluidRow(configUIsim2(ns), configUIsim3(ns), configUIsim4(ns)),configUIsim5(ns)
+        fluidRow(
+          column(4, 
+                 uiOutput(ns("gaussians")),
+          ),
+          column(4, 
+                 uiOutput(ns("tgsRHF"))
+          ),
+          column(4, 
+                 uiOutput(ns("tgsTHF"))
+          ),
+        )
+      )
+    ),
+    
+    tabPanel(
+      title = "Baseline Input",
+      id = ns("baseInput"),
+      icon = icon("gears", class = "fa-solid"),
+      fluidPage(
+        fluidRow(configUIsim2(ns)) 
       )
     ),
     
@@ -48,11 +76,48 @@ mdsc_sim_ui <- function(id) {
 
 mdsc_sim_server <- function(id) {
   moduleServer(id, function(input, output, session) {
+    ns <- NS(id)
+    
+    output$gaussians <- renderUI({
+      
+      gaussianNumber <- as.numeric(input$gaussianNumber)
+      tgs <- as.numeric(input$tgs)
+      
+      lapply(1:gaussianNumber, function(i) {
+        textInput(ns(paste0("gaussian", i)), "For each of the Gaussian profiles you wish to simulate, input (in this exact order) the onset in °C, end 
+                  in °C, and enthalpy in J/g. Use a dot as decimal separator.")
+      })
+    })
+    
+    
+    output$tgsRHF <- renderUI({
+      
+      tgNumber <- as.numeric(input$tgNumber)
+
+      lapply(1:tgNumber, function(i) {
+        textInput(ns(paste0("tgsRHF", i)), "For each of the Glass transitions  you wish to simulate, input (in this exact order) the Tg onset on the RHF in °C,  
+                  the Tg midpoint on the RHF in °C, and the jump in heat capacity over the Tg in J/°C.g. Use a dot as decimal separator")
+      })
+      
+    })
+    
+    output$tgsTHF <- renderUI({
+      tgNumber <- as.numeric(input$tgNumber)
+      
+      lapply(1:tgNumber, function(i) {
+        textInput(ns(paste0("tgsTHF", i)), "For each of the Glass transitions  you wish to simulate, input (in this exact order) the Tg onset on the THF in °C,  
+                  the Tg midpoint on the THF in °C, the Tg endset on the THF in °C. Use a dot as decimal separator")
+      })
+    })
+    
+    
+    
     # Create a reactiveValues object to store inputs
     reactive_inputs <- reactiveValues()
     
     observeEvent(input$calculate, {
       showPageSpinner()
+      
       
       reactive_inputs$sampling <- eval(parse(text = input$sampling))
       reactive_inputs$startTemp <- eval(parse(text = input$startTemp))
@@ -68,18 +133,27 @@ mdsc_sim_server <- function(id) {
       reactive_inputs$deltaCpPreTg <- eval(parse(text = input$deltaCpPreTg))
       reactive_inputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
       reactive_inputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
-      reactive_inputs$locationTgTHF <- as.numeric(eval(parse(text = unlist(trimws(strsplit(input$locationTgTHF, ","))))))
-      reactive_inputs$locationTgRHF <- as.numeric(eval(parse(text = unlist(trimws(strsplit(input$locationTgRHF, ","))))))
-      reactive_inputs$deltaCpTg <- eval(parse(text = input$deltaCpTg))
-      reactive_inputs$MeltEnth <- eval(parse(text = input$MeltEnth))
-      reactive_inputs$phase_melt <- eval(parse(text = input$phase_melt))
-      reactive_inputs$locationMelt <- as.numeric(eval(parse(text = unlist(trimws(strsplit(input$locationMelt, ","))))))
-      reactive_inputs$periodSignal <- eval(parse(text = input$periodSignal))
-      reactive_inputs$Crystalenth <- eval(parse(text = input$Crystalenth))
-      reactive_inputs$locationcrystal <- as.numeric(eval(parse(text = unlist(trimws(strsplit(input$locationcrystal, ","))))))
-      reactive_inputs$EnthrecEnth <- eval(parse(text = input$EnthrecEnth))
-      reactive_inputs$locationEnthRec <- as.numeric(eval(parse(text = unlist(trimws(strsplit(input$locationEnthRec, ","))))))
       
+      reactive_inputs$gaussianNumber <- as.numeric(input$gaussianNumber)
+      reactive_inputs$gaussianList <- list()
+
+      for(i in 1:reactive_inputs$gaussianNumber) {
+        reactive_inputs$gaussianList[[length(reactive_inputs$gaussianList) + 1]] <- input[[paste0("gaussian", i)]]
+      }
+      
+      reactive_inputs$tgNumber <- as.numeric(input$tgNumber)
+      reactive_inputs$tgRHFList <- list()
+      
+      for(i in 1:reactive_inputs$tgNumber) {
+        reactive_inputs$tgRHFList[[length(reactive_inputs$tgRHFList) + 1]] <- input[[paste0("tgsRHF", i)]]
+      }
+      
+      reactive_inputs$tgTHFList <- list()
+      
+      for(i in 1:reactive_inputs$tgNumber) {
+        reactive_inputs$tgTHFList[[length(reactive_inputs$tgTHFList) + 1]] <- input[[paste0("tgsTHF", i)]]
+      }
+
       source("../Modulated DSC deconvolution simulation/Time point generation.R")
       source("../Modulated DSC deconvolution simulation/Signal generation.R")
       source("../Modulated DSC deconvolution simulation/Equally-spaced y-values.R")
@@ -95,39 +169,9 @@ mdsc_sim_server <- function(id) {
       
       
       
-      df1 <- timegeneration(
-        sampling = reactive_inputs$sampling,
-        startTemp = reactive_inputs$startTemp,
-        endTemp = reactive_inputs$endTemp,
-        period = reactive_inputs$period,
-        heatRate = reactive_inputs$heatRate)
+      df1 <- timegeneration(reactive_inputs)
       
-      df2 <- signalgeneration(    
-        sampling = reactive_inputs$sampling,
-        startTemp = reactive_inputs$startTemp,
-        endTemp = reactive_inputs$endTemp,
-        period = reactive_inputs$period,
-        heatRate = reactive_inputs$heatRate,
-        Atemp = reactive_inputs$Atemp,
-        phase = reactive_inputs$phase,
-        deltaRHFPreTg = reactive_inputs$deltaRHFPreTg,
-        deltaRHFPostTg = reactive_inputs$deltaRHFPostTg,
-        StartRHFPreTg = reactive_inputs$StartRHFPreTg,
-        deltaCpPreTg = reactive_inputs$deltaCpPreTg,
-        deltaCpPostTg = reactive_inputs$deltaCpPostTg,
-        StartCpTempPreTg = reactive_inputs$StartCpTempPreTg,
-        locationTgTHF = reactive_inputs$locationTgTHF,
-        locationTgRHF = reactive_inputs$locationTgRHF,
-        deltaCpTg = reactive_inputs$deltaCpTg,
-        MeltEnth = reactive_inputs$MeltEnth,
-        phase_melt = reactive_inputs$phase_melt,
-        locationMelt = reactive_inputs$locationMelt,
-        Crystalenth = reactive_inputs$Crystalenth,
-        locationcrystal = reactive_inputs$locationcrystal,
-        EnthrecEnth = reactive_inputs$EnthrecEnth,
-        locationEnthRec = reactive_inputs$locationEnthRec,
-        periodSignal = reactive_inputs$periodSignal,
-        df1 = df1)
+      df2 <- signalgeneration(reactive_inputs, df1)
       
       reactive_inputs$df2 <- df2
       resampled_points <- equalyval(df2 = df2)

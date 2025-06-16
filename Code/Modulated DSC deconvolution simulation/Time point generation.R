@@ -1,4 +1,12 @@
-timegeneration <- function(endTemp, startTemp, heatRate, period, sampling) {
+timegeneration <- function(reactive_inputs) {
+  
+  sampling <- reactive_inputs$sampling
+  startTemp <- reactive_inputs$startTemp
+  endTemp <- reactive_inputs$endTemp
+  period <- reactive_inputs$period
+  heatRate <- reactive_inputs$heatRate
+  
+  
   timeSpan <- (endTemp - startTemp) / heatRate
   .nrMods <- ceiling(timeSpan/period)
   

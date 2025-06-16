@@ -26,30 +26,30 @@ configUIsim2 <- function(ns) {
   )
 }
 
-configUIsim3 <- function(ns) {
-  tagList(
-    column(4,
-           textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "28.46, 39.13, 33.77"),
-           textInput(ns("locationTgRHF"), "Where is the Tg on the reversing heat flow? Input start, end, and midpoint separated by commas (°C)", "35, 45, 40"),
-           textInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", "0.268"),
-           textInput(ns("MeltEnth"), "What is the melting enthalpy (in J/g)", "-0.2"),
-           textInput(ns("phase_melt"), "What is the phase of the melting with respect to the temperature modulation (rad)", "0"),
-           textInput(ns("periodSignal"), "Period of the melting modulations in seconds", "40"),
-           textInput(ns("locationMelt"), "Where does the melting start and stop? Two inputs separated by a comma, in °C", "134, 154")
-    )
-  )
-}
-
-configUIsim4 <- function(ns) {
-  tagList(
-    column(4,
-           textInput(ns("Crystalenth"), "What is the crystallisation enthalpy (J/g)", "0.05"),
-           textInput(ns("locationcrystal"), "Where does the crystallisation start and stop? Two inputs separated by a comma, in °C", "80,100"),
-           textInput(ns("EnthrecEnth"), "What is the enthalpy recovery enthalpy (J/g)", "-0.02"),
-           textInput(ns("locationEnthRec"), "Where does the enthalpy recovery start and stop? Two inputs separated by a comma, in °C", "30,45")
-    )
-  )
-}
+# configUIsim3 <- function(ns) {
+#   tagList(
+#     column(4,
+#            textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "28.46, 39.13, 33.77"),
+#            textInput(ns("locationTgRHF"), "Where is the Tg on the reversing heat flow? Input start, end, and midpoint separated by commas (°C)", "35, 45, 40"),
+#            textInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", "0.268"),
+#            textInput(ns("MeltEnth"), "What is the melting enthalpy (in J/g)", "-0.2"),
+#            textInput(ns("phase_melt"), "What is the phase of the melting with respect to the temperature modulation (rad)", "0"),
+#            textInput(ns("periodSignal"), "Period of the melting modulations in seconds", "40"),
+#            textInput(ns("locationMelt"), "Where does the melting start and stop? Two inputs separated by a comma, in °C", "134, 154")
+#     )
+#   )
+# }
+# 
+# configUIsim4 <- function(ns) {
+#   tagList(
+#     column(4,
+#            textInput(ns("Crystalenth"), "What is the crystallisation enthalpy (J/g)", "0.05"),
+#            textInput(ns("locationcrystal"), "Where does the crystallisation start and stop? Two inputs separated by a comma, in °C", "80,100"),
+#            textInput(ns("EnthrecEnth"), "What is the enthalpy recovery enthalpy (J/g)", "-0.02"),
+#            textInput(ns("locationEnthRec"), "Where does the enthalpy recovery start and stop? Two inputs separated by a comma, in °C", "30,45")
+#     )
+#   )
+# }
 
 configUIsim5 <- function(ns) {
   tagList(
