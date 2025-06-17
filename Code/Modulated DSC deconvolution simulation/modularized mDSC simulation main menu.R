@@ -67,6 +67,9 @@ mdsc_sim_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- NS(id)
     
+    disable("mDSCSimplotsDownload")
+    disable("downloadExcelSimDSC")
+    
     observeEvent(input$next1, {
       updateNavbarPage(session, "tabs", selected = "baseInput")
     })
@@ -194,6 +197,9 @@ mdsc_sim_server <- function(id) {
       reactive_inputs$finaldf <- results[[1]]
       reactive_inputs$noFTcalc <- results[[2]]
       
+      enable("mDSCSimplotsDownload")
+      enable("downloadExcelSimDSC")
+      
       
       hidePageSpinner()
       
@@ -211,6 +217,88 @@ mdsc_sim_server <- function(id) {
       }
     )
     
+    output$mDSCSimplotsDownload <- downloadHandler(
+      filename = function() {
+        paste0(Sys.Date(), " ", "_mDSC simulation - all plots.zip")  # Must be .zip
+      },
+      content = function(file) {
+        showPageSpinner()
+        res <- reactive_inputs$finaldf
+        res2 <- reactive_inputs$noFTcalc
+        
+        tmpdir <- tempdir()
+        
+        # Output files for the plots
+        plot1_file <- file.path(tmpdir, paste0("MHF plot", input$extension))
+        plot2_file <- file.path(tmpdir, paste0("overlay plot", input$extension))
+        plot3_file <- file.path(tmpdir, paste0("THF plot", input$extension))
+        plot4_file <- file.path(tmpdir, paste0("RHF plot", input$extension))
+        plot5_file <- file.path(tmpdir, paste0("RHF without FT plot", input$extension))
+        plot6_file <- file.path(tmpdir, paste0("NRHF plot", input$extension))
+        
+        # Save each plot to its file
+        ggsave(
+          filename = plot1_file,
+          plot = MHFplots(res, reactive_inputs$subtitle),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot2_file,
+          plot = overlayplot(res, reactive_inputs$subtitle),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot3_file,
+          plot = smoothedTHFplot(res, reactive_inputs$subtitle),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot4_file,
+          plot = smoothedRHFplot(res, reactive_inputs$subtitle),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot5_file,
+          plot = RHFnoFT(res2, reactive_inputs$subtitle),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        ggsave(
+          filename = plot6_file,
+          plot = smoothedNRHFplot(res, reactive_inputs$subtitle),
+          dpi = as.numeric(input$exportDpi),
+          width = as.numeric(input$exportWidth),
+          height = as.numeric(input$exportHeight),
+          units = "cm"
+        )
+        
+        # Bundle into a zip file
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file, plot4_file, plot5_file, plot6_file), flags = "-j")
+        
+        hidePageSpinner()
+        
+      }
+    )
+    
     
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({
@@ -224,10 +312,8 @@ mdsc_sim_server <- function(id) {
                          "Overlay" = overlayplot(res, reactive_inputs$subtitle),
                          "THF" = smoothedTHFplot(res, reactive_inputs$subtitle),
                          "RHF" = smoothedRHFplot(res, reactive_inputs$subtitle),
-                         "RHF no FT" = RHFnoFT(res2),
-                         "NRHF" = smoothedNRHFplot(res, reactive_inputs$subtitle),
-                         "Signal closeup" = tempsignaloverlay(reactive_inputs$df2, reactive_inputs$subtitle))
-      
+                         "RHF no FT" = RHFnoFT(res2, reactive_inputs$subtitle),
+                         "NRHF" = smoothedNRHFplot(res, reactive_inputs$subtitle))
       ggplotly(plot_obj, tooltip = c("x", "y", "text"))
     })
   })

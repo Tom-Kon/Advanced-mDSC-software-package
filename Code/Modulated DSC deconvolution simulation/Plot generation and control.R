@@ -98,47 +98,6 @@ smoothedTHFplot <- function(resampled_points, subtitle) {
 }
 
 
-tempsignaloverlay <- function(df2, subtitle) {
-  Smoothed_THF <- ggplot() +
-    geom_line(data = df2, aes(x = TRef, y = modTemp, color = "modTemp"), linewidth = 1.3) +
-    geom_line(data = df2, aes(x = TRef, y = modTempderiv, color = "dT/dt"), linewidth = 1.3) +
-    geom_line(data = df2, aes(x = TRef, y = signal_vecmelt, color = "Added signal"), linewidth = 1.3) +
-    labs(title = "Physical viability of model",
-         subtitle = subtitle,
-         x = "Temperature (°C)",
-         y = "Temperature and total heat flow",
-         color = "Legend") +
-    scale_color_manual(values = c(
-      "modTemp" = "blue",
-      "dT/dt" = "red",
-      "Added signal" = "darkgreen"
-    )) +
-    theme_minimal(base_size = 18) +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
-      axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
-      axis.text = element_text(size = 18, color = "black"),
-      axis.line = element_line(color = "black", linewidth = 0.5),
-      panel.grid.major = element_line(color = "gray", linewidth = 0.25),
-      panel.grid.minor = element_blank(),
-      plot.margin = margin(20, 20, 20, 20),
-      axis.ticks = element_line(color = "black", linewidth = 0.5)
-    ) +
-    scale_x_continuous(
-      expand = c(0.005, 0.005),
-      breaks = scales::pretty_breaks(n = num_ticks_x)
-    ) +
-    scale_y_continuous(
-      expand = c(0.0002, 0.0002),
-      breaks = scales::pretty_breaks(n = num_ticks_y)
-    )
-  
-  return(Smoothed_THF)
-}
-
-  
-
   
 smoothedRHFplot <- function(resampled_points, subtitle) {
   
@@ -155,7 +114,7 @@ smoothedRHFplot <- function(resampled_points, subtitle) {
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
       axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
@@ -197,14 +156,14 @@ smoothedNRHFplot <- function(resampled_points, subtitle) {
   return(Smoothed_NRHF)
 } 
 
-RHFnoFT <- function(res2) {
+RHFnoFT <- function(res2, subtitle) {
   
   # Create each ggplot object with the specified names
   RHFextracalc <- ggplot(res2) +
     # geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHFNotEven), color = "blue", size = 1) +
     geom_line(data = res2, aes(x = meantemp, y = RHF), color = "blue", linewidth = 1.5) +
-    labs(title = "Test",
-         subtitle = "subtitle",
+    labs(title = "Reversing heat flow calculated without Fourier transform",
+         subtitle = subtitle,
          x = "Temperature (°C)",
          y = "Reversing Heat Flow (W/g)"
     ) +
