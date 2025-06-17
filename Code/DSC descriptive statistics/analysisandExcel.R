@@ -1,4 +1,5 @@
 source("../DSC descriptive statistics/functions.R")
+source("../DSC descriptive statistics/errorhandling.R", local= TRUE)
 
 #---------------------------------------------------------------------------------------------------------------
 # Code
@@ -20,6 +21,7 @@ source("../DSC descriptive statistics/functions.R")
 #------------------------------------------------------------------------------------------------------------------------------------
 analysisAndExcel <- function(input, extraInput) {
   numTables <- extraInput$numTables
+  msg <- NULL
   
   # Extract uploaded files and get their paths
   files <- input$files
@@ -37,15 +39,19 @@ analysisAndExcel <- function(input, extraInput) {
   # Extract other input data
   numCycles <- as.numeric(input$heatingCycle)
   tableTitle <- input$sampleName
-  # outputLocation <- input$outputPath
   outputExcel <- input$excelName
   outputSheet <- input$excelSheet
   pans <- as.numeric(input$pans)
   outputSheetRaw <- input$excelName2
+  saveRaw <- input$saveRaw
+  
+  msg <- errorhandling(files, outputExcel, outputSheet, tableTitle, pans, saveRaw, outputSheetRaw)
   
   
-  
-  source("../DSC descriptive statistics/errorhandling.R", local= TRUE)
+  if(!is.null(msg)) {
+    return(msg)
+  }
+
   
   # Set rounding of the values according to the user input
   if (input$round1 == FALSE) {
@@ -62,13 +68,11 @@ analysisAndExcel <- function(input, extraInput) {
 
   # Further error handling: check the number of tables in the document and the user-specified number
   if (length(get(paste0("tablesDoc", 1))) != sum(numTables)) {
-    print("Error: It seems that the sum of the number of tables you said the document has via the dropdown menus doesn't match the real number of tables in the document. Please check your input and try again.")
-    output$errorMessage <- renderText({
-      "Error: It seems that the sum of the number of tables you said the document has via the dropdown menus doesn't match the real number of tables in the document. Please check your input and try again."
-    })
-    return(NULL)
+    msg <- "Error: It seems that the sum of the number of tables you said the document has via the dropdown menus doesn't match the real number of tables in the document. Please check your input and try again."
+    return(msg)
   }
   
+
   #Setting up integers and data frames for subsequent iterations. 
   tableStart <- 1
   allCycles <- data.frame()
@@ -92,11 +96,8 @@ analysisAndExcel <- function(input, extraInput) {
         tempDfDocTemp <- get(paste0("tempDfDoc", c))
         # Check the number of rows in the tables
         if (nrow(tempDfDocTemp) != 2) {
-          print("Error: It seems something is wrong with the number of rows in your tables. Please keep in mind that every table in your document can only have 2 rows, and that the second row should contain your data. Something you might want to check if your table has two rows is whether the first row is considered as headers. Check this through word by selecting the table and going to table design.")
-          output$errorMessage <- renderText({
-            "Error: It seems something is wrong with the number of rows in your tables. Please keep in mind that every table in your document can only have 2 rows, and that the second row should contain your data. Something you might want to check if your table has two rows is whether the first row is considered as headers. Check this through word by selecting the table and going to table design."
-          })
-          return(NULL)
+          msg <- "Error: It seems something is wrong with the number of rows in your tables. Please keep in mind that every table in your document can only have 2 rows, and that the second row should contain your data. Something you might want to check if your table has two rows is whether the first row is considered as headers. Check this through word by selecting the table and going to table design."
+          return(msg)
         }
       }
       
@@ -125,7 +126,6 @@ analysisAndExcel <- function(input, extraInput) {
         }
       }
       
-      print(tempDf)
       # Clean and convert the values in tables
       tempDf <- lapply(tempDf, cleanAndConvert)
       tempDf <- as.numeric(lapply(tempDf, as.numeric))
@@ -338,11 +338,8 @@ analysisAndExcel <- function(input, extraInput) {
   
   # Further error handling: Check the input number of titles
   if (sumColTitles != sumNumColHeatingCycle) {
-    print("It seems that the number of titles you put in when setting up your method doesn't match the amount of columns in the data you're trying to save to Excel. Make sure they match and make sure to save a new template.")
-    output$errorMessage <- renderText({
-      "It seems that the number of titles you put in when setting up your method doesn't match the amount of columns in the data you're trying to save to Excel. Make sure they match and make sure to save a new template."
-    })
-    return(NULL)
+    msg <- "It seems that the number of titles you put in when setting up your method doesn't match the amount of columns in the data you're trying to save to Excel. Make sure they match and make sure to save a new template."
+    return(msg)
   }
   
   #Create some variables to use in a subsequent loop and clean up Combinedstats. 

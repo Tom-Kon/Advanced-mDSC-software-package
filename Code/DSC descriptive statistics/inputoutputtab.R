@@ -17,46 +17,46 @@ fluidPage(
         ns("files"),
         "What files do you want to analyze?",
         multiple = TRUE),
-      textInput(
-        ns("outputPath"),
-        "Output Folder Path",
-        placeholder = "e.g., C:/Users/YourUsername/Documents"),
+      textInput(ns("sampleName"), "Sample Name"),
     ),
     column(
       6,
       textInput(ns("excelName"), "Output Excel File Name"),
       textInput(ns("excelSheet"), "Output Sheet Name"),
-      textInput(ns("sampleName"), "Sample Name"),
     )
   ),
   tags$br(),
   
   fluidRow(
-    column(
-      12,
-      mainPanel(
-        # actionButton(ns("runAnalysis"), "Run Analysis"),
-        downloadButton(ns("excelDownload"), "Download Results")
-      ),
-    )
+    column(6,
+           div(style = "text-align:center;",
+               actionButton(ns("errorCheck"), HTML("Check your input for errors<br>(this is not optional)"), 
+                            class = "btn-primary btn-lg",
+                            style = "width: 70%; font-size: 18px; padding: 15px 30px;")
+               )
+           ),
+    column(6,
+           div(style = "text-align:center;",
+               downloadButton(ns("excelDownload"), "Download Results", 
+                            class = "btn-primary btn-lg",
+                            style = "width: 70%; font-size: 20px; padding: 15px 30px;")
+               ),
+           )
   ),
-  tags$br(),
   
-  
+  HTML("<br>", "<br>", "<br>"),
   fluidRow(
-    mainPanel(
       div(
-        id = ns("analysisMessageContainer"),
+        class = "succes-text",
         textOutput(ns("analysisMessage")
         )     
-      )
     ),
     
     fluidRow(
       mainPanel(
         div(
-          id = ns("errorMessageContainer"),
-          textOutput("errorMessage")
+          class = "error-text",
+          textOutput(ns("errorMessage"))
         )    
       )
     ),

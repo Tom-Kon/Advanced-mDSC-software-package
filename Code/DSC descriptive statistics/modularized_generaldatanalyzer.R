@@ -69,6 +69,8 @@ mdsc_analyzer_server <- function(id) {
     extraInput <- list()
     source("../DSC descriptive statistics/dynamicui.R", local= TRUE)
     
+    disable("excelDownload")
+    
 
       observeEvent(input$Next, {
         updateNavbarPage(session, "tabs", selected = "outputInputTab")
@@ -80,8 +82,6 @@ mdsc_analyzer_server <- function(id) {
       # Define reactive values inside the scope
       numTables <- reactiveVal(NULL)
       colTitles <- reactiveVal(NULL)
-      
-      
       
       output$tablesDropdowns <- renderUI({
         
@@ -135,16 +135,30 @@ mdsc_analyzer_server <- function(id) {
       # })
       
       
+      
+      observeEvent(input$errorCheck, {
+        source("../DSC descriptive statistics/dynamicui.R", local= TRUE)
+        
+        wb <<- analysisAndExcel(input, extraInput)
+        if(typeof(wb) == "character") {
+          output$errorMessage <- renderText({wb})
+          return(NULL)
+        }
+        toggleState("excelDownload")
+        output$analysisMessage <- renderText({"No errors, you can save the file!"})
+        
+      })
+      
+      
       output$excelDownload <- downloadHandler(
         filename = function() {
           paste0(input$excelName, ".xlsx")
         },
         content = function(file) {
           showPageSpinner()
-          source("../DSC descriptive statistics/dynamicui.R", local= TRUE)
-          wb <- analysisAndExcel(input, extraInput)
           saveWorkbook(wb, file = file, overwrite = TRUE)
           hidePageSpinner()
+          shinyjs::disable(ns("excelDownload"))
         }
       )
  
