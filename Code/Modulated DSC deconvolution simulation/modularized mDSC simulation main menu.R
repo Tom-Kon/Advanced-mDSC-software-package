@@ -17,8 +17,7 @@ mdsc_sim_ui <- function(id) {
         configUIsim1(ns),
         fluidRow(
           column(6, 
-                 selectInput(inputId = ns("gaussianNumber"), label ="How many Gaussian-shaped events do you want to add?", choices = c(1:10)),
-                 selectInput(inputId = ns("tgNumber"), label ="How many glass transitions do you want to add?", choices = c(1:10)),
+                 selectInput(inputId = ns("gaussianNumber"), label ="How many Gaussian-shaped events do you want to add?", choices = c(0:10)),
                  configUIsim5(ns)
           ),
         )
@@ -31,15 +30,12 @@ mdsc_sim_ui <- function(id) {
       icon = icon("gears", class = "fa-solid"),
       fluidPage(
         fluidRow(
-          column(4, 
-                 uiOutput(ns("gaussians")),
-          ),
-          column(4, 
-                 uiOutput(ns("tgsRHF"))
-          ),
-          column(4, 
-                 uiOutput(ns("tgsTHF"))
-          ),
+          column(12,
+                 conditionalPanel(
+                   condition = paste0("input['", ns("gaussianNumber"), "'] != 0"),
+                   uiOutput(ns("gaussians"))
+                 )
+          )
         )
       )
     ),
@@ -49,7 +45,7 @@ mdsc_sim_ui <- function(id) {
       id = ns("baseInput"),
       icon = icon("gears", class = "fa-solid"),
       fluidPage(
-        fluidRow(configUIsim2(ns)) 
+        fluidRow(configUIsim2(ns), configUIsim3(ns)) 
       )
     ),
     
@@ -78,46 +74,37 @@ mdsc_sim_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- NS(id)
     
-    output$gaussians <- renderUI({
-      
+    observeEvent(input$gaussianNumber, {
       gaussianNumber <- as.numeric(input$gaussianNumber)
-      tgs <- as.numeric(input$tgs)
       
-      lapply(1:gaussianNumber, function(i) {
-        textInput(ns(paste0("gaussian", i)), "For each of the Gaussian profiles you wish to simulate, input (in this exact order) the onset in °C, end 
-                  in °C, and enthalpy in J/g. Use a dot as decimal separator.")
-      })
+      if (!is.na(gaussianNumber) && gaussianNumber != 0) {
+        output$gaussians <- renderUI({
+          lapply(1:gaussianNumber, function(i) {
+            textInput(
+              ns(paste0("gaussian", i)),
+              label = paste0("Gaussian ", i, ": Onset (°C), End (°C), Enthalpy (J/g)"),
+              value = ""
+            )
+          })
+        })
+      } else {
+        output$gaussians <- renderUI(NULL)  # Clear if zero
+      }
     })
     
     
-    output$tgsRHF <- renderUI({
-      
-      tgNumber <- as.numeric(input$tgNumber)
 
-      lapply(1:tgNumber, function(i) {
-        textInput(ns(paste0("tgsRHF", i)), "For each of the Glass transitions  you wish to simulate, input (in this exact order) the Tg onset on the RHF in °C,  
-                  the Tg midpoint on the RHF in °C, and the jump in heat capacity over the Tg in J/°C.g. Use a dot as decimal separator")
-      })
-      
-    })
     
-    output$tgsTHF <- renderUI({
-      tgNumber <- as.numeric(input$tgNumber)
-      
-      lapply(1:tgNumber, function(i) {
-        textInput(ns(paste0("tgsTHF", i)), "For each of the Glass transitions  you wish to simulate, input (in this exact order) the Tg onset on the THF in °C,  
-                  the Tg midpoint on the THF in °C, the Tg endset on the THF in °C. Use a dot as decimal separator")
-      })
-    })
     
+
     
     
     # Create a reactiveValues object to store inputs
     reactive_inputs <- reactiveValues()
     
     observeEvent(input$calculate, {
-      showPageSpinner()
       
+      showPageSpinner()
       
       reactive_inputs$sampling <- eval(parse(text = input$sampling))
       reactive_inputs$startTemp <- eval(parse(text = input$startTemp))
@@ -133,26 +120,22 @@ mdsc_sim_server <- function(id) {
       reactive_inputs$deltaCpPreTg <- eval(parse(text = input$deltaCpPreTg))
       reactive_inputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
       reactive_inputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
+      reactive_inputs$locationTgTHF <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
+      reactive_inputs$locationTgRHF <- as.numeric(unlist(strsplit(input$locationTgRHF, ",")))
+      reactive_inputs$deltaCpTg <- as.numeric(unlist(strsplit(input$deltaCpTg, ",")))
       
+
+
       reactive_inputs$gaussianNumber <- as.numeric(input$gaussianNumber)
       reactive_inputs$gaussianList <- list()
+      
+      
+      if(reactive_inputs$gaussianNumber != 0) {
+        for(i in 1:reactive_inputs$gaussianNumber) {
+          reactive_inputs$gaussianList[[length(reactive_inputs$gaussianList) + 1]] <- as.numeric(unlist(strsplit(input[[paste0("gaussian", i)]], ",")))
+        }
+      } else {NULL}
 
-      for(i in 1:reactive_inputs$gaussianNumber) {
-        reactive_inputs$gaussianList[[length(reactive_inputs$gaussianList) + 1]] <- input[[paste0("gaussian", i)]]
-      }
-      
-      reactive_inputs$tgNumber <- as.numeric(input$tgNumber)
-      reactive_inputs$tgRHFList <- list()
-      
-      for(i in 1:reactive_inputs$tgNumber) {
-        reactive_inputs$tgRHFList[[length(reactive_inputs$tgRHFList) + 1]] <- input[[paste0("tgsRHF", i)]]
-      }
-      
-      reactive_inputs$tgTHFList <- list()
-      
-      for(i in 1:reactive_inputs$tgNumber) {
-        reactive_inputs$tgTHFList[[length(reactive_inputs$tgTHFList) + 1]] <- input[[paste0("tgsTHF", i)]]
-      }
 
       source("../Modulated DSC deconvolution simulation/Time point generation.R")
       source("../Modulated DSC deconvolution simulation/Signal generation.R")
@@ -168,13 +151,13 @@ mdsc_sim_server <- function(id) {
         "Melting amplitude: ", reactive_inputs$MeltEnth, " W/g. Other parameters (such as start temp.) are visible on the plot.")
       
       
-      
       df1 <- timegeneration(reactive_inputs)
       
       df2 <- signalgeneration(reactive_inputs, df1)
       
       reactive_inputs$df2 <- df2
-      resampled_points <- equalyval(df2 = df2)
+      
+      resampled_points <- equalyval(reactive_inputs$df2)
       
       results <- finalcalc(
         sampling = reactive_inputs$sampling,
