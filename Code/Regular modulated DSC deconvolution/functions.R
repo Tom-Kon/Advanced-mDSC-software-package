@@ -1,5 +1,11 @@
 excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
   sheet <- as.numeric(sheet)
+  
+  if (length(excel_sheets(Excel)) < sheet) {
+    msg <- paste0("Error: you're trying to select a sheet that does not exist. You Excel only has ", length(excel_sheets(Excel)), " sheet(s), while you're trying to select sheet number ", sheet)
+    return(msg)
+  }  
+  
   Excel <- read_excel(Excel, sheet, col_names = FALSE)
   row_idx <- match(TRUE, apply(Excel, 1, function(r) any(tolower(r) == "time")))
   headers <- as.vector(unlist(Excel[row_idx, ]))
@@ -40,12 +46,12 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
     if(HFcalcextra) {
       
       if (length(headers[idxhf]) == 0) {
-        msg <- "Error: there is no total heat flow column in your Excel sheet."
+        msg <- "Error: there is no total heat flow column in your Excel sheet, or you may have selected the wrong sheet."
         return(msg)
       }
       
       if (length(headers[idxtemp]) == 0) {
-        msg <- "Error: there is no temperature column in your Excel sheet."
+        msg <- "Error: there is no temperature column in your Excel sheet, or you may have selected the wrong sheet."
         return(msg)
       }      
     
@@ -55,12 +61,12 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
   if(import == 2) {
     if(compare) {
      if (length(headers[idxhf]) == 0) {
-        msg <- "Error: there is no total heat flow column in your Excel sheet."
+        msg <- "Error: there is no total heat flow column in your Excel sheet, or you may have selected the wrong sheet."
         return(msg)
       }
       
       if (length(headers[idxtemp]) == 0) {
-        msg <- "Error: there is no temperature column in your Excel sheet."
+        msg <- "Error: there is no temperature column in your Excel sheet, or you may have selected the wrong sheet."
         return(msg)
       } 
     }    
@@ -69,13 +75,13 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
 
   
   if (length(headers[idxtime]) == 0) {
-    msg <- "Error: there is no time column in your selected Excel sheet."
+    msg <- "Error: there is no time column in your selected Excel sheet, or you may have selected the wrong sheet."
     return(msg)
     
   }
   
   if (length(headers[idxModhf]) == 0) {
-    msg <- "Error: there is no modulated heat flow column in your selected Excel sheet"
+    msg <- "Error: there is no modulated heat flow column in your selected Excel sheet, or you may have selected the wrong sheet."
     return(msg)
   }
   

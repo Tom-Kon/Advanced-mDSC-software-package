@@ -1,5 +1,11 @@
 #FUNCTIONS------------------------------------------
 excel_cleaner <- function(Excel, sheet) {
+  
+  if (length(excel_sheets(Excel)) < sheet) {
+    msg <- paste0("Error: you're trying to select a sheet that does not exist. You Excel only has ", length(excel_sheets(Excel)), " sheet(s), while you're trying to select sheet number ", sheet)
+    return(msg)
+  }  
+  
   Excel <- read_excel(Excel, sheet, col_names = FALSE)
   row_idx <- match(TRUE, apply(Excel, 1, function(r) any(tolower(r) == "time")))
   headers <- as.vector(unlist(Excel[row_idx, ]))
