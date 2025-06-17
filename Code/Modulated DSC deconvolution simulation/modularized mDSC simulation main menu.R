@@ -12,40 +12,29 @@ mdsc_sim_ui <- function(id) {
     tabPanel(
       title = "Parameter Input",
       id = ns("paraminput"),
-      icon = icon("gears", class = "fa-solid"),
+      icon = icon("sliders", class = "fa-solid"),
       fluidPage(
         configUIsim1(ns),
-        fluidRow(
-          column(6, 
-                 selectInput(inputId = ns("gaussianNumber"), label ="How many Gaussian-shaped events do you want to add?", choices = c(0:10)),
-                 configUIsim5(ns)
-          ),
-        )
-      )
-    ),
-    
-    tabPanel(
-      title = "Test",
-      id = ns("Test"),
-      icon = icon("gears", class = "fa-solid"),
-      fluidPage(
-        fluidRow(
-          column(12,
-                 conditionalPanel(
-                   condition = paste0("input['", ns("gaussianNumber"), "'] != 0"),
-                   uiOutput(ns("gaussians"))
-                 )
-          )
-        )
       )
     ),
     
     tabPanel(
       title = "Baseline Input",
       id = ns("baseInput"),
+      value = "baseInput",
       icon = icon("gears", class = "fa-solid"),
       fluidPage(
-        fluidRow(configUIsim2(ns), configUIsim3(ns)) 
+        configUIsim2(ns)
+      )
+    ),
+    
+    tabPanel(
+      title = "Gaussian peaks input",
+      id = ns("gaussPeak"),
+      value = "gaussPeak",
+      icon = icon("chart-area", class = "fa-solid"),
+      fluidPage(
+          configUIsim3(ns)
       )
     ),
     
@@ -54,17 +43,7 @@ mdsc_sim_ui <- function(id) {
       title = "Graphs",
       icon = icon("chart-line", class = "fa-solid"),
       fluidPage(
-        titlePanel("Output graphs"),
-        fluidRow(
-          column(12, wellPanel(
-            selectInput(ns("plot_choice"), "Select Plot:",
-                        choices = c("MHF", "Overlay", "THF", "RHF", "RHF no FT", "NRHF", "Signal closeup"),
-                        selected = "MHF")
-          ))
-        ),
-        fluidRow(
-          column(12, plotlyOutput(ns("plot"), height = "90vh"))
-        )
+        configUIsim4(ns)
       )
     )
   )
@@ -74,18 +53,46 @@ mdsc_sim_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- NS(id)
     
+    observeEvent(input$next1, {
+      updateNavbarPage(session, "tabs", selected = "baseInput")
+    })
+    
+    observeEvent(input$next2, {
+      updateNavbarPage(session, "tabs", selected = "gaussPeak")
+    })
+    
     observeEvent(input$gaussianNumber, {
       gaussianNumber <- as.numeric(input$gaussianNumber)
       
       if (!is.na(gaussianNumber) && gaussianNumber != 0) {
         output$gaussians <- renderUI({
-          lapply(1:gaussianNumber, function(i) {
+          # Create the individual inputs
+          inputs <- lapply(1:gaussianNumber, function(i) {
             textInput(
               ns(paste0("gaussian", i)),
               label = paste0("Gaussian ", i, ": Onset (°C), End (°C), Enthalpy (J/g)"),
               value = ""
             )
           })
+          
+          # Distribute inputs across three columns
+          col1 <- inputs[seq(1, length(inputs), 3)]
+          if (gaussianNumber > 1) {
+            col2 <- inputs[seq(2, length(inputs), 3)]
+          }
+          if (gaussianNumber > 2) {
+            col3 <- inputs[seq(3, length(inputs), 3)]
+          }
+          
+          fluidRow(
+            column(4, col1),
+            if (gaussianNumber > 1) {
+              column(4, col2)
+            },
+            if (gaussianNumber > 2) {
+              column(4, col3)
+            }
+          )
         })
       } else {
         output$gaussians <- renderUI(NULL)  # Clear if zero
@@ -93,16 +100,11 @@ mdsc_sim_server <- function(id) {
     })
     
     
-
-    
-    
-
-    
     
     # Create a reactiveValues object to store inputs
     reactive_inputs <- reactiveValues()
     
-    observeEvent(input$calculate, {
+    observeEvent(input$analyze, {
       
       showPageSpinner()
       
