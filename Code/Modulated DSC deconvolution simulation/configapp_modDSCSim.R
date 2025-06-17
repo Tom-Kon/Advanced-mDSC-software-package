@@ -16,11 +16,11 @@ configUIsim1 <- function(ns) {
 configUIsim2 <- function(ns) {
   tagList(
     column(4,
-           textInput(ns("deltaRHFPreTg"), "What is the slope of the reversing heat flow before the Tg (J/(g*°C))", "-0.000137"),
-           textInput(ns("deltaRHFPostTg"), "What is the slope of the reversing heat flow after the Tg (J/(g*°C))", "-0.000120"),
+           textInput(ns("deltaRHFPreTg"), "What is the slope of the reversing heat flow before the Tg (J/(g*°C))", "-0.0001"),
+           textInput(ns("deltaRHFPostTg"), "What is the slope of the reversing heat flow after the Tg (J/(g*°C))", "-0.0001"),
            textInput(ns("StartRHFPreTg"), "What value does your reversing heat flow start at (J/g)", "-0.040"),
-           textInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C))", "0.00858"),
-           textInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C))", "0.0004"),
+           textInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C))", "0.0008"),
+           textInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C))", "0.0009"),
            textInput(ns("StartCpTempPreTg"), "What value does your total heat capacity start at (J/g)", "1.05")
     )
   )
@@ -29,7 +29,7 @@ configUIsim2 <- function(ns) {
 configUIsim3 <- function(ns) {
   tagList(
     column(4,
-           textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "15, 25, 20"),
+           textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "30, 40, 35"),
            textInput(ns("locationTgRHF"), "Where is the Tg on the reversing heat flow? Input start, end, and midpoint separated by commas (°C)", "35, 45, 40"),
            textInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", "0.268"),
            # textInput(ns("MeltEnth"), "What is the melting enthalpy (in J/g)", "-0.2"),

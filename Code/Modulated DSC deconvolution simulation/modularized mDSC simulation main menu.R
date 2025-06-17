@@ -1,6 +1,6 @@
 # mdsc_module.R
 source("../Modulated DSC deconvolution simulation/libraries.R")
-source("../Modulated DSC deconvolution simulation/configapp.R")
+source("../Modulated DSC deconvolution simulation/configapp_modDSCSim.R")
 
 mdsc_sim_ui <- function(id) {
   ns <- NS(id)
@@ -114,17 +114,21 @@ mdsc_sim_server <- function(id) {
       reactive_inputs$Atemp <- eval(parse(text = input$Atemp))
       reactive_inputs$phase <- eval(parse(text = input$phase))
       reactive_inputs$loessAlpha <- eval(parse(text = input$loessAlpha))
+      
+      
+      
       reactive_inputs$deltaRHFPreTg <- eval(parse(text = input$deltaRHFPreTg))
       reactive_inputs$deltaRHFPostTg <- eval(parse(text = input$deltaRHFPostTg))
       reactive_inputs$StartRHFPreTg <- eval(parse(text = input$StartRHFPreTg))
       reactive_inputs$deltaCpPreTg <- eval(parse(text = input$deltaCpPreTg))
       reactive_inputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
       reactive_inputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
+      
+      
       reactive_inputs$locationTgTHF <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
       reactive_inputs$locationTgRHF <- as.numeric(unlist(strsplit(input$locationTgRHF, ",")))
       reactive_inputs$deltaCpTg <- as.numeric(unlist(strsplit(input$deltaCpTg, ",")))
       
-
 
       reactive_inputs$gaussianNumber <- as.numeric(input$gaussianNumber)
       reactive_inputs$gaussianList <- list()

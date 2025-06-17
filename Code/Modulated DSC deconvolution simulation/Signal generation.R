@@ -43,17 +43,14 @@ signalgeneration <- function(reactive_inputs, df1){
   deltaHFPostTg <- -deltaCpPostTg*heatRate
   StartHFTempPreTg <- -StartCpTempPreTg*heatRate
   deltaHFTg <- -deltaCpTg*heatRate  # in W/g
-  
-  # locationMelt[3] <- (locationMelt[2]+locationMelt[1])/2
-  # locationcrystal[3] <- (locationcrystal[2]+locationcrystal[1])/2
-  # locationEnthRec[3] <- (locationEnthRec[2]+locationEnthRec[1])/2
-  
+
   
   modTemp <- Atemp * sin(2*pi/period * times) + heatRate * times
   modTempnoRamp <- Atemp * sin(2*pi/period * times)
   TRef <- startTemp + heatRate * times
   modTempderiv <- Atemp * 2*pi/period * cos(2*pi/period * times) + heatRate
   modTempdervPhase <- Atemp * 2*pi/period * cos(2*pi/period * times + phase) + heatRate
+  modTempdervPhaseNoHR <- Atemp * 2*pi/period * cos(2*pi/period * times + phase)
   
   FinalRevCpPreTg <- StartRevCpTempPreTg + deltaRevCpTempPreTg * locationTgRHF[1]
   StartRevCpTempPostTg <- FinalRevCpPreTg + deltaCpTg
@@ -74,10 +71,10 @@ signalgeneration <- function(reactive_inputs, df1){
   kRHF <- log((1 - epsilon)/epsilon) / ((locationTgRHF[2] - locationTgRHF[1])/2)
   kTHF <- log((1 - epsilon)/epsilon) / ((locationTgTHF[2] - locationTgTHF[1])/2)
   
-  RevCpTg <- (StartRevCpTempPostTg - FinalRevCpPreTg) / (1 + exp(-kRHF * (TRef - locationTgRHF[3])))
+  RevCpTg <- 1/ (1 + exp(-kRHF * (TRef - locationTgRHF[3])))
   
-  SinebeforeTg <- (StartRevCpTempPreTg + deltaRevCpTempPreTg * TRef) * modTempdervPhase
-  SineafterTg <- (StartRevCpTempPostTg + deltaRevCpTempPostTg * TRef) * modTempdervPhase
+  SinebeforeTg <- (StartRevCpTempPreTg + deltaRevCpTempPreTg * TRef) * modTempdervPhaseNoHR
+  SineafterTg <- (StartRevCpTempPostTg + deltaRevCpTempPostTg * TRef) * modTempdervPhaseNoHR
   
   TRef1 <- TRef[TRef <= locationTgTHF[1]]
   BaseBeforeTgShort <- -(StartCpTempPreTg + deltaCpPreTg * TRef1) * heatRate
@@ -117,27 +114,10 @@ signalgeneration <- function(reactive_inputs, df1){
     ) %>%
     select(-isTg, -tg_index)
   
-  write.xlsx(df, "C:/Users/Tom/Downloads/test.xlsx")
-  
   
   #Add baseline to MHF
-  df <- df %>%
-    # Identify rows in the Tg region and compute a relative index
-    mutate(
-      isTg = TRef >= locationTgRHF[1] & TRef <= locationTgRHF[2],
-      tg_index = if_else(isTg, row_number() - idx_Tg1RHF + 1, NA_integer_)
-    ) %>%
-    
-    mutate(
-      MHF = case_when(
-        TRef < locationTgRHF[1] ~ MHF + SinebeforeTg,
-        isTg ~ MHF +  SinebeforeTg + RevCpTg,
-        TRef > locationTgRHF[2] ~ MHF + SineafterTg
-      )
-    ) %>%
-    select(-isTg, -tg_index)
+  df$MHF <- df$MHF + SinebeforeTg*(1-RevCpTg)+SineafterTg*RevCpTg
 
-  
   
   # Track already reached temperatures
   # reachedTemps <- numeric(0)
@@ -174,8 +154,6 @@ signalgeneration <- function(reactive_inputs, df1){
   #       MHF
   #     )
   #   )
-  # 
-  # sigmacrystal <- (locationcrystal[2]-locationcrystal[3])/sqrt(2*log(1000))
   
   signalVec <- numeric(nrow(df))
   
@@ -225,47 +203,6 @@ signalgeneration <- function(reactive_inputs, df1){
     }
   }
 
-
-  # for (i in seq_along(df$TRef)) {
-  #   # Compute crystallisation signal
-  # 
-  #   if (df$TRef[i] >= locationcrystal[1] && df$TRef[i] <= locationcrystal[2]) {
-  #     signal_vec[i] <- Crystalenth/sqrt(2*pi*sigmacrystal^2) * exp(-((TRef[i] - locationcrystal[3])^2) / (2 * sigmacrystal^2))
-  #   } else {
-  #     signal_vec[i] <- 0
-  #   }
-  # }
-  # 
-  # # Add signal and update MHF
-  # df <- df %>%
-  #   mutate(
-  #     signal = signal_vec,
-  #     MHF = MHF + signal
-  #   )
-
-  # sigmaEnthRec <- (locationEnthRec[2]-locationEnthRec[3])/sqrt(2*log(1000))
-  # 
-  
-  # for (i in seq_along(df$TRef)) {
-  #   # Compute crystallisation signal
-  #   
-  #   if (df$TRef[i] >= locationEnthRec[1] && df$TRef[i] <= locationEnthRec[2]) {
-  #     signal_vec[i] <- EnthrecEnth/sqrt(2*pi*sigmaEnthRec^2) * exp(-((TRef[i] - locationEnthRec[3])^2) / (2 * sigmaEnthRec^2))
-  #   } else {
-  #     signal_vec[i] <- 0
-  #   }
-  # }
-  
-  # # Add signal and update MHF
-  # df <- df %>%
-  #   mutate(
-  #     signal = signal_vec,
-  #     MHF = MHF + signal
-  #   )
-  
-  MHF <- df$MHF
-  time <- df$times
-  
   df2 <- df
 
 return(df2)
