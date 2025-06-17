@@ -1,4 +1,4 @@
-downloadExcelSimDSC <- function(reactive_inputs) {
+downloadExcelSimDSCFunc <- function(reactive_inputs) {
   
   #Time generation
   sampling <- reactive_inputs$sampling
@@ -17,22 +17,33 @@ downloadExcelSimDSC <- function(reactive_inputs) {
   deltaCpPostTg <- reactive_inputs$deltaCpPostTg
   StartCpTempPreTg <- reactive_inputs$StartCpTempPreTg
   
-  #MHF generation (for loop)
+  #MHF generation (Tg)
   locationTgTHF <- reactive_inputs$locationTgTHF
   locationTgRHF <- reactive_inputs$locationTgRHF
   deltaCpTg <- reactive_inputs$deltaCpTg
-  MeltEnth <- reactive_inputs$MeltEnth
-  phase_melt <- reactive_inputs$phase_melt
-  locationMelt <- reactive_inputs$locationMelt
-  Crystalenth <- reactive_inputs$Crystalenth
-  locationcrystal <- reactive_inputs$locationcrystal
-  EnthrecEnth <- reactive_inputs$EnthrecEnth
-  locationEnthRec <- reactive_inputs$locationEnthRec
-  periodSignal <- reactive_inputs$periodSignal
+  
+  #MHF generation (for loop)
+  gaussianNumber <- reactive_inputs$gaussianNumber
+  gaussianList <- reactive_inputs$gaussianList
   
   
-  config <- data.frame(
-    ParameterFixed <- c("Sampling rate (pts/sec)",
+  #Results
+  finaldf <- reactive_inputs$finaldf
+  noFTcalc <-   reactive_inputs$noFTcalc
+  
+  onsetVals <- c()
+  for(i in seq_along(gaussianList)) {onsetVals[i] <- gaussianList[[i]][1]}
+  
+  endsetVals <- c()
+  for(i in seq_along(gaussianList)) {endsetVals[i] <- gaussianList[[i]][2]}
+  
+  enthalpyVals <- c()
+  for(i in seq_along(gaussianList)) {enthalpyVals[i] <- gaussianList[[i]][3]}
+  
+  
+  configFixed <- data.frame(
+
+    "Parameters" = c("Sampling rate (pts/sec)",
                    "Starting temperature (°C)",
                    "End temperature (°C)",
                    "Period (°C)",
@@ -45,42 +56,54 @@ downloadExcelSimDSC <- function(reactive_inputs) {
                    "Slope of the Cp before the Tg (W/°C)",
                    "Slope of the Cp after the Tg (W/°C)",
                    "Starting value of the Cp before the Tg (W/°C)"),
-                   
-    Value <- c(sampling,
-               startTemp,
-               endTemp,
-               period,
-               heatRate,
-               Atemp, 
-               phase, 
-               deltaRHFPreTg,
-               deltaRHFPostTg,
-               StartRHFPreTg,
-               deltaCpPreTg,
-               deltaCpPostTg,
-               StartCpTempPreTg)
+    
+    "Values" = c(sampling, startTemp, endTemp, period, heatRate, Atemp, phase, deltaRHFPreTg, deltaRHFPostTg,
+                 StartRHFPreTg, deltaCpPreTg, deltaCpPostTg, StartCpTempPreTg),
+    
+    check.names = FALSE
   )
   
-  wb <- createWorkbook()
+  configTg <- data.frame(
+    "Onset(°C)" = c(locationTgTHF[1], locationTgRHF[1]), 
+    "Endset(°C)" = c(locationTgTHF[2], locationTgRHF[2]), 
+    "Midpoint(°C)" = c(locationTgTHF[3], locationTgRHF[3]), 
+    "Jump in heat capacity (J/g*°C)" = c(deltaCpTg, deltaCpTg),
+    row.names = c("THF Tg values", "RHF Tg values"),
+    check.names = FALSE
+    
+  )
   
-  FTDeconvolution <- reactive_inputs$finaldf
-  noFTDeconvolution <- reactive_inputs$noFTcalc
-  rawSignal <- reactive_inputs$df2
-  rawSignalFinal <- data.frame("Times" = rawSignal$times, "TRef" = rawSignal$TRef, "Modulated temperature" = rawSignal$modTemp, "Derivative of the modulated temperature" = rawSignal$modTempderiv, "Modulated temperature without the ramp" = rawSignal$modTempnoRamp, check.names = FALSE)
+  if(gaussianNumber > 0) {
+    configGauss <- data.frame(
+      "Onset(°C)" = onsetVals,
+      "Endset(°C)" = endsetVals,
+      "Enthalpy (J/g)" = enthalpyVals, 
+      row.names = c(1:gaussianNumber),
+      check.names = FALSE
+    )
+    }
 
-  addWorksheet(wb, "Settings")
-  writeData(wb, sheet <- "Settings", config)
+
   
-  addWorksheet(wb, "FT Deconvoluted signals")
-  writeData(wb, sheet <- "FT Deconvoluted signals", FTDeconvolution)
   
-  addWorksheet(wb, "Non-FT Deconvoluted signals")
-  writeData(wb, sheet <- "Non-FT Deconvoluted signals", noFTDeconvolution)
+  wbmDSCSim <- createWorkbook()
   
-  addWorksheet(wb, "Raw MHF signal")
-  writeData(wb, sheet <- "Raw MHF signal", rawSignalFinal)
+  addWorksheet(wbmDSCSim, "Settings")
+  writeData(wbmDSCSim, sheet <- "Settings", configFixed, startCol = 1)
+  writeData(wbmDSCSim, sheet <- "Settings", configTg, startCol = 4)
   
-  return(wb)
+  if(gaussianNumber > 0) {
+  writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 10)
+  }
+  
+  addWorksheet(wbmDSCSim, "FT Deconvoluted signals")
+  writeData(wbmDSCSim, sheet <- "FT Deconvoluted signals", finaldf)
+  
+  addWorksheet(wbmDSCSim, "Non-FT Deconvoluted signals")
+  writeData(wbmDSCSim, sheet <- "Non-FT Deconvoluted signals", noFTcalc)
+
+  
+  return(wbmDSCSim)
   
 }
 

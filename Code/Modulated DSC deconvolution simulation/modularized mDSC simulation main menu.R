@@ -1,6 +1,8 @@
 # mdsc_module.R
 source("../Modulated DSC deconvolution simulation/libraries.R")
 source("../Modulated DSC deconvolution simulation/configapp_modDSCSim.R")
+source("../Modulated DSC deconvolution simulation/downloadsDSCSim.R")
+
 
 mdsc_sim_ui <- function(id) {
   ns <- NS(id)
@@ -45,7 +47,19 @@ mdsc_sim_ui <- function(id) {
       fluidPage(
         configUIsim4(ns)
       )
-    )
+    ),
+    tabPanel(
+      id = ns("downloads"),
+      title = "Downloads",
+      icon = icon("download", class = "fa-solid"),
+      fluidPage(configUI5(ns))
+    ), 
+    tabPanel(
+      id = ns("tutorial"),
+      title = "Tutorial",
+      icon = icon("book", class = "fa-solid"),
+      fluidPage()
+    ), 
   )
 }
 
@@ -184,6 +198,19 @@ mdsc_sim_server <- function(id) {
       hidePageSpinner()
       
     })
+    
+    output$downloadExcelSimDSC <- downloadHandler(
+      filename = function() {
+        paste0(Sys.Date(), "_mDSC simulation.xlsx")
+      },
+      content = function(file) {
+        showPageSpinner()
+        wbmDSCSim <- downloadExcelSimDSCFunc(reactive_inputs)   
+        saveWorkbook(wbmDSCSim, file = file, overwrite = TRUE)
+        hidePageSpinner()
+      }
+    )
+    
     
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({

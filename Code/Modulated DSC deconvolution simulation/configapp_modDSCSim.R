@@ -109,4 +109,59 @@ configUIsim4 <- function(ns) {
   )
 }
 
+configUI5 <- function(ns) {
+  sidebarLayout(
+    sidebarPanel(
+      h4("Plot export settings"),
+      selectInput(ns("extension"), "What should the plot's extension be?", c(".png", ".jpg", ".tiff")), 
+      textInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
+      textInput(ns("exportWidth"), "What should the plot width be in cm?",  value= 20),
+      textInput(ns("exportHeight"), "What should the plot height be in cm?", value= 20)
+    ),
+    
+    mainPanel(
+      fluidRow(
+        tags$div(
+          style = "text-align: center;",
+          downloadButton(ns("downloadExcelSimDSC"), "Download the Excel sheet with all the analyses", class = "btn-primary btn-lg")
+        )
+      ),
+      br(), br(),
+      fluidRow(
+        tags$div(
+          style = "text-align: center;",
+          downloadButton(ns("NRHFdownload"), "Download the non-reversing heat flow plot", class = "btn-primary btn-lg")
+        )
+      ),
+      br(), br(),
+      fluidRow(
+        tags$div(
+          style = "text-align: center;",
+          downloadButton(ns("RevCpdownload"), "Download the reversing heat capacity plot", class = "btn-primary btn-lg")
+        )
+      ),
+      br(), br(),
+      fluidRow(
+        tags$div(
+          style = "text-align: center;",
+          downloadButton(ns("nonFTrevCpdownload"), "Download the reversing heat capacity plot calculated without FT", class = "btn-primary btn-lg")
+        )
+      ),
+      br(), br(),
+      fluidRow(
+        tags$div(
+          style = "text-align: center;",
+          downloadButton(ns("allPlotsDownload"), "Download all plots at once in a single .zip file", class = "btn-primary btn-lg")
+        )
+      ),
+      br(), br(), br(),
+      div(
+        class = "succes-text",
+        textOutput(ns("downloadMessage"))
+      )
+    )
+  )
+}
+
+
 
