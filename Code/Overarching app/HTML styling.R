@@ -193,7 +193,7 @@ HTML("
       }
       
       .succes-text {
-        font-size: 40px; 
+        font-size: 30px; 
         text-align: center; 
         color: #32CD32;
       }
