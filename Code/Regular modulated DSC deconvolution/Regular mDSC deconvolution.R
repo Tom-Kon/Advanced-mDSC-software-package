@@ -17,23 +17,27 @@ normal_mDSC_ui <- function(id) {
       title = "Parameter Input",
       icon = icon("gears", class = "fa-solid"),
       fluidPage(
-        tagList(
+        fluidRow(
+          div(
+            style = "text-align:center",
+            column(6,
+                   div(style = "width: 100%;",
+                       textInput(ns("period"), "Period in seconds", "40")),
+                   div(style = "width: 100%;",
+                       textInput(ns("heating_rate"), "Heating rate in °C/min", "2")),
+                   div(style = "width: 100%;",
+                       textInput(ns("setAmplitude"), "Temperature amplitude set by user (°C)", "0.212"))
+            )
+          ),
           column(6,
-                 textInput(ns("period"), "Period in seconds", "40"),
-                 textInput(ns("heating_rate"), "Heating rate in °C/min", "2"),
-                 textInput(ns("setAmplitude"), "Temperature amplitude set by user (°C)", "0.212"),
+                 checkboxInput(ns("HFcalcextra"), "Do you want to calculate RHF and NRHF using the THF as well?"),
+                 checkboxInput(ns("compare"), "Do you want to compare with unmodulated DSC?"),
                  fileInput(ns("Excel_mDSC"), "Upload your Excel here"),
                  checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
                  conditionalPanel(
                    condition = sprintf("!input['%s']", ns("sheetask")),
                    selectInput(ns("sheet"), "What sheet is it in then?", choices = c("2", "3", "4", "5"))
-                 ), 
-
-                 actionButton(ns("analyze"), "Analyze", class = "btn-primary btn-lg")
-          ), 
-          column(6,
-                 checkboxInput(ns("HFcalcextra"), "Do you want to calculate RHF and NRHF using the THF as well?"),
-                 checkboxInput(ns("compare"), "Do you want to compare with unmodulated DSC?"),
+                 ),
                  conditionalPanel(
                    condition = sprintf("input['%s']", ns("compare")),
                    fileInput(ns("Excel_DSC"), "Upload your Excel here"),
@@ -41,18 +45,26 @@ normal_mDSC_ui <- function(id) {
                    conditionalPanel(
                      condition = sprintf("!input['%s']", ns("sheetask2")),
                      selectInput(ns("sheet2"), "What sheet is it in then?", choices = c("2", "3", "4", "5"))
-                   ),                    
-                 ),
-                 mainPanel(
-                   div(
-                     class = "error-text",
-                     textOutput(ns("errorMessage"))
-                   )    
-                 ) 
+                   )
+                 )
           )
+        ),
+        HTML("<br><br><br>"),
+        fluidRow(
+          column(4),
+          column(4,
+                 div(style = "text-align:center;",
+                     actionButton(ns("analyze"), "Analyze", 
+                                  class = "btn-primary btn-lg",
+                                  style = "width: 70%; font-size: 25px; padding: 15px 30px;")
+                 )
+          ),
+          column(4)
         )
       )
     ),
+    
+    
     tabPanel(
       title = "Graphs",
       icon = icon("chart-line", class = "fa-solid"),

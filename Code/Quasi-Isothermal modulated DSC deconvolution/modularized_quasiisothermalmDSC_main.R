@@ -32,7 +32,7 @@ quasiIsotherm_ui <- function(id) {
       id = ns("input"),
       icon = icon("gears", class = "fa-solid"),
       fluidPage(
-        configUI1(ns), configUI2(ns), configUI3(ns)
+        configUI1(ns)
       )
     ),
     tabPanel(
@@ -40,35 +40,14 @@ quasiIsotherm_ui <- function(id) {
       title = "Graphs",
       icon = icon("chart-line", class = "fa-solid"),
       fluidPage(
-        titlePanel("Output graphs"),
-        fluidRow(
-          column(12, wellPanel(
-            selectInput(ns("plot_choice"), "Select Plot:", 
-                        choices = c("NRHF", "RevCp", "Manual RevCp", "RevCp and NRHF", 
-                                    "Maxima and minima 1", "Maxima and minima prefinal", "Maxima and minima final", 
-                                    "Original data", "First cleaned up data", "Prefinal cleaned up data", "Final data used for analysis"), 
-                        selected = "RevCp"),
-            fluidRow(
-              column(6,
-                     HTML("<br>"),
-                     actionButton(ns("recalc"), "Recalculate with different number of modulations")
-              ),
-              column(6, 
-                     textInput(ns("modulations_back_in_new"), "New number of modulations")
-              )
-            )
-          ))
-        ),
-        fluidRow(
-          column(12, plotlyOutput(ns("plot"), height = "90vh"))
-        )
+        configUI2(ns)
       )
     ), 
     tabPanel(
       id = ns("downloads"),
       title = "Downloads",
       icon = icon("download", class = "fa-solid"),
-      fluidPage(configUI4(ns))
+      fluidPage(configUI3(ns))
     ), 
     tabPanel(
       id = ns("tutorial"),
@@ -94,7 +73,7 @@ mdsc_quasiIso_server <- function(id) {
     reactive_inputs <- reactiveValues()
     
     # This part is separate and independent of your server logic
-    observeEvent(input$calculate, {
+    observeEvent(input$analyze, {
       
       showPageSpinner()
       

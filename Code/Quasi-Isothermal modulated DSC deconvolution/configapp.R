@@ -1,52 +1,82 @@
-
 options(shiny.maxRequestSize = 100 * 1024^2)  # 100 MB limit
-
 
 configUI1<- function(ns) {
   tagList(
-    column(6,
-      fileInput(ns("Excel_in"), "Upload your Excel here"),
-      checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
-      conditionalPanel(
-        condition = sprintf("!input['%s']", ns("sheetask")),
-        selectInput(ns("sheet"), "What sheet is it in then?", choices = c("2", "3", "4", "5"))
+    fluidRow(
+      column(6,
+             textInput(ns("period_in"), "What was your modulation period (in minutes)", "2/3"), 
+             textInput(ns("step_size_in"), "What was your step size (in °C)", "3"),
+             textInput(ns("isotherm_length_in"), "What was your isotherm length (in minutes)", "20"),
+             textInput(ns("starting_temp_in"), "What was your starting temperature (in °C)", "13")
+            
+             ),
+ 
+      column(6,
+             textInput(ns("setAmplitude_in"), "What was your temperature modulation amplitude (in °C)", "0.212"),
+             textInput(ns("modulations_back_in"), "How many modulations should be used for the final calculation?", "15"),
+             textInput(ns("sampling"), "What was your sampling rate in pts/s?", "10"),
+             fileInput(ns("Excel_in"), "Upload your Excel here"),
+             checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
+             conditionalPanel(
+               condition = sprintf("!input['%s']", ns("sheetask")),
+               selectInput(ns("sheet"), "What sheet is it in then?", choices = c("2", "3", "4", "5"))
+               )
+             )    
       ),
-      mainPanel(
-        div(
-          class = "error-text",
-          textOutput(ns("errorMessage"))
-        )    
-      )   
+    HTML("<br><br><br>"),
+    fluidRow(
+      column(4),
+      column(4,
+             div(style = "text-align:center;",
+                 actionButton(ns("analyze"), "Analyze", 
+                              class = "btn-primary btn-lg",
+                              style = "width: 70%; font-size: 25px; padding: 15px 30px;")
+             ),
+             HTML("<br><br><br>"),
+             div(
+               class = "error-text",
+               textOutput(ns("errorMessage"))
+             )
+      ),
+      column(4)
     )
   )
 }
+
 
 configUI2<- function(ns) {
   tagList(
-    column(6,
-      textInput(ns("period_in"), "What was your modulation period (in minutes)", "2/3"), 
-      textInput(ns("step_size_in"), "What was your step size (in °C)", "3"),
-      textInput(ns("isotherm_length_in"), "What was your isotherm length (in minutes)", "20"),
-      textInput(ns("starting_temp_in"), "What was your starting temperature (in °C)", "13"),
-      textInput(ns("setAmplitude_in"), "What was your temperature modulation amplitude (in °C)", "0.212"),
-      textInput(ns("modulations_back_in"), "How many modulations should be used for the final calculation?", "15"),
-      textInput(ns("sampling"), "What was your sampling rate in pts/s?", "10"),
+    fluidRow(
+      titlePanel("Output graphs"),
+      fluidRow(
+        column(12, wellPanel(
+          selectInput(ns("plot_choice"), "Select Plot:", 
+                      choices = c("NRHF", "RevCp", "Manual RevCp", "RevCp and NRHF", 
+                                  "Maxima and minima 1", "Maxima and minima prefinal", "Maxima and minima final", 
+                                  "Original data", "First cleaned up data", "Prefinal cleaned up data", "Final data used for analysis"), 
+                      selected = "RevCp"),
+          fluidRow(
+            column(6,
+                   HTML("<br>"),
+                   actionButton(ns("recalc"), "Recalculate with different number of modulations")
+            ),
+            column(6, 
+                   textInput(ns("modulations_back_in_new"), "New number of modulations")
+            )
+          )
+        ))
+      ),
+      fluidRow(
+        column(12, plotlyOutput(ns("plot"), height = "90vh"))
+      )
     )
   )
 }
 
-configUI3<- function(ns) {
-  tagList(
-    HTML("<br>"),
-    HTML("<br>"),
-    tags$div(
-      style = "text-align: center;",
-      actionButton(ns("calculate"), "Calculate", class = "btn-primary btn-lg")
-    )
-  )
-}
 
-configUI4 <- function(ns) {
+
+
+configUI3 <- function(ns) {
   sidebarLayout(
     sidebarPanel(
       h4("Plot export settings"),
