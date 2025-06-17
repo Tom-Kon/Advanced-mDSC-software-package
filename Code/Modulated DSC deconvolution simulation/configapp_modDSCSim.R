@@ -85,7 +85,12 @@ configUIsim3 <- function(ns) {
       column(4,
              tags$div(
                style = "text-align: center;",
-               actionButton(ns("analyze"), "Analyze", class = "btn-primary btn-lg", style = "width: 70%; font-size: 25px; padding: 15px 30px;")
+               actionButton(ns("analyze"), "Analyze", class = "btn-primary btn-lg", style = "width: 70%; font-size: 25px; padding: 15px 30px;"),
+               HTML("<br><br><br>"),
+               div(
+                 class = "error-text",
+                 textOutput(ns("errorMessage"))
+               )
              )
       ),
       column(4)

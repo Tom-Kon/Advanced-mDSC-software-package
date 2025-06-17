@@ -2,6 +2,12 @@
 source("../Modulated DSC deconvolution simulation/libraries.R")
 source("../Modulated DSC deconvolution simulation/configapp_modDSCSim.R")
 source("../Modulated DSC deconvolution simulation/downloadsDSCSim.R")
+source("../Modulated DSC deconvolution simulation/Time point generation.R")
+source("../Modulated DSC deconvolution simulation/Signal generation.R")
+source("../Modulated DSC deconvolution simulation/Equally-spaced y-values.R")
+source("../Modulated DSC deconvolution simulation/Final calculations.R")
+source("../Modulated DSC deconvolution simulation/Plot generation and control.R")
+source("../Modulated DSC deconvolution simulation/mDSCSimErrorHandling.R")
 
 
 mdsc_sim_ui <- function(id) {
@@ -122,7 +128,6 @@ mdsc_sim_server <- function(id) {
     reactive_inputs <- reactiveValues()
     
     observeEvent(input$analyze, {
-      
       showPageSpinner()
       
       reactive_inputs$sampling <- eval(parse(text = input$sampling))
@@ -133,7 +138,6 @@ mdsc_sim_server <- function(id) {
       reactive_inputs$Atemp <- eval(parse(text = input$Atemp))
       reactive_inputs$phase <- eval(parse(text = input$phase))
       reactive_inputs$loessAlpha <- eval(parse(text = input$loessAlpha))
-      
       
       
       reactive_inputs$deltaRHFPreTg <- eval(parse(text = input$deltaRHFPreTg))
@@ -159,19 +163,26 @@ mdsc_sim_server <- function(id) {
         }
       } else {NULL}
 
-
-      source("../Modulated DSC deconvolution simulation/Time point generation.R")
-      source("../Modulated DSC deconvolution simulation/Signal generation.R")
-      source("../Modulated DSC deconvolution simulation/Equally-spaced y-values.R")
-      source("../Modulated DSC deconvolution simulation/Final calculations.R")
-      source("../Modulated DSC deconvolution simulation/Plot generation and control.R")
+      msg <- mDSCSimErrorhandlingFunc(reactive_inputs)
       
+      # Update the error message output (this triggers UI update)
+      output$errorMessage <- renderText({
+        if (!is.null(msg)) msg else ""
+      })
+      
+      # If there is an error message, stop further processing
+      if (!is.null(msg)) {
+        hidePageSpinner()
+        return(NULL)
+      }
       
       reactive_inputs$subtitle <- paste0(
         "Sampling: ", reactive_inputs$sampling, " pts/sec. Period: ", reactive_inputs$period, " sec. ", 
         "Melting period: ", reactive_inputs$periodSignal, " sec. Heating rate: ", reactive_inputs$heatRate * 60, " °C/min. ",
         "MHF phase: ", reactive_inputs$phase, " rad. LOESS alpha: ", reactive_inputs$loessAlpha, ".\n Temp. amplitude: ", reactive_inputs$Atemp, " °C.",
         "Melting amplitude: ", reactive_inputs$MeltEnth, " W/g. Other parameters (such as start temp.) are visible on the plot.")
+      
+      
       
       
       df1 <- timegeneration(reactive_inputs)
