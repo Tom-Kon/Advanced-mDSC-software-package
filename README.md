@@ -60,9 +60,7 @@ $\Delta T$ between the sample and reference pans. The total heat flow
 $\frac{dQ}{dt}$, which is the energy flowing to the sample per unit of time, can 
 then be derived to be the following:\
 
-$$
-\frac{dQ}{dt} = - \frac{\Delta T}{R_r} \tag{1}
-$$
+![Equation 1.](figures/math/math-1.svg)
 
 Where R_r is a resistance term. This simple equation does not consider differences 
 in heat capacity between the two furnaces, differences in heat capacity between 
@@ -89,11 +87,9 @@ and interpret thermograms are not included in this text.
 The value of the heat flow signal depends on the heating rate. Hence, sometimes, 
 the heat capacity is plotted, since it is normalized for heating rate. The 
 relationship between heat capacity ($C_p$) and heating rate ($\beta$) is as 
-follows when exothermic events are plotted up:\
+follows when exothermic events are plotted up:
 
-$$
-C_p (\frac{J}{g °C} = - \frac{\frac{dQ}{dt} (\frac{J}{gs})}{\beta (\frac{°C}{s})}) \tag{2}
-$$
+![Equation 2.](figures/math/math-2.svg)
 
 The minus sign here is crucial and must be explained further. If a sample is 
 giving off heat (for instance when it is crystallizing), the furnace supplies 
@@ -113,18 +109,13 @@ forward.
 Now that the basics of DSC are clear, it is time to discuss the simple 
 temperature program used in unmodulated DSC, since this will paint the picture
 for the main differences between modulated (mDSC) and unmodulated DSC (still DSC).
-For a DSC analysis, temperature ($T$) can be expressed as follows:\
+For a DSC analysis, temperature ($T$) can be expressed as follows:
 
-$$
-T = T_0 + \beta t \tag{3} 
-$$
+![Equation 3.](figures/math/math-3.svg)
 
 where *t* is the time, and *β* is the heating rate. Taking the derivative simply 
-gives:\
 
-$$
-\frac{dT}{dt} = \beta \tag{4}
-$$
+![Equation 4.](figures/math/math-4.svg)
 
 This is a very important difference when comparing to DSC and mDSC, where the
 temperature program is more complex.
