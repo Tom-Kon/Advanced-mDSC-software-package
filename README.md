@@ -70,7 +70,8 @@ calibration is always necessary for all DSC instruments to correct for
 instrumental error. Nonetheless, the sample contribution is still fully contained 
 in *Equation 1*.
 
-![Figure 1: basic representation of a differential scanning calorimeter.](figures/Fig1_differential_scanning_calorimeter.png)
+![Figure 1.](figures/Fig1_differential_scanning_calorimeter.png)
+**Figure 1.** Basic representation of a differential scanning calorimeter.
 
 The result of a DSC run is a thermogram where heat flow, often normalized for 
 sample mass, is generally plotted against temperature. From a thermogram, the
@@ -82,7 +83,11 @@ containing a glass transition, an enthalpy recovery, a crystallization event,
 and a melting event is shown in *Figure 2*. Further instructions on how to analyze 
 and interpret thermograms are not included in this text.
 
-![Figure 2: a typical thermogram resulting from a differential scanning calorimetry experiment. Different thermal events are present and highlighted in the figure.](figures/Fig2_typical_thermogram.png)
+![Figure 2](figures/Fig2_typical_thermogram.png)
+**Figure 2.** Typical thermogram resulting from a differential scanning 
+calorimetry experiment. Different thermal events are present and highlighted in 
+the figure.
+
 
 The value of the heat flow signal depends on the heating rate. Hence, sometimes, 
 the heat capacity is plotted, since it is normalized for heating rate. The 
