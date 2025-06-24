@@ -1,13 +1,13 @@
 # mdsc_module.R
-source("../Modulated DSC deconvolution simulation/libraries.R")
-source("../Modulated DSC deconvolution simulation/configapp_modDSCSim.R")
-source("../Modulated DSC deconvolution simulation/downloadsDSCSim.R")
-source("../Modulated DSC deconvolution simulation/Time point generation.R")
-source("../Modulated DSC deconvolution simulation/Signal generation.R")
-source("../Modulated DSC deconvolution simulation/Equally-spaced y-values.R")
-source("../Modulated DSC deconvolution simulation/Final calculations.R")
-source("../Modulated DSC deconvolution simulation/Plot generation and control.R")
-source("../Modulated DSC deconvolution simulation/mDSCSimErrorHandling.R")
+source("Modulated DSC deconvolution simulation/libraries.R")
+source("Modulated DSC deconvolution simulation/configapp_modDSCSim.R")
+source("Modulated DSC deconvolution simulation/downloadsDSCSim.R")
+source("Modulated DSC deconvolution simulation/Time point generation.R")
+source("Modulated DSC deconvolution simulation/Signal generation.R")
+source("Modulated DSC deconvolution simulation/Equally-spaced y-values.R")
+source("Modulated DSC deconvolution simulation/Final calculations.R")
+source("Modulated DSC deconvolution simulation/Plot generation and control.R")
+source("Modulated DSC deconvolution simulation/mDSCSimErrorHandling.R")
 
 
 mdsc_sim_ui <- function(id) {
@@ -61,11 +61,14 @@ mdsc_sim_ui <- function(id) {
       fluidPage(configUI5(ns))
     ), 
     tabPanel(
-      id = ns("tutorial"),
       title = "Tutorial",
       icon = icon("book", class = "fa-solid"),
-      fluidPage()
-    ), 
+      fluidPage(
+        withMathJax(
+          includeMarkdown("Modulated DSC deconvolution simulation/simulation tutorial.md")
+        )
+      )
+    )
   )
 }
 

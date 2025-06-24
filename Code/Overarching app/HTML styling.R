@@ -175,7 +175,8 @@ HTML("
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         height: 100%;
-      }
+        }
+      
       .card h4 {
         margin-top: 0;
       }
@@ -184,6 +185,13 @@ HTML("
           text-align: left; 
           color: #333;
       }
+      
+      img.center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      }
+      
       
       .btn-title {
         margin-bottom: 15px;

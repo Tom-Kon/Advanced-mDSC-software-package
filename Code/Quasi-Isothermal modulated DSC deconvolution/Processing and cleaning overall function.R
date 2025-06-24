@@ -7,7 +7,7 @@ processDSC <- function(fileName, Excel, sheet, export, starting_temp, step_size,
   subtitle <- paste0("Dataset: ", "test")
   tempModAmplitude <- setAmplitude*2*pi/period
 
-  source("../Quasi-Isothermal modulated DSC deconvolution/detailed functions.R")
+  source("Quasi-Isothermal modulated DSC deconvolution/detailed functions.R")
   
     # 1. Load and pre‐process the data -------------------------------
   d <- excel_cleaner(Excel, sheet)

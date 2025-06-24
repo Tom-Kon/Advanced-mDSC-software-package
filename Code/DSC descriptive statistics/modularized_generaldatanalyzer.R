@@ -1,6 +1,6 @@
-source("../DSC descriptive statistics/libraries.R")
-source("../DSC descriptive statistics/functions.R")
-source("../DSC descriptive statistics/analysisandExcel.R")
+source("DSC descriptive statistics/libraries.R")
+source("DSC descriptive statistics/functions.R")
+source("DSC descriptive statistics/analysisandExcel.R")
 
 
 mdsc_analyzer_ui<- function(id) {
@@ -25,15 +25,10 @@ mdsc_analyzer_ui<- function(id) {
       #Static user interface: all of the styling is put in a tabPanel (see above), since putting it as a separate entity results in errors
       #---------------------------------------------------------------------------------------------------------------------------
       
-      tags$head(
-        tags$style(
-          source("HTML styling.R")
-        )
-      ),
       
       #Actual input tabs are here---------------------------------------------------------------------------------------------------------------------------
       
-      source("../DSC descriptive statistics/main.R", local = TRUE)$value,
+      source("DSC descriptive statistics/main.R", local = TRUE)$value,
     ),
     
     tabPanel(
@@ -41,7 +36,7 @@ mdsc_analyzer_ui<- function(id) {
       id= ns("outputInputTab"),
       icon = icon("file-import", class = "fa-solid"),
       value = "outputInputTab",
-      source("../DSC descriptive statistics/inputoutputtab.R", local = TRUE)$value),
+      source("DSC descriptive statistics/inputoutputtab.R", local = TRUE)$value),
 
     
     #-----------------------------------------------------------
@@ -53,7 +48,7 @@ mdsc_analyzer_ui<- function(id) {
       "Tutorial",
       icon = icon("book", class = "fa-solid"),
       value = "tutorialTab",
-      source("../DSC descriptive statistics/tutorial.R", local = TRUE)$value),
+      source("DSC descriptive statistics/tutorial.R", local = TRUE)$value),
     
    )
 }
@@ -67,7 +62,7 @@ mdsc_analyzer_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns  # make sure ns is defined for use in dynamicui.R
     extraInput <- list()
-    source("../DSC descriptive statistics/dynamicui.R", local= TRUE)
+    source("DSC descriptive statistics/dynamicui.R", local= TRUE)
     
     disable("excelDownload")
     
@@ -137,7 +132,7 @@ mdsc_analyzer_server <- function(id) {
       
       
       observeEvent(input$errorCheck, {
-        source("../DSC descriptive statistics/dynamicui.R", local= TRUE)
+        source("DSC descriptive statistics/dynamicui.R", local= TRUE)
         
         wb <<- analysisAndExcel(input, extraInput)
         if(typeof(wb) == "character") {

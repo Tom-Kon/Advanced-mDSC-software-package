@@ -2,7 +2,7 @@ processDSCrecalc <- function(fileName, sample_results, modulations_back, period,
   
   tempModAmplitude <- setAmplitude*2*pi/period
   
-  source("../Quasi-Isothermal modulated DSC deconvolution/detailed functions.R")
+  source("Quasi-Isothermal modulated DSC deconvolution/detailed functions.R")
 
   # Recompute extrema on the cleaned data for the subsequent steps
   extrema_counts2 <- sample_results$d_steps_cleaned_2 %>%

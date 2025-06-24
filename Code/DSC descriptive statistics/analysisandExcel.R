@@ -1,5 +1,5 @@
-source("../DSC descriptive statistics/functions.R")
-source("../DSC descriptive statistics/errorhandling.R", local= TRUE)
+source("DSC descriptive statistics/functions.R")
+source("DSC descriptive statistics/errorhandling.R", local= TRUE)
 
 #---------------------------------------------------------------------------------------------------------------
 # Code
