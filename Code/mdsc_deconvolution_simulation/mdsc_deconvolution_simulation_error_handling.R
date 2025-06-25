@@ -1,90 +1,94 @@
-mDSCSimErrorhandlingFunc <- function(reactive_inputs){
+#-----------------------------------------------------------------------------------------
+#Function containing all error handling of the app
+#-----------------------------------------------------------------------------------------
+
+simulation_error_handling <- function(reactiveInputs){
   
-  if(is.null(reactive_inputs$sampling) || is.null(reactive_inputs$startTemp) || is.null(reactive_inputs$endTemp) || is.null(reactive_inputs$period) ||
-     is.null(reactive_inputs$heatRate) || is.null(reactive_inputs$Atemp) || is.null(reactive_inputs$phase) || is.null(reactive_inputs$loessAlpha)) {
+  if(is.null(reactiveInputs$sampling) || is.null(reactiveInputs$startTemp) || is.null(reactiveInputs$endTemp) || is.null(reactiveInputs$period) ||
+     is.null(reactiveInputs$heatRate) || is.null(reactiveInputs$Atemp) || is.null(reactiveInputs$phase) || is.null(reactiveInputs$loessAlpha)) {
     
     msg <- "One of your basic parameter inputs is missing!"
     return(msg)
   }
   
   
-  if(is.null(reactive_inputs$deltaRHFPreTg) || is.null(reactive_inputs$deltaRHFPostTg) || is.null(reactive_inputs$StartRHFPreTg) ||
-     is.null(reactive_inputs$deltaCpPreTg) || is.null(reactive_inputs$deltaCpPostTg) || is.null(reactive_inputs$StartCpTempPreTg) ||
-     is.null(reactive_inputs$locationTgTHF) || is.null(reactive_inputs$locationTgRHF) || is.null(reactive_inputs$deltaCpTg)) {
+  if(is.null(reactiveInputs$deltaRHFPreTg) || is.null(reactiveInputs$deltaRHFPostTg) || is.null(reactiveInputs$StartRHFPreTg) ||
+     is.null(reactiveInputs$deltaCpPreTg) || is.null(reactiveInputs$deltaCpPostTg) || is.null(reactiveInputs$StartCpTempPreTg) ||
+     is.null(reactiveInputs$locationTgTHF) || is.null(reactiveInputs$locationTgRHF) || is.null(reactiveInputs$deltaCpTg)) {
     
     msg <- "One of your Tg inputs is missing!"
     return(msg)
   }
   
-  if(length(reactive_inputs$locationTgTHF) != 3){msg <- "The input for the Tg location on the THF must contain 3 values; the onset, the endset, and the midpoint. Your input contained more or fewer values"
+  if(length(reactiveInputs$locationTgTHF) != 3){msg <- "The input for the Tg location on the THF must contain 3 values; the onset, the endset, and the midpoint. Your input contained more or fewer values"
   return(msg)}
-  if(length(reactive_inputs$locationTgRHF) != 3){msg <- "The input for the Tg location on the RHF must contain 3 values; the onset, the endset, and the midpoint. Your input contained more or fewer values"
-  return(msg)}
-  
-  if(reactive_inputs$locationTgTHF[2] < reactive_inputs$locationTgTHF[1]) {msg <- "According to your input, the onset of your Tg on the THF occurs before the endset" 
+  if(length(reactiveInputs$locationTgRHF) != 3){msg <- "The input for the Tg location on the RHF must contain 3 values; the onset, the endset, and the midpoint. Your input contained more or fewer values"
   return(msg)}
   
-  if(reactive_inputs$locationTgTHF[3] < reactive_inputs$locationTgTHF[1]) {msg <- "According to your input, the onset of your Tg on the THF occurs after the midpoint" 
-  return (msg)}
-  
-  if(reactive_inputs$locationTgTHF[2] < reactive_inputs$locationTgTHF[3]) {msg <- "According to your input, the endset of your Tg on the THF occurs before the midpoint" 
-  return (msg)}
-  
-  if(reactive_inputs$locationTgRHF[2] < reactive_inputs$locationTgRHF[1]) {msg <- "According to your input, the onset of your Tg on the RHF occurs before the endset" 
+  if(reactiveInputs$locationTgTHF[2] < reactiveInputs$locationTgTHF[1]) {msg <- "According to your input, the onset of your Tg on the THF occurs before the endset" 
   return(msg)}
   
-  if(reactive_inputs$locationTgRHF[3] < reactive_inputs$locationTgRHF[1]) {msg <- "According to your input, the onset of your Tg on the RHF occurs after the midpoint" 
+  if(reactiveInputs$locationTgTHF[3] < reactiveInputs$locationTgTHF[1]) {msg <- "According to your input, the onset of your Tg on the THF occurs after the midpoint" 
   return (msg)}
   
-  if(reactive_inputs$locationTgRHF[2] < reactive_inputs$locationTgRHF[3]) {msg <- "According to your input, the endset of your Tg on the RHF occurs before the midpoint" 
+  if(reactiveInputs$locationTgTHF[2] < reactiveInputs$locationTgTHF[3]) {msg <- "According to your input, the endset of your Tg on the THF occurs before the midpoint" 
   return (msg)}
   
-  if(reactive_inputs$locationTgRHF[1] < reactive_inputs$startTemp) {msg <- "According to your input, the onset of your Tg on the RHF occurs before the start of your mDSC run" 
+  if(reactiveInputs$locationTgRHF[2] < reactiveInputs$locationTgRHF[1]) {msg <- "According to your input, the onset of your Tg on the RHF occurs before the endset" 
+  return(msg)}
+  
+  if(reactiveInputs$locationTgRHF[3] < reactiveInputs$locationTgRHF[1]) {msg <- "According to your input, the onset of your Tg on the RHF occurs after the midpoint" 
+  return (msg)}
+  
+  if(reactiveInputs$locationTgRHF[2] < reactiveInputs$locationTgRHF[3]) {msg <- "According to your input, the endset of your Tg on the RHF occurs before the midpoint" 
+  return (msg)}
+  
+  if(reactiveInputs$locationTgRHF[1] < reactiveInputs$startTemp) {msg <- "According to your input, the onset of your Tg on the RHF occurs before the start of your mDSC run" 
   return (msg)}
 
-  if(reactive_inputs$locationTgTHF[1] < reactive_inputs$startTemp) {msg <- "According to your input, the onset of your Tg on the THF occurs before the start of your mDSC run" 
+  if(reactiveInputs$locationTgTHF[1] < reactiveInputs$startTemp) {msg <- "According to your input, the onset of your Tg on the THF occurs before the start of your mDSC run" 
   return (msg)}
   
   
   onsetValsGaussian <- c()
-  for(i in seq_along(reactive_inputs$gaussianList)) {onsetValsGaussian[i] <- reactive_inputs$gaussianList[[i]][1]}
+  for(i in seq_along(reactiveInputs$gaussianList)) {onsetValsGaussian[i] <- reactiveInputs$gaussianList[[i]][1]}
   
   endsetValsGaussian <- c()
-  for(i in seq_along(reactive_inputs$gaussianList)) {endsetValsGaussian[i] <- reactive_inputs$gaussianList[[i]][2]}
+  for(i in seq_along(reactiveInputs$gaussianList)) {endsetValsGaussian[i] <- reactiveInputs$gaussianList[[i]][2]}
   
   
-  if(reactive_inputs$gaussianNumber == 0) {
+  if(reactiveInputs$gaussianNumber == 0) {
     NULL
-  } else if(reactive_inputs$gaussianNumber == 1) {
-      if(is.null(reactive_inputs$gaussianList[[1]]) || length(reactive_inputs$gaussianList[[1]]) == 0) {
+  } else if(reactiveInputs$gaussianNumber == 1) {
+      if(is.null(reactiveInputs$gaussianList[[1]]) || length(reactiveInputs$gaussianList[[1]]) == 0) {
         msg <- "One of your Gaussian inputs is missing!"
         return (msg)
       }
     
-    if(length(reactive_inputs$gaussianList[[1]]) != 3) {
+    if(length(reactiveInputs$gaussianList[[1]]) != 3) {
       msg <- "The input for all Gaussian signals must contain 3 values; the onset, the endset, and the enthalpy. Your input contained more or fewer values"
       return(msg)}  
     
     
   } else {
     
-    for(i in 1:reactive_inputs$gaussianNumber) {
-      if(is.null(reactive_inputs$gaussianList[[i]]) || length(reactive_inputs$gaussianList[[i]]) == 0) {
+    for(i in 1:reactiveInputs$gaussianNumber) {
+      if(is.null(reactiveInputs$gaussianList[[i]]) || length(reactiveInputs$gaussianList[[i]]) == 0) {
         msg <- "One of your Gaussian inputs is missing!"
         return (msg)
       }
     }
-      for(i in 1:reactive_inputs$gaussianNumber) {
-        if(length(reactive_inputs$gaussianList[[i]]) != 3) {
+      for(i in 1:reactiveInputs$gaussianNumber) {
+        if(length(reactiveInputs$gaussianList[[i]]) != 3) {
           msg <- "The input for all Gaussian signals must contain 3 values; the onset, the endset, and the enthalpy. Your input contained more or fewer values"
           return(msg)}
       }
     }
   
 
-  if(reactive_inputs$gaussianNumber != 0) {
+  if(reactiveInputs$gaussianNumber != 0) {
       for(i in seq_along(onsetValsGaussian)) {
-        if(onsetValsGaussian[i] < reactive_inputs$startTemp) {
+        if(onsetValsGaussian[i] < reactiveInputs$startTemp) {
           msg <- "One of the onset values of your Gaussians is higher than the starting temperature of your mDSC run!"
           return(msg)
         }

@@ -1,4 +1,9 @@
-finalcalc <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, resampled_points, loessAlpha, df1, df2){
+#-----------------------------------------------------------------------------------------
+# Final calculations both with and without the Fourier transform 
+#-----------------------------------------------------------------------------------------
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_calculation_helper_functions.R")
+
+final_calculation <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, resampled_points, loessAlpha, timeGen, signalGen){
   
   ws <- period*sampling*1 #ws is window size, the factor 1 should be changed to user input to change how many periods should be used for calculations
   user_frequency <- 1/period  
@@ -9,7 +14,7 @@ finalcalc <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, res
 
   finaldf$rollmean <- rollmean(finaldf$MHF, k = ws, fill = NA, align = "center")
   
-  BaselinecorrMHF <- df2$MHF - finaldf$rollmean
+  BaselinecorrMHF <- signalGen$MHF - finaldf$rollmean
   finaldf$BaselinecorrMHFNotEven <- BaselinecorrMHF
   
   # Perform rolling FFT and extract the amplitude at the user-defined frequency
@@ -20,7 +25,7 @@ finalcalc <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, res
     
     # Compute the frequencies corresponding to the FFT result
     n <- length(x)
-    sampling_rate <- 1 / (df1$times[2] - df1$times[1])  # assuming `times` is the time vector in seconds
+    sampling_rate <- 1 / (timeGen$times[2] - timeGen$times[1])  # assuming `times` is the time vector in seconds
     frequencies <- seq(0, sampling_rate / 2, length.out = n / 2 + 1)
     
     # Calculate the amplitude (modulus) of the FFT result
@@ -37,12 +42,11 @@ finalcalc <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, res
   
   finaldf$TRef <- finaldf$time*heatRate + startTemp
   
-  source("../Regular modulated DSC deconvolution/functions.R")
   
   Atemp <- 2*pi*Atemp/period
-  extrema_df <-locate_extrema_manual(finaldf$MHF, finaldf$time, finaldf$TRef)
+  extrema_df <-locate_extrema(finaldf$MHF, finaldf$time, finaldf$TRef)
   counts <- count_extrema(extrema_df)
-  noFTcalc <- HFcalc(extrema_df, Atemp, heatRate)
+  noFTcalc <- calculate_heatflow_min_max(extrema_df, Atemp, heatRate)
   
 
   # Add the rolling amplitude to the data frame

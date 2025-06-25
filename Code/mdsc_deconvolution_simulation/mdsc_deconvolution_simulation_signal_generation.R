@@ -1,38 +1,42 @@
-signalgeneration <- function(reactive_inputs, df1){
-  
-  sampling <- reactive_inputs$sampling
-  startTemp <- reactive_inputs$startTemp
-  endTemp <- reactive_inputs$endTemp
-  period <- reactive_inputs$period
-  heatRate <- reactive_inputs$heatRate
-  Atemp <- reactive_inputs$Atemp
-  phase <- reactive_inputs$phase
-  deltaRHFPreTg <- reactive_inputs$deltaRHFPreTg
-  deltaRHFPostTg <- reactive_inputs$deltaRHFPostTg
-  StartRHFPreTg <- reactive_inputs$StartRHFPreTg
-  deltaCpPreTg <- reactive_inputs$deltaCpPreTg
-  deltaCpPostTg <- reactive_inputs$deltaCpPostTg
-  StartCpTempPreTg <- reactive_inputs$StartCpTempPreTg
-  
-  gaussianNumber <- reactive_inputs$gaussianNumber
+#-----------------------------------------------------------------------------------------
+#Function to create the baseline MHF signal, add Tgs, and add Gaussian curves on top
+#-----------------------------------------------------------------------------------------
 
-  locationTgTHF <- reactive_inputs$locationTgTHF
-  locationTgRHF <- reactive_inputs$locationTgRHF
-  deltaCpTg <- reactive_inputs$deltaCpTg
+signal_generation <- function(reactiveInputs, timeGen){
+  
+  sampling <- reactiveInputs$sampling
+  startTemp <- reactiveInputs$startTemp
+  endTemp <- reactiveInputs$endTemp
+  period <- reactiveInputs$period
+  heatRate <- reactiveInputs$heatRate
+  Atemp <- reactiveInputs$Atemp
+  phase <- reactiveInputs$phase
+  deltaRHFPreTg <- reactiveInputs$deltaRHFPreTg
+  deltaRHFPostTg <- reactiveInputs$deltaRHFPostTg
+  StartRHFPreTg <- reactiveInputs$StartRHFPreTg
+  deltaCpPreTg <- reactiveInputs$deltaCpPreTg
+  deltaCpPostTg <- reactiveInputs$deltaCpPostTg
+  StartCpTempPreTg <- reactiveInputs$StartCpTempPreTg
+  
+  gaussianNumber <- reactiveInputs$gaussianNumber
+
+  locationTgTHF <- reactiveInputs$locationTgTHF
+  locationTgRHF <- reactiveInputs$locationTgRHF
+  deltaCpTg <- reactiveInputs$deltaCpTg
   
   
-  MeltEnth <- reactive_inputs$MeltEnth
-  phase_melt <- reactive_inputs$phase_melt
-  locationMelt <- reactive_inputs$locationMelt
-  Crystalenth <- reactive_inputs$Crystalenth
-  locationcrystal <- reactive_inputs$locationcrystal
-  EnthrecEnth <- reactive_inputs$EnthrecEnth
-  locationEnthRec <- reactive_inputs$locationEnthRec
-  periodSignal <- reactive_inputs$periodSignal
+  MeltEnth <- reactiveInputs$MeltEnth
+  phase_melt <- reactiveInputs$phase_melt
+  locationMelt <- reactiveInputs$locationMelt
+  Crystalenth <- reactiveInputs$Crystalenth
+  locationcrystal <- reactiveInputs$locationcrystal
+  EnthrecEnth <- reactiveInputs$EnthrecEnth
+  locationEnthRec <- reactiveInputs$locationEnthRec
+  periodSignal <- reactiveInputs$periodSignal
 
   
-  times <- df1$times
-  groups <- df1$groups
+  times <- timeGen$times
+  groups <- timeGen$groups
   
   
   deltaRevCpTempPreTg <- -deltaRHFPreTg/heatRate
@@ -162,7 +166,7 @@ signalgeneration <- function(reactive_inputs, df1){
     
     
   } else if (gaussianNumber == 1){
-    signalToAdd <- reactive_inputs$gaussianList[[1]]
+    signalToAdd <- reactiveInputs$gaussianList[[1]]
     onset <- signalToAdd[1]
     endset <- signalToAdd[2]
     midpoint <- (signalToAdd[1]+signalToAdd[2])/2
@@ -184,7 +188,7 @@ signalgeneration <- function(reactive_inputs, df1){
     
   } else {
     for(i in 1:gaussianNumber) {
-      signalToAdd <- reactive_inputs$gaussianList[[i]]
+      signalToAdd <- reactiveInputs$gaussianList[[i]]
       onset <- signalToAdd[1]
       endset <- signalToAdd[2]
       midpoint <- (signalToAdd[1]+signalToAdd[2])/2
@@ -203,8 +207,8 @@ signalgeneration <- function(reactive_inputs, df1){
     }
   }
 
-  df2 <- df
+  signalGen <- df
 
-return(df2)
+return(signalGen)
 }
 

@@ -1,5 +1,6 @@
-# Function only returns message
-
+#-----------------------------------------------------------------------------------------
+# Error handling functions
+#-----------------------------------------------------------------------------------------
 error_handling <- function(reactiveInputs, import) {
   
   msg <- NULL

@@ -127,45 +127,45 @@ mdsc_sim_server <- function(id) {
     
     
     # Create a reactiveValues object to store inputs
-    reactive_inputs <- reactiveValues()
+    reactiveInputs <- reactiveValues()
     
     observeEvent(input$analyze, {
       showPageSpinner()
       
-      reactive_inputs$sampling <- eval(parse(text = input$sampling))
-      reactive_inputs$startTemp <- eval(parse(text = input$startTemp))
-      reactive_inputs$endTemp <- eval(parse(text = input$endTemp))
-      reactive_inputs$period <- eval(parse(text = input$period))
-      reactive_inputs$heatRate <- eval(parse(text = input$heatRate))/60
-      reactive_inputs$Atemp <- eval(parse(text = input$Atemp))
-      reactive_inputs$phase <- eval(parse(text = input$phase))
-      reactive_inputs$loessAlpha <- eval(parse(text = input$loessAlpha))
+      reactiveInputs$sampling <- eval(parse(text = input$sampling))
+      reactiveInputs$startTemp <- eval(parse(text = input$startTemp))
+      reactiveInputs$endTemp <- eval(parse(text = input$endTemp))
+      reactiveInputs$period <- eval(parse(text = input$period))
+      reactiveInputs$heatRate <- eval(parse(text = input$heatRate))/60
+      reactiveInputs$Atemp <- eval(parse(text = input$Atemp))
+      reactiveInputs$phase <- eval(parse(text = input$phase))
+      reactiveInputs$loessAlpha <- eval(parse(text = input$loessAlpha))
       
       
-      reactive_inputs$deltaRHFPreTg <- eval(parse(text = input$deltaRHFPreTg))
-      reactive_inputs$deltaRHFPostTg <- eval(parse(text = input$deltaRHFPostTg))
-      reactive_inputs$StartRHFPreTg <- eval(parse(text = input$StartRHFPreTg))
-      reactive_inputs$deltaCpPreTg <- eval(parse(text = input$deltaCpPreTg))
-      reactive_inputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
-      reactive_inputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
+      reactiveInputs$deltaRHFPreTg <- eval(parse(text = input$deltaRHFPreTg))
+      reactiveInputs$deltaRHFPostTg <- eval(parse(text = input$deltaRHFPostTg))
+      reactiveInputs$StartRHFPreTg <- eval(parse(text = input$StartRHFPreTg))
+      reactiveInputs$deltaCpPreTg <- eval(parse(text = input$deltaCpPreTg))
+      reactiveInputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
+      reactiveInputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
       
       
-      reactive_inputs$locationTgTHF <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
-      reactive_inputs$locationTgRHF <- as.numeric(unlist(strsplit(input$locationTgRHF, ",")))
-      reactive_inputs$deltaCpTg <- as.numeric(unlist(strsplit(input$deltaCpTg, ",")))
+      reactiveInputs$locationTgTHF <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
+      reactiveInputs$locationTgRHF <- as.numeric(unlist(strsplit(input$locationTgRHF, ",")))
+      reactiveInputs$deltaCpTg <- as.numeric(unlist(strsplit(input$deltaCpTg, ",")))
       
 
-      reactive_inputs$gaussianNumber <- as.numeric(input$gaussianNumber)
-      reactive_inputs$gaussianList <- list()
+      reactiveInputs$gaussianNumber <- as.numeric(input$gaussianNumber)
+      reactiveInputs$gaussianList <- list()
       
       
-      if(reactive_inputs$gaussianNumber != 0) {
-        for(i in 1:reactive_inputs$gaussianNumber) {
-          reactive_inputs$gaussianList[[length(reactive_inputs$gaussianList) + 1]] <- as.numeric(unlist(strsplit(input[[paste0("gaussian", i)]], ",")))
+      if(reactiveInputs$gaussianNumber != 0) {
+        for(i in 1:reactiveInputs$gaussianNumber) {
+          reactiveInputs$gaussianList[[length(reactiveInputs$gaussianList) + 1]] <- as.numeric(unlist(strsplit(input[[paste0("gaussian", i)]], ",")))
         }
       } else {NULL}
 
-      msg <- mDSCSimErrorhandlingFunc(reactive_inputs)
+      msg <- simulation_error_handling(reactiveInputs)
       
       # Update the error message output (this triggers UI update)
       output$errorMessage <- renderText({
@@ -178,37 +178,37 @@ mdsc_sim_server <- function(id) {
         return(NULL)
       }
       
-      reactive_inputs$subtitle <- paste0(
-        "Sampling: ", reactive_inputs$sampling, " pts/sec. Period: ", reactive_inputs$period, " sec. ", 
-        "Melting period: ", reactive_inputs$periodSignal, " sec. Heating rate: ", reactive_inputs$heatRate * 60, " °C/min. ",
-        "MHF phase: ", reactive_inputs$phase, " rad. LOESS alpha: ", reactive_inputs$loessAlpha, ".\n Temp. amplitude: ", reactive_inputs$Atemp, " °C.",
-        "Melting amplitude: ", reactive_inputs$MeltEnth, " W/g. Other parameters (such as start temp.) are visible on the plot.")
+      reactiveInputs$subtitle <- paste0(
+        "Sampling: ", reactiveInputs$sampling, " pts/sec. Period: ", reactiveInputs$period, " sec. ", 
+        "Melting period: ", reactiveInputs$periodSignal, " sec. Heating rate: ", reactiveInputs$heatRate * 60, " °C/min. ",
+        "MHF phase: ", reactiveInputs$phase, " rad. LOESS alpha: ", reactiveInputs$loessAlpha, ".\n Temp. amplitude: ", reactiveInputs$Atemp, " °C.",
+        "Melting amplitude: ", reactiveInputs$MeltEnth, " W/g. Other parameters (such as start temp.) are visible on the plot.")
       
       
       
       
-      df1 <- timegeneration(reactive_inputs)
+      timeGen <- time_generation(reactiveInputs)
       
-      df2 <- signalgeneration(reactive_inputs, df1)
+      signalGen <- signal_generation(reactiveInputs, timeGen)
       
-      reactive_inputs$df2 <- df2
+      reactiveInputs$signalGen <- signalGen
       
-      resampled_points <- equalyval(reactive_inputs$df2)
+      resampled_points <- equal_y_val(reactiveInputs$signalGen)
       
-      results <- finalcalc(
-        sampling = reactive_inputs$sampling,
-        startTemp = reactive_inputs$startTemp,
-        endTemp = reactive_inputs$endTemp,
-        period = reactive_inputs$period,
-        heatRate = reactive_inputs$heatRate,
-        Atemp = reactive_inputs$Atemp,
+      results <- final_calculation(
+        sampling = reactiveInputs$sampling,
+        startTemp = reactiveInputs$startTemp,
+        endTemp = reactiveInputs$endTemp,
+        period = reactiveInputs$period,
+        heatRate = reactiveInputs$heatRate,
+        Atemp = reactiveInputs$Atemp,
         resampled_points = resampled_points,
-        loessAlpha = reactive_inputs$loessAlpha,
-        df1 = df1,
-        df2 = df2)
+        loessAlpha = reactiveInputs$loessAlpha,
+        timeGen = timeGen,
+        signalGen = signalGen)
       
-      reactive_inputs$finaldf <- results[[1]]
-      reactive_inputs$noFTcalc <- results[[2]]
+      reactiveInputs$finaldf <- results[[1]]
+      reactiveInputs$noFTcalc <- results[[2]]
       
       enable("mDSCSimplotsDownload")
       enable("downloadExcelSimDSC")
@@ -224,7 +224,7 @@ mdsc_sim_server <- function(id) {
       },
       content = function(file) {
         showPageSpinner()
-        wbmDSCSim <- downloadExcelSimDSCFunc(reactive_inputs)   
+        wbmDSCSim <- download_Excel(reactiveInputs)   
         saveWorkbook(wbmDSCSim, file = file, overwrite = TRUE)
         hidePageSpinner()
       }
@@ -236,8 +236,8 @@ mdsc_sim_server <- function(id) {
       },
       content = function(file) {
         showPageSpinner()
-        res <- reactive_inputs$finaldf
-        res2 <- reactive_inputs$noFTcalc
+        res <- reactiveInputs$finaldf
+        res2 <- reactiveInputs$noFTcalc
         
         tmpdir <- tempdir()
         
@@ -252,7 +252,7 @@ mdsc_sim_server <- function(id) {
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
-          plot = MHFplots(res, reactive_inputs$subtitle),
+          plot = MHFplots(res, reactiveInputs$subtitle),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -261,7 +261,7 @@ mdsc_sim_server <- function(id) {
         
         ggsave(
           filename = plot2_file,
-          plot = overlayplot(res, reactive_inputs$subtitle),
+          plot = overlayplot(res, reactiveInputs$subtitle),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -270,7 +270,7 @@ mdsc_sim_server <- function(id) {
         
         ggsave(
           filename = plot3_file,
-          plot = smoothedTHFplot(res, reactive_inputs$subtitle),
+          plot = smoothedTHFplot(res, reactiveInputs$subtitle),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -279,7 +279,7 @@ mdsc_sim_server <- function(id) {
         
         ggsave(
           filename = plot4_file,
-          plot = smoothedRHFplot(res, reactive_inputs$subtitle),
+          plot = smoothedRHFplot(res, reactiveInputs$subtitle),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -288,7 +288,7 @@ mdsc_sim_server <- function(id) {
         
         ggsave(
           filename = plot5_file,
-          plot = RHFnoFT(res2, reactive_inputs$subtitle),
+          plot = RHFnoFT(res2, reactiveInputs$subtitle),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -297,7 +297,7 @@ mdsc_sim_server <- function(id) {
         
         ggsave(
           filename = plot6_file,
-          plot = smoothedNRHFplot(res, reactive_inputs$subtitle),
+          plot = smoothedNRHFplot(res, reactiveInputs$subtitle),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -315,18 +315,18 @@ mdsc_sim_server <- function(id) {
     
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({
-      req(reactive_inputs$finaldf)  # Ensure results exist
-      req(reactive_inputs$noFTcalc)
-      res <- reactive_inputs$finaldf
-      res2 <- reactive_inputs$noFTcalc
+      req(reactiveInputs$finaldf)  # Ensure results exist
+      req(reactiveInputs$noFTcalc)
+      res <- reactiveInputs$finaldf
+      res2 <- reactiveInputs$noFTcalc
       
       plot_obj <- switch(input$plot_choice,
-                         "MHF" = MHFplots(res, reactive_inputs$subtitle),
-                         "Overlay" = overlayplot(res, reactive_inputs$subtitle),
-                         "THF" = smoothedTHFplot(res, reactive_inputs$subtitle),
-                         "RHF" = smoothedRHFplot(res, reactive_inputs$subtitle),
-                         "RHF no FT" = RHFnoFT(res2, reactive_inputs$subtitle),
-                         "NRHF" = smoothedNRHFplot(res, reactive_inputs$subtitle))
+                         "MHF" = MHFplots(res, reactiveInputs$subtitle),
+                         "Overlay" = overlayplot(res, reactiveInputs$subtitle),
+                         "THF" = smoothedTHFplot(res, reactiveInputs$subtitle),
+                         "RHF" = smoothedRHFplot(res, reactiveInputs$subtitle),
+                         "RHF no FT" = RHFnoFT(res2, reactiveInputs$subtitle),
+                         "NRHF" = smoothedNRHFplot(res, reactiveInputs$subtitle))
       ggplotly(plot_obj, tooltip = c("x", "y", "text"))
     })
   })

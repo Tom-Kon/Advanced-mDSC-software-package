@@ -1,10 +1,14 @@
-timegeneration <- function(reactive_inputs) {
+#-----------------------------------------------------------------------------------------
+#Function to define a vector of time points that will be used in the signal generation
+#-----------------------------------------------------------------------------------------
+
+time_generation <- function(reactiveInputs) {
   
-  sampling <- reactive_inputs$sampling
-  startTemp <- reactive_inputs$startTemp
-  endTemp <- reactive_inputs$endTemp
-  period <- reactive_inputs$period
-  heatRate <- reactive_inputs$heatRate
+  sampling <- reactiveInputs$sampling
+  startTemp <- reactiveInputs$startTemp
+  endTemp <- reactiveInputs$endTemp
+  period <- reactiveInputs$period
+  heatRate <- reactiveInputs$heatRate
   
   
   timeSpan <- (endTemp - startTemp) / heatRate
@@ -27,10 +31,9 @@ timegeneration <- function(reactive_inputs) {
   }
   
   # Convert to a data frame and filter out duplicates
-  df1 <- data.frame(times, groups) %>%
+  timeGen <- data.frame(times, groups) %>%
     distinct(times, .keep_all = TRUE)  # Keep the first occurrence of each time point
 
-  
-  return(df1)
+  return(timeGen)
 }
 

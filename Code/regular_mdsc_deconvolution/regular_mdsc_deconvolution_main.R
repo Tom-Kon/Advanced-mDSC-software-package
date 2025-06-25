@@ -246,7 +246,7 @@ normal_mDSC_server <- function(id) {
       
       
       #Apply functions for non-FT calculation
-      extrema_df <-locate_extrema_manual(d$modHeatFlow, d$time, d$temperature)
+      extrema_df <-locate_extrema(d$modHeatFlow, d$time, d$temperature)
       counts <- count_extrema(extrema_df)
       calculationMinMaxResults <- calculate_heatflow_min_max(extrema_df, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
       

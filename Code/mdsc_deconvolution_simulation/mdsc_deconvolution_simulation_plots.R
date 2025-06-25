@@ -1,12 +1,12 @@
 num_ticks_x <- 10
 num_ticks_y <- 5
 
-MHFplots <- function(resampled_points, subtitle) {
+MHFplots <- function(results, subtitle) {
   
   # Create each ggplot object with the specified names
-  MHF_and_baselinecorr_MHF <- ggplot(resampled_points) +
-    # geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHFNotEven), color = "blue", size = 1) +
-    geom_line(data = resampled_points, aes(x = TRef, y = MHF), color = "blue", linewidth = 1.5) +
+  MHF_and_baselinecorr_MHF <- ggplot(results) +
+    # geom_line(data = results, aes(x = TRef, y = BaselinecorrMHFNotEven), color = "blue", size = 1) +
+    geom_line(data = results, aes(x = TRef, y = MHF), color = "blue", linewidth = 1.5) +
     labs(title = "Initial modulated heat flow and baseline-corrected modulated heat flow",
          subtitle = subtitle,
          x = "Temperature (°C)",
@@ -34,12 +34,12 @@ MHFplots <- function(resampled_points, subtitle) {
   return(MHF_and_baselinecorr_MHF)  
 }
 
-overlayplot <- function(resampled_points, subtitle) {
+overlayplot <- function(results, subtitle) {
   
-  Overlay <- ggplot(resampled_points) +
-    geom_line(data = resampled_points, aes(x = TRef, y = loessTHF, color = "THF"), linewidth = 1.3) +
-    geom_line(data = resampled_points, aes(x = TRef, y = loessRHF, color = "RHF"), linewidth = 1.3) +
-    geom_line(data = resampled_points, aes(x = TRef, y = loessNRHF, color = "NRHF"), linewidth = 1.3) +
+  Overlay <- ggplot(results) +
+    geom_line(data = results, aes(x = TRef, y = loessTHF, color = "THF"), linewidth = 1.3) +
+    geom_line(data = results, aes(x = TRef, y = loessRHF, color = "RHF"), linewidth = 1.3) +
+    geom_line(data = results, aes(x = TRef, y = loessNRHF, color = "NRHF"), linewidth = 1.3) +
     labs(title = "Overlay of the total, reversing and non-reversing heat flows",
          subtitle = subtitle,
          x = "Temperature (°C)",
@@ -69,9 +69,9 @@ overlayplot <- function(resampled_points, subtitle) {
   
   }
 
-smoothedTHFplot <- function(resampled_points, subtitle) {
-  Smoothed_THF <- ggplot(resampled_points) +
-    geom_line(data = resampled_points, aes(x = TRef, y = loessTHF), color = "blue", linewidth = 1.3) +
+smoothedTHFplot <- function(results, subtitle) {
+  Smoothed_THF <- ggplot(results) +
+    geom_line(data = results, aes(x = TRef, y = loessTHF), color = "blue", linewidth = 1.3) +
     labs(title = "LOESS smoothed Total heat flow",
          subtitle = subtitle,
          x = "Temperature (°C)",
@@ -99,10 +99,10 @@ smoothedTHFplot <- function(resampled_points, subtitle) {
 
 
   
-smoothedRHFplot <- function(resampled_points, subtitle) {
+smoothedRHFplot <- function(results, subtitle) {
   
-  Smoothed_RHF <- ggplot(resampled_points) +
-    geom_line(data = resampled_points, aes(x = TRef, y = loessRHF), color = "blue", linewidth = 1.3) +
+  Smoothed_RHF <- ggplot(results) +
+    geom_line(data = results, aes(x = TRef, y = loessRHF), color = "blue", linewidth = 1.3) +
     labs(title = "LOESS smoothed Reversing heat flow",
          subtitle = subtitle,
          x = "Temperature (°C)",
@@ -128,9 +128,9 @@ smoothedRHFplot <- function(resampled_points, subtitle) {
   return(Smoothed_RHF)
 }  
  
-smoothedNRHFplot <- function(resampled_points, subtitle) {
-  Smoothed_NRHF <- ggplot(resampled_points) +
-    geom_line(data = resampled_points, aes(x = TRef, y = loessNRHF), color = "blue", linewidth = 1.3) +
+smoothedNRHFplot <- function(results, subtitle) {
+  Smoothed_NRHF <- ggplot(results) +
+    geom_line(data = results, aes(x = TRef, y = loessNRHF), color = "blue", linewidth = 1.3) +
     labs(title = "LOESS smoothed non-reversing heat flow",
          subtitle = subtitle,
          x = "Temperature (°C)",
@@ -160,7 +160,6 @@ RHFnoFT <- function(res2, subtitle) {
   
   # Create each ggplot object with the specified names
   RHFextracalc <- ggplot(res2) +
-    # geom_line(data = resampled_points, aes(x = TRef, y = BaselinecorrMHFNotEven), color = "blue", size = 1) +
     geom_line(data = res2, aes(x = meantemp, y = RHF), color = "blue", linewidth = 1.5) +
     labs(title = "Reversing heat flow calculated without Fourier transform",
          subtitle = subtitle,

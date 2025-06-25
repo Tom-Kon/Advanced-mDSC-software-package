@@ -1,35 +1,39 @@
-downloadExcelSimDSCFunc <- function(reactive_inputs) {
+#-----------------------------------------------------------------------------------------
+#Function to export the resulting Excel file
+#-----------------------------------------------------------------------------------------
+
+download_Excel <- function(reactiveInputs) {
   
   #Time generation
-  sampling <- reactive_inputs$sampling
-  startTemp <- reactive_inputs$startTemp
-  endTemp <- reactive_inputs$endTemp
-  period <- reactive_inputs$period
-  heatRate <- reactive_inputs$heatRate
+  sampling <- reactiveInputs$sampling
+  startTemp <- reactiveInputs$startTemp
+  endTemp <- reactiveInputs$endTemp
+  period <- reactiveInputs$period
+  heatRate <- reactiveInputs$heatRate
   
   #MHF generation (fixed)
-  Atemp <- reactive_inputs$Atemp
-  phase <- reactive_inputs$phase
-  deltaRHFPreTg <- reactive_inputs$deltaRHFPreTg
-  deltaRHFPostTg <- reactive_inputs$deltaRHFPostTg
-  StartRHFPreTg <- reactive_inputs$StartRHFPreTg
-  deltaCpPreTg <- reactive_inputs$deltaCpPreTg
-  deltaCpPostTg <- reactive_inputs$deltaCpPostTg
-  StartCpTempPreTg <- reactive_inputs$StartCpTempPreTg
+  Atemp <- reactiveInputs$Atemp
+  phase <- reactiveInputs$phase
+  deltaRHFPreTg <- reactiveInputs$deltaRHFPreTg
+  deltaRHFPostTg <- reactiveInputs$deltaRHFPostTg
+  StartRHFPreTg <- reactiveInputs$StartRHFPreTg
+  deltaCpPreTg <- reactiveInputs$deltaCpPreTg
+  deltaCpPostTg <- reactiveInputs$deltaCpPostTg
+  StartCpTempPreTg <- reactiveInputs$StartCpTempPreTg
   
   #MHF generation (Tg)
-  locationTgTHF <- reactive_inputs$locationTgTHF
-  locationTgRHF <- reactive_inputs$locationTgRHF
-  deltaCpTg <- reactive_inputs$deltaCpTg
+  locationTgTHF <- reactiveInputs$locationTgTHF
+  locationTgRHF <- reactiveInputs$locationTgRHF
+  deltaCpTg <- reactiveInputs$deltaCpTg
   
   #MHF generation (for loop)
-  gaussianNumber <- reactive_inputs$gaussianNumber
-  gaussianList <- reactive_inputs$gaussianList
+  gaussianNumber <- reactiveInputs$gaussianNumber
+  gaussianList <- reactiveInputs$gaussianList
   
   
   #Results
-  finaldf <- reactive_inputs$finaldf
-  noFTcalc <-   reactive_inputs$noFTcalc
+  finaldf <- reactiveInputs$finaldf
+  noFTcalc <-   reactiveInputs$noFTcalc
   
   onsetVals <- c()
   for(i in seq_along(gaussianList)) {onsetVals[i] <- gaussianList[[i]][1]}
@@ -83,8 +87,6 @@ downloadExcelSimDSCFunc <- function(reactive_inputs) {
     )
     }
 
-
-  
   
   wbmDSCSim <- createWorkbook()
   

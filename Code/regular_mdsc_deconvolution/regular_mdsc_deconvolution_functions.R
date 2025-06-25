@@ -127,7 +127,7 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
 # Define the function to locate maxima and minima and output their indices and values
 #-----------------------------------------------------------------------------------------
 
-locate_extrema_manual <- function(modHeatFlow_values, time_values, temperature_values) {
+locate_extrema <- function(modHeatFlow_values, time_values, temperature_values) {
   window_size <- 50  # Number of surrounding points to check
   
   maxima_indices <- c()

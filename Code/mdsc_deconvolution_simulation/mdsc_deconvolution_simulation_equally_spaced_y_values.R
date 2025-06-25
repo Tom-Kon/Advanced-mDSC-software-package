@@ -1,14 +1,14 @@
-equalyval <- function(df2) {
+equal_y_val <- function(signalGen) {
   # ---- 2. Resample Data to be Equally Spaced in Y over Full Cycles ----
   # Because sin(x) is not monotonic over a full cycle, we split it into monotonic segments.
-  ds <- diff(df2$MHF)
+  ds <- diff(signalGen$MHF)
   sgn <- sign(ds)
   
   # Detect turning points where the monotonicity changes
   change_idx <- which(diff(sgn) != 0) + 1
   
   # Define segment boundaries (include start and end)
-  seg_boundaries <- sort(unique(c(1, change_idx, length(df2$MHF))))
+  seg_boundaries <- sort(unique(c(1, change_idx, length(signalGen$MHF))))
   
   # Initialize a data frame to hold resampled points
   resampled_points <- data.frame(time = numeric(), MHF = numeric())
@@ -16,8 +16,8 @@ equalyval <- function(df2) {
   # Process each monotonic segment separately
   for (i in 1:(length(seg_boundaries) - 1)) {
     seg_idx <- seg_boundaries[i]:seg_boundaries[i + 1]
-    x_seg <- df2$times[seg_idx]
-    y_seg <- df2$MHF[seg_idx]
+    x_seg <- signalGen$times[seg_idx]
+    y_seg <- signalGen$MHF[seg_idx]
     
     # Create equally spaced y-values for the segment
     y_equally <- seq(min(y_seg), max(y_seg), length.out = length(y_seg))
