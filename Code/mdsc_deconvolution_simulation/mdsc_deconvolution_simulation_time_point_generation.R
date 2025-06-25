@@ -16,7 +16,7 @@ time_generation <- function(reactiveInputs) {
   
   # Define total number of points
   points_per_mod <- period*sampling  # Points per modulation
-  total_points <- .nrMods * (points_per_mod +1) # Total points needed
+  total_points <- .nrMods * (points_per_mod + 1) # Total points needed
   
   # Initialize vector with correct length
   times <- numeric(total_points)
@@ -26,7 +26,8 @@ time_generation <- function(reactiveInputs) {
   for (i in 1:.nrMods) {
     start_idx <- (i - 1) * (points_per_mod + 1) + 1  # Adjust for extra points
     end_idx <- i * (points_per_mod + 1)  # Include extra point
-    times[start_idx:end_idx] <- (i-1) * period + seq(0, period, length.out = (points_per_mod+1))
+    times[start_idx:end_idx] <- (i-1) * period + seq(0, period, 
+                                                     length.out = (points_per_mod + 1))
     groups[start_idx:end_idx] <- i
   }
   
@@ -36,4 +37,3 @@ time_generation <- function(reactiveInputs) {
 
   return(timeGen)
 }
-

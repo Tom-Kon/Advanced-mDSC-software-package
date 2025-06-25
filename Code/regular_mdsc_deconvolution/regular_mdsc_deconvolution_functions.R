@@ -7,7 +7,9 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
   sheet <- as.numeric(sheet)
   
   if (length(excel_sheets(Excel)) < sheet) {
-    msg <- paste0("Error: you're trying to select a sheet that does not exist. You Excel only has ", length(excel_sheets(Excel)), " sheet(s), while you're trying to select sheet number ", sheet)
+    msg <- paste0("Error: you're trying to select a sheet that does not exist. You Excel only has ", 
+                  length(excel_sheets(Excel)), " sheet(s), while you're trying to select sheet number ",
+                  sheet)
     return(msg)
   }  
   
@@ -78,12 +80,9 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
     }    
   }
   
-
-  
   if (length(headers[idxtime]) == 0) {
     msg <- "Error: there is no time column in your selected Excel sheet, or you may have selected the wrong sheet."
     return(msg)
-    
   }
   
   if (length(headers[idxModhf]) == 0) {
@@ -204,9 +203,9 @@ calculate_heatflow_min_max <- function(extremaDf, RHFCalcDenominator, heatingRat
   
   diff <- abs(nrow(maxima)-nrow(minima))
 
-  if(nrow(maxima) > nrow(minima)) {
+  if (nrow(maxima) > nrow(minima)) {
     maxima <- maxima[-(nrow(maxima)-diff+1:nrow(maxima)),]
-  } else if(nrow(maxima) < nrow(minima)) {
+  } else if (nrow(maxima) < nrow(minima)) {
     minima <- minima[-(nrow(minima)-diff+1:nrow(minima)),]
   }
   
@@ -233,7 +232,7 @@ calculate_heatflow_min_max <- function(extremaDf, RHFCalcDenominator, heatingRat
 #-----------------------------------------------------------------------------------------
 #Function defining the calculation based on comparing extremaDf and THF
 #-----------------------------------------------------------------------------------------
-calculate_heatflow_min_max_THF <- function(extremaDf, RHFCalcDenominator, heatingRate, d){
+calculate_heatflow_min_max_THF <- function(extremaDf, RHFCalcDenominator, heatingRate, d) {
   
   maxima <- extremaDf %>%
     filter(type == "maxima")
@@ -256,7 +255,7 @@ calculate_heatflow_min_max_THF <- function(extremaDf, RHFCalcDenominator, heatin
 #-----------------------------------------------------------------------------------------
 #Function defining the calculation based on the Fourier transform
 #-----------------------------------------------------------------------------------------
-calculate_fft <- function(period, d, RHFCalcDenominator, heatingRate){
+calculate_fft <- function(period, d, RHFCalcDenominator, heatingRate) {
   
   dt <- mean(diff(d$time*60))
   freq <- 1/period
@@ -265,12 +264,14 @@ calculate_fft <- function(period, d, RHFCalcDenominator, heatingRate){
   # output <- fftfunc(period, dt, resampled_points)
   window_size <- period/dt
   calculate_fft <- data.frame(time = d$time, temperature = d$temperature)
-  calculate_fft$THF <- rollmean(d$modHeatFlow, k = window_size, fill = NA, align = "center")
+  calculate_fft$THF <- rollmean(d$modHeatFlow, k = window_size, fill = NA, 
+                                align = "center")
   calculate_fft$baselinecorrHF <- d$modHeatFlow - calculate_fft$THF
 
   
   # Perform rolling FFT and extract the amplitude at the user-defined frequency
-  calculate_fft$amplitude <- rollapply(calculate_fft$baselinecorrHF, width = window_size, FUN = function(x) {
+  calculate_fft$amplitude <- rollapply(calculate_fft$baselinecorrHF, 
+                                       width = window_size, FUN = function(x) {
     
     # Perform the Fast Fourier Transform (FFT) on the window
     fft_result <- fft(x)
@@ -294,10 +295,8 @@ calculate_fft <- function(period, d, RHFCalcDenominator, heatingRate){
   calculate_fft$RHF <- calculate_fft$amplitude/RHFCalcDenominator*(-heatingRate/60)
   calculate_fft$NRHF <- calculate_fft$THF - calculate_fft$RHF
   
-  
   return(calculate_fft)
 }
-
 
 
 #-----------------------------------------------------------------------------------------
@@ -325,5 +324,3 @@ calculate_heatflow_min_max_DSC <- function(DSC, extremaDf, RHFCalcDenominator, h
   
   return(CalculationMinMaxResultsDSC)
 }
-
-

@@ -98,7 +98,7 @@ mdsc_quasiIso_server <- function(id) {
       reactiveInputs$recalc <- 1
       
     
-    # Update reactive values when calculate button is pressed
+      # Update reactive values when calculate button is pressed
       # Store file input
       reactiveInputs$Excel <- input$Excel$datapath
       reactiveInputs$fileName <- as.character(input$Excel$name)
@@ -140,7 +140,6 @@ mdsc_quasiIso_server <- function(id) {
         if (!is.null(msg)) hidePageSpinner()
         
         req(is.null(msg))  # Exit here if there's an error
-        
       }
       
       if(!is.null(attr(results, "comment"))) {
@@ -170,7 +169,7 @@ mdsc_quasiIso_server <- function(id) {
       
       reactiveInputs$modulationsBack <- eval(parse(text = input$modulations_back_in_new))
       
-      if (is.null(reactiveInputs$modulationsBack)){
+      if (is.null(reactiveInputs$modulationsBack)) {
         msg <- "Error: the new value for the number of modulations is missing"
       }
       
@@ -200,35 +199,33 @@ mdsc_quasiIso_server <- function(id) {
       
     })
     
-
-    
-output$excelDownload <- downloadHandler(
-  filename = function() {
-    fileName <- unlist(strsplit(reactiveInputs$fileName, "\\."))[1]
-    paste0(fileName, " ", reactiveInputs$modulationsBack, " modulations analysed.xlsx")
-  },
-  
-  content = function(file) {
-    showPageSpinner()
-    
-    wb <- downloadExcel(
-      results = reactiveInputs$results,
-      fileName = reactiveInputs$fileName,
-      modulationsBack = reactiveInputs$modulationsBack,
-      period = reactiveInputs$period,
-      setAmplitude = reactiveInputs$setAmplitude,
-      startingTemp = reactiveInputs$startingTemp,
-      stepSize = reactiveInputs$stepSize,
-      isothermLength = reactiveInputs$isothermLength,
-      sampling = reactiveInputs$sampling
-    )   
-    
-    saveWorkbook(wb, file = file, overwrite = TRUE)
-    
-    hidePageSpinner()
-    
-  }
-)
+    output$excelDownload <- downloadHandler(
+      filename = function() {
+        fileName <- unlist(strsplit(reactiveInputs$fileName, "\\."))[1]
+        paste0(fileName, " ", reactiveInputs$modulationsBack, " modulations analysed.xlsx")
+      },
+      
+      content = function(file) {
+        showPageSpinner()
+        
+        wb <- downloadExcel(
+          results = reactiveInputs$results,
+          fileName = reactiveInputs$fileName,
+          modulationsBack = reactiveInputs$modulationsBack,
+          period = reactiveInputs$period,
+          setAmplitude = reactiveInputs$setAmplitude,
+          startingTemp = reactiveInputs$startingTemp,
+          stepSize = reactiveInputs$stepSize,
+          isothermLength = reactiveInputs$isothermLength,
+          sampling = reactiveInputs$sampling
+        )   
+        
+        saveWorkbook(wb, file = file, overwrite = TRUE)
+        
+        hidePageSpinner()
+        
+      }
+    )
     
     output$NRHFdownload <- downloadHandler(
       filename = function() {
@@ -336,9 +333,6 @@ output$excelDownload <- downloadHandler(
         plot10_file <- file.path(tmpdir, paste0("Prefinal cleaned up data", input$extension))
         plot11_file <- file.path(tmpdir, paste0("Final data used for analysis", input$extension))
         
-        
-        
-        
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
@@ -431,7 +425,10 @@ output$excelDownload <- downloadHandler(
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file ,plot5_file, plot6_file, plot7_file, plot8_file, plot9_file, plot10_file, plot11_file), flags = "-j")
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file,
+                                      plot5_file, plot6_file, plot7_file, 
+                                      plot8_file, plot9_file, plot10_file, 
+                                      plot11_file), flags = "-j")
         
         hidePageSpinner()
         
@@ -444,17 +441,37 @@ output$excelDownload <- downloadHandler(
       res <- reactiveInputs$results
       
       plot_obj <- switch(input$plot_choice,
-                         "NRHF" = NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "RevCp" = RevCp_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "Manual RevCp" = Manual_RevCp_plot(res$resultsNoFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "RevCp and NRHF" = RevCp_NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "Original data" = Original_data(res$`Original data`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "First cleaned up data" = Datasteps_plot_1(res$isolatedPatterns, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "Prefinal cleaned up data" = Datasteps_plot_prefinal(res$deleteLastMax, reactiveInputs$modulationsBack, reactiveInputs$fileName),
-                         "Final data used for analysis" = Datasteps_plot_final(res$finalDataForAnalysis, reactiveInputs$modulationsBack, reactiveInputs$fileName))
+                         "NRHF" = NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, 
+                                            reactiveInputs$fileName),
+                         "RevCp" = RevCp_plot(res$resultsFT, reactiveInputs$modulationsBack, 
+                                              reactiveInputs$fileName),
+                         "Manual RevCp" = Manual_RevCp_plot(res$resultsNoFT,
+                                                            reactiveInputs$modulationsBack, 
+                                                            reactiveInputs$fileName),
+                         "RevCp and NRHF" = RevCp_NRHF_plot(res$resultsFT, 
+                                                            reactiveInputs$modulationsBack, 
+                                                            reactiveInputs$fileName),
+                         "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, 
+                                                               reactiveInputs$modulationsBack, 
+                                                               reactiveInputs$fileName),
+                         "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`,
+                                                                        reactiveInputs$modulationsBack, 
+                                                                        reactiveInputs$fileName),
+                         "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, 
+                                                                      reactiveInputs$modulationsBack,
+                                                                      reactiveInputs$fileName),
+                         "Original data" = Original_data(res$`Original data`, 
+                                                         reactiveInputs$modulationsBack, 
+                                                         reactiveInputs$fileName),
+                         "First cleaned up data" = Datasteps_plot_1(res$isolatedPatterns, 
+                                                                    reactiveInputs$modulationsBack, 
+                                                                    reactiveInputs$fileName),
+                         "Prefinal cleaned up data" = Datasteps_plot_prefinal(res$deleteLastMax, 
+                                                                              reactiveInputs$modulationsBack,
+                                                                              reactiveInputs$fileName),
+                         "Final data used for analysis" = Datasteps_plot_final(res$finalDataForAnalysis, 
+                                                                               reactiveInputs$modulationsBack, 
+                                                                               reactiveInputs$fileName))
       
       ggplotly(plot_obj, tooltip = c("x", "y", "text"))
     })

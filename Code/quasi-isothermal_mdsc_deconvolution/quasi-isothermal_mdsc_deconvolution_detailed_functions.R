@@ -2,7 +2,9 @@
 excel_cleaner <- function(Excel, sheet) {
   
   if (length(excel_sheets(Excel)) < sheet) {
-    msg <- paste0("Error: you're trying to select a sheet that does not exist. You Excel only has ", length(excel_sheets(Excel)), " sheet(s), while you're trying to select sheet number ", sheet)
+    msg <- paste0("Error: you're trying to select a sheet that does not exist. You Excel only has ", 
+                  length(excel_sheets(Excel)), " sheet(s), while you're trying to select sheet number ", 
+                  sheet)
     return(msg)
   }  
   
@@ -13,25 +15,32 @@ excel_cleaner <- function(Excel, sheet) {
   
   temp <- sapply(headers, function(x) strsplit(x, " "))
   
-  idxtime <- which(vapply(temp, function(x) any(tolower(x) %in% "time"), logical(1)) )
+  idxtime <- which(vapply(temp, function(x) any(tolower(x) %in% "time"), 
+                          logical(1)) )
   temp[idxtime] <- "time"
   
-  idxmodtemp <- which(vapply(temp, function(x) {all(c("temperature", "modulated") %in% tolower(x))}, logical(1)))
+  idxmodtemp <- which(vapply(temp, function(x) {all(c("temperature", "modulated") %in% tolower(x))}, 
+                             logical(1)))
   temp[idxmodtemp] <- "modTemp"
   
-  idxtemp <- which(vapply(temp, function(x) any(tolower(x) %in% "temperature"), logical(1)) )
+  idxtemp <- which(vapply(temp, function(x) any(tolower(x) %in% "temperature"), 
+                          logical(1)) )
   temp[idxtemp] <- "temperature"
   
-  idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, logical(1)))
+  idxModhf <- which(vapply(temp, function(x) {all(c("heat", "flow", "modulated") %in% tolower(x))}, 
+                           logical(1)))
   temp[idxModhf] <- "modHeatFlow"
   
-  idxRevhf <- which(vapply(temp, function(x) {all(c("reversing", "heat", "flow") %in% tolower(x))}, logical(1)))
+  idxRevhf <- which(vapply(temp, function(x) {all(c("reversing", "heat", "flow") %in% tolower(x))}, 
+                           logical(1)))
   temp[idxRevhf] <- "RevmodHeatFlow"
   
-  idxNonRevhf <- which(vapply(temp, function(x) {all(c("non-reversing","heat", "flow") %in% tolower(x))}, logical(1)))
+  idxNonRevhf <- which(vapply(temp, function(x) {all(c("non-reversing","heat", "flow") %in% tolower(x))}, 
+                              logical(1)))
   temp[idxNonRevhf] <- "NonRevmodHeatFlow"
   
-  idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, logical(1)))
+  idxhf <- which(vapply(temp, function(x) {all(c("heat", "flow") %in% tolower(x))}, 
+                        logical(1)))
   temp[idxhf] <- "heatFlow"
   
   headers <- unlist(temp)
@@ -85,10 +94,8 @@ excel_cleaner <- function(Excel, sheet) {
       attr(Excel, "comment") <- errorSigFig
       break
     } 
-
   }
   
-
   return(Excel)
 }
 

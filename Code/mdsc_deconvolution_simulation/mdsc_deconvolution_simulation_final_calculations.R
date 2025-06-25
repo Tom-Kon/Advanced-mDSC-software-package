@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------------------
 source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_calculation_helper_functions.R")
 
-final_calculation <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, resampled_points, loessAlpha, timeGen, signalGen){
+final_calculation <- function(sampling, startTemp, endTemp, period, heatRate, Atemp, resampled_points, loessAlpha, timeGen, signalGen) {
   
   ws <- period*sampling*1 #ws is window size, the factor 1 should be changed to user input to change how many periods should be used for calculations
   user_frequency <- 1/period  

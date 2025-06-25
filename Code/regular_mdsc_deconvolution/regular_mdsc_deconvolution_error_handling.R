@@ -39,8 +39,4 @@ error_handling <- function(reactiveInputs, import) {
   }
   
   return(msg)  # No error 
-  
-  
-  
 }
-

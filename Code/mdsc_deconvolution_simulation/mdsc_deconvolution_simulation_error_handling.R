@@ -11,7 +11,6 @@ simulation_error_handling <- function(reactiveInputs){
     return(msg)
   }
   
-  
   if(is.null(reactiveInputs$deltaRHFPreTg) || is.null(reactiveInputs$deltaRHFPostTg) || is.null(reactiveInputs$StartRHFPreTg) ||
      is.null(reactiveInputs$deltaCpPreTg) || is.null(reactiveInputs$deltaCpPostTg) || is.null(reactiveInputs$StartCpTempPreTg) ||
      is.null(reactiveInputs$locationTgTHF) || is.null(reactiveInputs$locationTgRHF) || is.null(reactiveInputs$deltaCpTg)) {
@@ -20,34 +19,55 @@ simulation_error_handling <- function(reactiveInputs){
     return(msg)
   }
   
-  if(length(reactiveInputs$locationTgTHF) != 3){msg <- "The input for the Tg location on the THF must contain 3 values; the onset, the endset, and the midpoint. Your input contained more or fewer values"
-  return(msg)}
-  if(length(reactiveInputs$locationTgRHF) != 3){msg <- "The input for the Tg location on the RHF must contain 3 values; the onset, the endset, and the midpoint. Your input contained more or fewer values"
-  return(msg)}
+  if(length(reactiveInputs$locationTgTHF) != 3) {
+    msg <- "The input for the Tg location on the THF must contain 3 values; the onset, the endset, and the midpoint. Your input contained more or fewer values"
+    return(msg)
+  }
   
-  if(reactiveInputs$locationTgTHF[2] < reactiveInputs$locationTgTHF[1]) {msg <- "According to your input, the onset of your Tg on the THF occurs before the endset" 
-  return(msg)}
+  if(length(reactiveInputs$locationTgRHF) != 3) {
+    msg <- "The input for the Tg location on the RHF must contain 3 values; the onset, the endset, and the midpoint. Your input contained more or fewer values"
+    return(msg)
+  }
   
-  if(reactiveInputs$locationTgTHF[3] < reactiveInputs$locationTgTHF[1]) {msg <- "According to your input, the onset of your Tg on the THF occurs after the midpoint" 
-  return (msg)}
+  if(reactiveInputs$locationTgTHF[2] < reactiveInputs$locationTgTHF[1]) {
+    msg <- "According to your input, the onset of your Tg on the THF occurs before the endset" 
+    return(msg)
+  }
   
-  if(reactiveInputs$locationTgTHF[2] < reactiveInputs$locationTgTHF[3]) {msg <- "According to your input, the endset of your Tg on the THF occurs before the midpoint" 
-  return (msg)}
+  if(reactiveInputs$locationTgTHF[3] < reactiveInputs$locationTgTHF[1]) {
+    msg <- "According to your input, the onset of your Tg on the THF occurs after the midpoint" 
+    return(msg)
+  }
   
-  if(reactiveInputs$locationTgRHF[2] < reactiveInputs$locationTgRHF[1]) {msg <- "According to your input, the onset of your Tg on the RHF occurs before the endset" 
-  return(msg)}
+  if(reactiveInputs$locationTgTHF[2] < reactiveInputs$locationTgTHF[3]) {
+    msg <- "According to your input, the endset of your Tg on the THF occurs before the midpoint" 
+    return(msg)
+  }
   
-  if(reactiveInputs$locationTgRHF[3] < reactiveInputs$locationTgRHF[1]) {msg <- "According to your input, the onset of your Tg on the RHF occurs after the midpoint" 
-  return (msg)}
+  if(reactiveInputs$locationTgRHF[2] < reactiveInputs$locationTgRHF[1]) {
+    msg <- "According to your input, the onset of your Tg on the RHF occurs before the endset" 
+    return(msg)
+  }
   
-  if(reactiveInputs$locationTgRHF[2] < reactiveInputs$locationTgRHF[3]) {msg <- "According to your input, the endset of your Tg on the RHF occurs before the midpoint" 
-  return (msg)}
+  if(reactiveInputs$locationTgRHF[3] < reactiveInputs$locationTgRHF[1]) {
+    msg <- "According to your input, the onset of your Tg on the RHF occurs after the midpoint" 
+    return(msg)
+  }
   
-  if(reactiveInputs$locationTgRHF[1] < reactiveInputs$startTemp) {msg <- "According to your input, the onset of your Tg on the RHF occurs before the start of your mDSC run" 
-  return (msg)}
+  if(reactiveInputs$locationTgRHF[2] < reactiveInputs$locationTgRHF[3]) {
+    msg <- "According to your input, the endset of your Tg on the RHF occurs before the midpoint" 
+    return(msg)
+  }
+  
+  if(reactiveInputs$locationTgRHF[1] < reactiveInputs$startTemp) {
+    msg <- "According to your input, the onset of your Tg on the RHF occurs before the start of your mDSC run" 
+    return(msg)
+  }
 
-  if(reactiveInputs$locationTgTHF[1] < reactiveInputs$startTemp) {msg <- "According to your input, the onset of your Tg on the THF occurs before the start of your mDSC run" 
-  return (msg)}
+  if(reactiveInputs$locationTgTHF[1] < reactiveInputs$startTemp) {
+    msg <- "According to your input, the onset of your Tg on the THF occurs before the start of your mDSC run" 
+    return(msg)
+  }
   
   
   onsetValsGaussian <- c()
@@ -60,15 +80,15 @@ simulation_error_handling <- function(reactiveInputs){
   if(reactiveInputs$gaussianNumber == 0) {
     NULL
   } else if(reactiveInputs$gaussianNumber == 1) {
-      if(is.null(reactiveInputs$gaussianList[[1]]) || length(reactiveInputs$gaussianList[[1]]) == 0) {
-        msg <- "One of your Gaussian inputs is missing!"
-        return (msg)
-      }
+    if(is.null(reactiveInputs$gaussianList[[1]]) || length(reactiveInputs$gaussianList[[1]]) == 0) {
+      msg <- "One of your Gaussian inputs is missing!"
+      return (msg)
+    }
     
     if(length(reactiveInputs$gaussianList[[1]]) != 3) {
       msg <- "The input for all Gaussian signals must contain 3 values; the onset, the endset, and the enthalpy. Your input contained more or fewer values"
-      return(msg)}  
-    
+      return(msg)
+    }
     
   } else {
     
@@ -81,7 +101,8 @@ simulation_error_handling <- function(reactiveInputs){
       for(i in 1:reactiveInputs$gaussianNumber) {
         if(length(reactiveInputs$gaussianList[[i]]) != 3) {
           msg <- "The input for all Gaussian signals must contain 3 values; the onset, the endset, and the enthalpy. Your input contained more or fewer values"
-          return(msg)}
+          return(msg)
+        }
       }
     }
   
@@ -101,9 +122,4 @@ simulation_error_handling <- function(reactiveInputs){
         }
       }
     }
-
-   
-
 }
-
-

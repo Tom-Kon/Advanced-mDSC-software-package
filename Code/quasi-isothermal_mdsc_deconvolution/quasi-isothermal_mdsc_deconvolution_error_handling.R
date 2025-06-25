@@ -21,8 +21,5 @@ error_handling_quasiIso <- function(reactiveInputs) {
     msg <- "Error: one of the inputs is missing"
   }
 
-  return(msg)  
-
+  return(msg)
 }
-
-

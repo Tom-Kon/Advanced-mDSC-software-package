@@ -26,7 +26,8 @@ normal_mDSC_ui <- function(id) {
                    div(style = "width: 100%;",
                        textInput(ns("heatingRate"), "Heating rate in °C/min", "2")),
                    div(style = "width: 100%;",
-                       textInput(ns("setAmplitude"), "Temperature amplitude set by user (°C)", "0.212"))
+                       textInput(ns("setAmplitude"), "Temperature amplitude set by user (°C)", 
+                                 "0.212"))
             )
           ),
           column(6,
@@ -36,7 +37,8 @@ normal_mDSC_ui <- function(id) {
                  checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
                  conditionalPanel(
                    condition = sprintf("!input['%s']", ns("sheetask")),
-                   selectInput(ns("sheet"), "What sheet is it in then?", choices = c("2", "3", "4", "5"))
+                   selectInput(ns("sheet"), "What sheet is it in then?", 
+                               choices = c("2", "3", "4", "5"))
                  ),
                  conditionalPanel(
                    condition = sprintf("input['%s']", ns("compare")),
@@ -44,7 +46,8 @@ normal_mDSC_ui <- function(id) {
                    checkboxInput(ns("sheetask2"), "Is your data in the first sheet of your Excel file?", TRUE),
                    conditionalPanel(
                      condition = sprintf("!input['%s']", ns("sheetask2")),
-                     selectInput(ns("sheet2"), "What sheet is it in then?", choices = c("2", "3", "4", "5"))
+                     selectInput(ns("sheet2"), "What sheet is it in then?", 
+                                 choices = c("2", "3", "4", "5"))
                    )
                  )
           )
@@ -83,9 +86,11 @@ normal_mDSC_ui <- function(id) {
         fluidRow(
           column(12, wellPanel(
             selectInput(ns("plot_choice"), "Select Plot:", 
-                        choices = c("THF", "RHF","NRHF", "THF FT", "RHF FT", "NRHF FT",
-                                    "THF TRIOS", "RHF based on THF TRIOS", "NRHF based on THF TRIOS", 
-                                    "THF unmodulated DSC", "RHF based on unmodulated DSC", "NRHF based on unmodulated DSC"), 
+                        choices = c("THF", "RHF","NRHF", "THF FT", "RHF FT", 
+                                    "NRHF FT", "THF TRIOS", "RHF based on THF TRIOS", 
+                                    "NRHF based on THF TRIOS",  "THF unmodulated DSC", 
+                                    "RHF based on unmodulated DSC", 
+                                    "NRHF based on unmodulated DSC"), 
                         selected = "THF"),
           ))
         ),
@@ -102,45 +107,58 @@ normal_mDSC_ui <- function(id) {
         sidebarLayout(
           sidebarPanel(
             h4("Plot export settings"),
-            selectInput(ns("extension"), "What should the plot's extension be?", c(".png", ".jpg", ".tiff")), 
+            selectInput(ns("extension"), "What should the plot's extension be?", 
+                        c(".png", ".jpg", ".tiff")), 
             textInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
-            textInput(ns("exportWidth"), "What should the plot width be in cm?",  value= 20),
-            textInput(ns("exportHeight"), "What should the plot height be in cm?", value= 20)
+            textInput(ns("exportWidth"), "What should the plot width be in cm?",  
+                      value= 20),
+            textInput(ns("exportHeight"), "What should the plot height be in cm?", 
+                      value= 20)
           ),
           
           mainPanel(
             fluidRow(
               tags$div(
                 style = "text-align: center;",
-                downloadButton(ns("excelDownload"), "Download the Excel sheet with all the analyses", class = "btn-primary btn-lg")
+                downloadButton(ns("excelDownload"), 
+                               "Download the Excel sheet with all the analyses", 
+                               class = "btn-primary btn-lg")
               )
             ),
             br(), br(),
             fluidRow(
               tags$div(
                 style = "text-align: center;",
-                downloadButton(ns("MaxMinAnalysisDownload"), "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and minima", class = "btn-primary btn-lg")
+                downloadButton(ns("MaxMinAnalysisDownload"), 
+                               "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and minima", 
+                               class = "btn-primary btn-lg")
               )
             ),
             br(), br(),
             fluidRow(
               tags$div(
                 style = "text-align: center;",
-                downloadButton(ns("FTAnalysisDownload"), "Download the 3 plots (THF, RHF, NRHF) based on the FT analysis", class = "btn-primary btn-lg")
+                downloadButton(ns("FTAnalysisDownload"), 
+                               "Download the 3 plots (THF, RHF, NRHF) based on the FT analysis", 
+                               class = "btn-primary btn-lg")
               )
             ),
             br(), br(),
             fluidRow(
               tags$div(
                 style = "text-align: center;",
-                downloadButton(ns("MaxTHFAnalysisDownload"), "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and the THF", class = "btn-primary btn-lg")
+                downloadButton(ns("MaxTHFAnalysisDownload"),
+                               "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and the THF",
+                               class = "btn-primary btn-lg")
               )
             ),
             br(), br(),
             fluidRow(
               tags$div(
                 style = "text-align: center;",
-                downloadButton(ns("MaxDSCAnalysisDownload"), "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and the unmodulated DSC", class = "btn-primary btn-lg")
+                downloadButton(ns("MaxDSCAnalysisDownload"), 
+                               "Download the 3 plots (THF, RHF, NRHF) based on the analysis of the maxima and the unmodulated DSC", 
+                               class = "btn-primary btn-lg")
               )
             ),
             br(), br(), br(),
@@ -248,19 +266,26 @@ normal_mDSC_server <- function(id) {
       #Apply functions for non-FT calculation
       extremaDf <-locate_extrema(d$modHeatFlow, d$time, d$temperature)
       counts <- count_extrema(extremaDf)
-      calculationMinMaxResults <- calculate_heatflow_min_max(extremaDf, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
+      calculationMinMaxResults <- calculate_heatflow_min_max(extremaDf, 
+                                                             reactiveInputs$RHFCalcDenominator, 
+                                                             reactiveInputs$heatingRate)
       
       reactiveInputs$extremaDf <- extremaDf
       reactiveInputs$calculationMinMaxResults <- calculationMinMaxResults
       
       
       if(reactiveInputs$HFcalcextra) {
-        calculationMinMaxResultsTHF <- calculate_heatflow_min_max_THF(reactiveInputs$extremaDf, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate, d)
+        calculationMinMaxResultsTHF <- calculate_heatflow_min_max_THF(reactiveInputs$extremaDf, 
+                                                                      reactiveInputs$RHFCalcDenominator, 
+                                                                      reactiveInputs$heatingRate, 
+                                                                      d)
         reactiveInputs$calculationMinMaxResultsTHF <- calculationMinMaxResultsTHF
       }
 
       #Apply functions for FT calculation
-      reactiveInputs$calculate_fft <- calculate_fft(reactiveInputs$period, d, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
+      reactiveInputs$calculate_fft <- calculate_fft(reactiveInputs$period, d,
+                                                    reactiveInputs$RHFCalcDenominator, 
+                                                    reactiveInputs$heatingRate)
       
       
       #Compare with DSC
@@ -281,7 +306,9 @@ normal_mDSC_server <- function(id) {
         
         if (!is.null(msg)) hidePageSpinner()
         
-        DSC <- excel_cleaner(reactiveInputs$ExcelmDSC, reactiveInputs$sheet, reactiveInputs$HFcalcextra, reactiveInputs$compare,import)
+        DSC <- excel_cleaner(reactiveInputs$ExcelmDSC, reactiveInputs$sheet, 
+                             reactiveInputs$HFcalcextra, reactiveInputs$compare,
+                             import)
         
         
         # Update the error message output (this triggers UI update)
@@ -303,7 +330,9 @@ normal_mDSC_server <- function(id) {
         req(is.null(msg))  # Exit here if there's an error
         
         
-        calculationMinMaxResultsDSC <- calculate_heatflow_min_max_DSC(DSC, extremaDf, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
+        calculationMinMaxResultsDSC <- calculate_heatflow_min_max_DSC(DSC, extremaDf, 
+                                                                      reactiveInputs$RHFCalcDenominator,
+                                                                      reactiveInputs$heatingRate)
         reactiveInputs$calculationMinMaxResultsDSC <- calculationMinMaxResultsDSC
    
       }
@@ -378,7 +407,8 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
+            flags = "-j")
         
         
         hidePageSpinner()
@@ -431,7 +461,8 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
+            flags = "-j")
         
         hidePageSpinner()
         
@@ -484,7 +515,8 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
+            flags = "-j")
         
         hidePageSpinner()
         
@@ -536,7 +568,8 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), flags = "-j")
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
+            flags = "-j")
         
         hidePageSpinner()
       }
@@ -586,5 +619,4 @@ normal_mDSC_server <- function(id) {
     
   })
 }
-
   

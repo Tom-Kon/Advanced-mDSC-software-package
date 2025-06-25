@@ -11,10 +11,12 @@ ggplot(calculationMinMaxResults, aes(x = meantemp, y = RHF)) +
   ) +
   theme_minimal(base_size = 18) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                              color = "black"), # Center title with bold font
     plot.subtitle = element_text(size = 12),  # Adjust the size as needed
     axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-    axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+    axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                margin = margin(r = 10)),  # Bold and separated y-axis title
     axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
     axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
     panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -36,10 +38,12 @@ ggplot(calculationMinMaxResults, aes(x = meantemp, y = THF)) +
   ) +
   theme_minimal(base_size = 18) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                              color = "black"), # Center title with bold font
     plot.subtitle = element_text(size = 12),  # Adjust the size as needed
     axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-    axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+    axis.title.y = element_text(size = 18, face = "bold", color = "black",
+                                margin = margin(r = 10)),  # Bold and separated y-axis title
     axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
     axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
     panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -61,10 +65,12 @@ ggplot(calculationMinMaxResults, aes(x = meantemp, y = NRHF)) +
   ) +
   theme_minimal(base_size = 18) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                              color = "black"), # Center title with bold font
     plot.subtitle = element_text(size = 12),  # Adjust the size as needed
     axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-    axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+    axis.title.y = element_text(size = 18, face = "bold", color = "black",
+                                margin = margin(r = 10)),  # Bold and separated y-axis title
     axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
     axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
     panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -86,10 +92,12 @@ THFplotFT <- function(calculate_fft) {
     ) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
       plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -111,10 +119,12 @@ RHFplotFT <- function(calculate_fft) {
     ) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
       plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black",
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -136,10 +146,12 @@ NRHFplotFT <- function(calculate_fft) {
     ) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
       plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black",
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -160,10 +172,12 @@ RHFplotTRIOS <- function(calculationMinMaxResultsTHF) {
     ) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
       plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black",
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -185,10 +199,12 @@ THFplotTRIOS <- function(calculationMinMaxResultsTHF) {
     ) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
       plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -210,10 +226,12 @@ NRHFplotTRIOS <- function(calculationMinMaxResultsTHF) {
     ) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
       plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -234,10 +252,12 @@ RHFplotDSC <- function(CalculationMinMaxResultsDSC) {
     ) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold",
+                                color = "black"), # Center title with bold font
       plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -259,10 +279,12 @@ THFplotDSC <- function(CalculationMinMaxResultsDSC) {
     ) +
     theme_minimal(base_size = 18) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
       plot.subtitle = element_text(size = 12),  # Adjust the size as needed
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black",
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -274,27 +296,27 @@ THFplotDSC <- function(CalculationMinMaxResultsDSC) {
 
 NRHFplotDSC <- function(CalculationMinMaxResultsDSC) {
   
-    # Plot the results
-    ggplot(CalculationMinMaxResultsDSC, aes(x = temperature, y = NRHF)) +
-      geom_line(color = "blue", linewidth = 1.25) +
-      labs(
-        title = "NRHF as a function of temperature",
-        x = "Temperature (°C)",
-        y = "Normalized Non-reversing heat flow (W/g)"
-      ) +
-      theme_minimal(base_size = 18) +
-      theme(
-        plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
-        plot.subtitle = element_text(size = 12),  # Adjust the size as needed
-        axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-        axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
-        axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-        axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
-        panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
-        panel.grid.minor = element_blank(),  # Minor grid lines removed
-        plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-        axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
-      ) 
+  # Plot the results
+  ggplot(CalculationMinMaxResultsDSC, aes(x = temperature, y = NRHF)) +
+    geom_line(color = "blue", linewidth = 1.25) +
+    labs(
+      title = "NRHF as a function of temperature",
+      x = "Temperature (°C)",
+      y = "Normalized Non-reversing heat flow (W/g)"
+    ) +
+    theme_minimal(base_size = 18) +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
+      plot.subtitle = element_text(size = 12),  # Adjust the size as needed
+      axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
+      panel.grid.minor = element_blank(),  # Minor grid lines removed
+      plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
+    ) 
 }
-
-

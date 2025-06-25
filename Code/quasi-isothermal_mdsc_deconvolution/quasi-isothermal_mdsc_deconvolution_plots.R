@@ -17,9 +17,11 @@ NRHF_plot <- function(results, modulationsBack, fileName) {
           ) +
           theme_minimal(base_size = 18) +  # Larger base font size for better readability
           theme(
-            plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+            plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                      color = "black"), # Center title with bold font
             axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-            axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+            axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                        margin = margin(r = 10)),  # Bold and separated y-axis title
             axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
             axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
             panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -27,7 +29,8 @@ NRHF_plot <- function(results, modulationsBack, fileName) {
             plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
             axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
           ) +
-          scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
+          scale_x_continuous(expand = c(0.005, 0.005), 
+                             breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
           scale_y_continuous(
             expand = c(0.0002, 0.0002) # Remove space between plot and y-axis
           )  # This ensures the y-axis covers the full range of your data with extra space at the top
@@ -37,7 +40,8 @@ NRHF_plot <- function(results, modulationsBack, fileName) {
 
 RevCp_plot <- function(results, modulationsBack, fileName) {
   
-  plottitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", modulationsBack, " modulations")
+  plottitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", 
+                           modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
     RevCp_p <- ggplot(results, aes(x = TRef)) +
@@ -50,9 +54,11 @@ RevCp_plot <- function(results, modulationsBack, fileName) {
       ) +
       theme_minimal(base_size = 18) +  # Larger base font size for better readability
       theme(
-        plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+        plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                  color = "black"), # Center title with bold font
         axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-        axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+        axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                    margin = margin(r = 10)),  # Bold and separated y-axis title
         axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
         axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
         panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -60,7 +66,8 @@ RevCp_plot <- function(results, modulationsBack, fileName) {
         plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
         axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
       ) +
-      scale_x_continuous(expand = c(0.005, 0.005), breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
+      scale_x_continuous(expand = c(0.005, 0.005),
+                         breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
       scale_y_continuous(
         expand = c(0.0002, 0.0002) # Remove space between plot and y-axis
       )  # This ensures the y-axis covers the full range of your data with extra space at the top
@@ -72,7 +79,8 @@ RevCp_plot <- function(results, modulationsBack, fileName) {
 
 Manual_RevCp_plot <- function(resultsNoFT, modulationsBack, fileName) {
   
-  plottitleRevCpmanual <- paste0("RevCp calculated manually, ", modulationsBack, " modulations")
+  plottitleRevCpmanual <- paste0("RevCp calculated manually, ",
+                                 modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
 
   manRevCp_p <- ggplot(resultsNoFT, aes(x = Tref)) +
@@ -85,9 +93,11 @@ Manual_RevCp_plot <- function(resultsNoFT, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  # Larger base font size for better readability
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"), # Center title with bold font
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"), # Center title with bold font
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
       axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
@@ -95,7 +105,8 @@ Manual_RevCp_plot <- function(resultsNoFT, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
       axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +  # Set the number of x-axis ticks
     scale_y_continuous(
       expand = c(0, 0)  # Remove space between plot and y-axis
     )  # This ensures the y-axis covers the full range of your data with extra space at the top
@@ -107,7 +118,8 @@ Manual_RevCp_plot <- function(resultsNoFT, modulationsBack, fileName) {
 #***--------------------------------Overlays------------------------**#
 
 RevCp_NRHF_plot <- function(results, modulationsBack, fileName) {
-  plottitleoverlay <- paste0("Overlay of RevCp and NRHF, ", modulationsBack, " modulations")
+  plottitleoverlay <- paste0("Overlay of RevCp and NRHF, ", 
+                             modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
   plot_ly(results) %>%
@@ -128,8 +140,9 @@ RevCp_NRHF_plot <- function(results, modulationsBack, fileName) {
     layout(
       title = list(
         text = paste0(
-          "<span style='font-size:20px; font-weight:bold'>", plottitleoverlay, "</span>",
-          "<br><span style='font-size:18px;'>", subtitle, "</span>"
+          "<span style='font-size:20px; font-weight:bold'>", 
+          plottitleoverlay, "</span>", "<br><span style='font-size:18px;'>", 
+          subtitle, "</span>"
         ),
         x = 0.5,
         xanchor = "center",
@@ -214,9 +227,11 @@ Original_data <- function(orgData, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -224,7 +239,8 @@ Original_data <- function(orgData, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
   
   # Convert to plotly and add hover text
@@ -255,9 +271,11 @@ Datasteps_plot_1 <- function(isolatedPatterns, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black",
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -265,7 +283,8 @@ Datasteps_plot_1 <- function(isolatedPatterns, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
   
   # Convert to plotly and add hover text
@@ -297,9 +316,11 @@ Datasteps_plot_prefinal <- function(deleteLastMax, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 20)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 20)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -307,7 +328,8 @@ Datasteps_plot_prefinal <- function(deleteLastMax, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) 
+    scale_x_continuous(expand = c(0, 0),
+                       breaks = scales::pretty_breaks(n = num_ticks)) 
 
   # Convert to plotly and add hover text
   dStepsCleaned_2Slice <- plotly::ggplotly(dStepsCleaned_2Slice, tooltip = "text") %>%
@@ -325,7 +347,8 @@ Datasteps_plot_final <- function(finalDataForAnalysis, modulationsBack, fileName
   finalDataForAnalysisSlice <- finalDataForAnalysis %>% 
     slice(seq(1, n(), by = 1))
   
-  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulationsBack, " modulations")
+  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", 
+                                          modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   dStepsCleaned_3Slice <- ggplot(finalDataForAnalysisSlice, aes(x = time, y = modHeatFlow)) +
@@ -338,9 +361,11 @@ Datasteps_plot_final <- function(finalDataForAnalysis, modulationsBack, fileName
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold",
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -348,7 +373,8 @@ Datasteps_plot_final <- function(finalDataForAnalysis, modulationsBack, fileName
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
   
   # Convert to plotly and add hover text
@@ -379,9 +405,11 @@ Maxima_minima <- function(extramadf, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -389,7 +417,8 @@ Maxima_minima <- function(extramadf, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
   
   return(Max_min)  
@@ -410,9 +439,11 @@ Maxima_minima_1 <- function(extramadf2, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -420,7 +451,8 @@ Maxima_minima_1 <- function(extramadf2, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
 
   return(Max_min_1)  
@@ -428,7 +460,8 @@ Maxima_minima_1 <- function(extramadf2, modulationsBack, fileName) {
 
 Maxima_minima_2 <- function(extramadf3, modulationsBack, fileName) {
   
-  plottitlemaxmin2 <- paste0("Maxima and minima of oscillations used in calculations, ", modulationsBack, " modulations")
+  plottitlemaxmin2 <- paste0("Maxima and minima of oscillations used in calculations, ", 
+                             modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
   Max_min_2 <- ggplot(extramadf3, aes(x = time, y = modHeatFlow)) +
@@ -441,9 +474,11 @@ Maxima_minima_2 <- function(extramadf3, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black",
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -451,7 +486,8 @@ Maxima_minima_2 <- function(extramadf3, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
   
   return(Max_min_2)  
@@ -475,9 +511,11 @@ Original_dataggplot <- function(orgData, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -485,7 +523,8 @@ Original_dataggplot <- function(orgData, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
   
   return(oD)  
@@ -509,9 +548,11 @@ Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulationsBack, fileName) {
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -519,7 +560,8 @@ Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulationsBack, fileName) {
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
   
   
@@ -545,9 +587,11 @@ Datasteps_plot_prefinalggplot <- function(deleteLastMax, modulationsBack, fileNa
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 20)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 20)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -555,8 +599,8 @@ Datasteps_plot_prefinalggplot <- function(deleteLastMax, modulationsBack, fileNa
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) 
-  
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) 
   
   return(dStepsCleaned_2Slice)  
 }
@@ -567,7 +611,8 @@ Datasteps_plot_finalggplot <- function(finalDataForAnalysis, modulationsBack, fi
   finalDataForAnalysisSlice <- finalDataForAnalysis %>% 
     slice(seq(1, n(), by = 1))
   
-  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulationsBack, " modulations")
+  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", 
+                                          modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   dStepsCleaned_3Slice <- ggplot(finalDataForAnalysisSlice, aes(x = time, y = modHeatFlow)) +
@@ -580,9 +625,11 @@ Datasteps_plot_finalggplot <- function(finalDataForAnalysis, modulationsBack, fi
     ) +
     theme_minimal(base_size = 18) +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = "black"),
+      plot.title = element_text(hjust = 0.5, size = 20, face = "bold", 
+                                color = "black"),
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),
+      axis.title.y = element_text(size = 18, face = "bold", color = "black", 
+                                  margin = margin(r = 10)),
       axis.text = element_text(size = 18, color = "black"),
       axis.line = element_line(color = "black", linewidth = 0.5),
       panel.grid.major = element_line(color = "gray", linewidth = 0.25),
@@ -590,10 +637,9 @@ Datasteps_plot_finalggplot <- function(finalDataForAnalysis, modulationsBack, fi
       plot.margin = margin(20, 20, 20, 20),
       axis.ticks = element_line(color = "black", linewidth = 0.5)
     ) +
-    scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
   
   return(dStepsCleaned_3Slice)  
 }
-
-

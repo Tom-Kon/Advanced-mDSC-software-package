@@ -11,7 +11,9 @@ processDSCrecalc <- function(fileName, results, modulationsBack, period, setAmpl
   
   extremaDfAfterDeleteMax <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
-  finalDataForAnalysis <- delete_data_until_equil(results$deleteLastMax, extremaDfAfterDeleteMax, period, modulationsBack)
+  finalDataForAnalysis <- delete_data_until_equil(results$deleteLastMax, 
+                                                  extremaDfAfterDeleteMax, 
+                                                  period, modulationsBack)
   TRef <- finalDataForAnalysis$pattern*stepSize+startingTemp
   finalDataForAnalysis <- cbind(finalDataForAnalysis, TRef)
   
@@ -100,7 +102,9 @@ processDSCrecalc <- function(fileName, results, modulationsBack, period, setAmpl
   
     #3. Manual RHF calculation
     # Apply the function to your extremaDfAfterDeleteMax data
-    finalAnalysisExtrema <- delete_extrema_until_equil(extremaDfAfterDeleteMax, results$deleteLastMax, period, modulationsBack)
+    finalAnalysisExtrema <- delete_extrema_until_equil(extremaDfAfterDeleteMax, 
+                                                       results$deleteLastMax, 
+                                                       period, modulationsBack)
     
     # Now average the heat_flow values per pattern
     averageHeatMaxima <- finalAnalysisExtrema %>%

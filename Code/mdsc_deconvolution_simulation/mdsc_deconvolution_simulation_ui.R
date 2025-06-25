@@ -17,7 +17,9 @@ configUIsim1 <- function(ns) {
              textInput(ns("Atemp"), "Amplitude of the temperature modulation (°C)", "0.212"),
              textInput(ns("phase"), "Phase of the modulated heat flow with respect to the temperature modulation (rad)", "-0.2"),
              textInput(ns("loessAlpha"), "Degree of smoothing (higher = more smoothing)", "0.05"),
-             selectInput(inputId = ns("gaussianNumber"), label ="How many Gaussian-shaped events do you want to add?", choices = c(0:10)),
+             selectInput(inputId = ns("gaussianNumber"), 
+                         label ="How many Gaussian-shaped events do you want to add?", 
+                         choices = c(0:10)),
       )
     ),
     fluidRow(
@@ -26,13 +28,12 @@ configUIsim1 <- function(ns) {
       column(4,
              tags$div(
                style = "text-align: center;",
-               actionButton(ns("next1"), "Next", class = "btn-primary btn-lg", style = "width: 70%; font-size: 25px; padding: 15px 30px;")
+               actionButton(ns("next1"), "Next", class = "btn-primary btn-lg", 
+                            style = "width: 70%; font-size: 25px; padding: 15px 30px;")
              )
       ),
       column(4)
     )
-
-
   )
 }
 
@@ -63,7 +64,8 @@ configUIsim2 <- function(ns) {
       column(4,
              tags$div(
                style = "text-align: center;",
-               actionButton(ns("next2"), "Next", class = "btn-primary btn-lg", style = "width: 70%; font-size: 25px; padding: 15px 30px;")
+               actionButton(ns("next2"), "Next", class = "btn-primary btn-lg", 
+                            style = "width: 70%; font-size: 25px; padding: 15px 30px;")
              )
       ),
       column(4)
@@ -89,7 +91,8 @@ configUIsim3 <- function(ns) {
       column(4,
              tags$div(
                style = "text-align: center;",
-               actionButton(ns("analyze"), "Analyze", class = "btn-primary btn-lg", style = "width: 70%; font-size: 25px; padding: 15px 30px;"),
+               actionButton(ns("analyze"), "Analyze", class = "btn-primary btn-lg", 
+                            style = "width: 70%; font-size: 25px; padding: 15px 30px;"),
                HTML("<br><br><br>"),
                div(
                  class = "error-text",
@@ -122,10 +125,13 @@ configUI5 <- function(ns) {
   sidebarLayout(
     sidebarPanel(
       h4("Plot export settings"),
-      selectInput(ns("extension"), "What should the plot's extension be?", c(".png", ".jpg", ".tiff")), 
+      selectInput(ns("extension"), "What should the plot's extension be?", 
+                  c(".png", ".jpg", ".tiff")), 
       textInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
-      textInput(ns("exportWidth"), "What should the plot width be in cm?",  value= 20),
-      textInput(ns("exportHeight"), "What should the plot height be in cm?", value= 20)
+      textInput(ns("exportWidth"), "What should the plot width be in cm?",  
+                value= 20),
+      textInput(ns("exportHeight"), "What should the plot height be in cm?", 
+                value= 20)
     ),
     
     mainPanel(
@@ -133,14 +139,16 @@ configUI5 <- function(ns) {
       fluidRow(
         tags$div(
           style = "text-align: center;",
-          downloadButton(ns("downloadExcelSimDSC"), "Download the Excel sheet with all the analyses", class = "btn-primary btn-lg")
+          downloadButton(ns("downloadExcelSimDSC"), "Download the Excel sheet with all the analyses", 
+                         class = "btn-primary btn-lg")
         )
       ),
       br(), br(), br(),
       fluidRow(
         tags$div(
           style = "text-align: center;",
-          downloadButton(ns("mDSCSimplotsDownload"), "Download all the plots as a .zip", class = "btn-primary btn-lg")
+          downloadButton(ns("mDSCSimplotsDownload"), "Download all the plots as a .zip", 
+                         class = "btn-primary btn-lg")
         )
       ),
       br(), br(), br(),
@@ -151,6 +159,3 @@ configUI5 <- function(ns) {
     )
   )
 }
-
-
-

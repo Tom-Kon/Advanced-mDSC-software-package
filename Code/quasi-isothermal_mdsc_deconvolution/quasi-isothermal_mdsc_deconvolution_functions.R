@@ -9,7 +9,7 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
 
   source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_detailed_functions.R")
   
-    # 1. Load and pre‐process the data -------------------------------
+  # 1. Load and pre‐process the data -------------------------------
   originalData <- excel_cleaner(Excel, sheet)
   if(typeof(originalData) == "character") {
     return(originalData)
@@ -43,9 +43,10 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
     unnest(cols = c(extrema_info))
   
   # Then proceed with your cleaning steps – note that you must run your functions that delete data etc.
-  deleteLastMax <- delete_data_after_last_maximum(isolatedPatterns, extremaDfIntermediate, stepSize, startingTemp, sampling, period, pointsDistanceMinimumMargin)
+  deleteLastMax <- delete_data_after_last_maximum(isolatedPatterns, extremaDfIntermediate, 
+                                                  stepSize, startingTemp, sampling, period, 
+                                                  pointsDistanceMinimumMargin)
 
-  
   # Recompute extrema on the cleaned data for the subsequent steps
   extrema_counts2 <- deleteLastMax %>%
     group_by(pattern) %>%
@@ -54,7 +55,8 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
   extremaDfAfterDeleteMax <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
   # finalDataForAnalysis <- delete_data_after_last_minimum(deleteLastMax, extremaDfAfterDeleteMax)
-  finalDataForAnalysis <- delete_data_until_equil(deleteLastMax, extremaDfAfterDeleteMax, period, modulationsBack)
+  finalDataForAnalysis <- delete_data_until_equil(deleteLastMax, extremaDfAfterDeleteMax, 
+                                                  period, modulationsBack)
   TRef <- finalDataForAnalysis$pattern*stepSize+startingTemp
   finalDataForAnalysis <- cbind(finalDataForAnalysis, TRef)
   
@@ -163,8 +165,12 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
     resultsNoFT <- cbind(average_amplitude, RevCpManual, Tref)
     
     
-    results <- list(extremaDfIntermediate, extremaDfAfterDeleteMax, finalAnalysisExtrema, originalData, isolatedPatterns, deleteLastMax, finalDataForAnalysis, resultsFT, resultsNoFT)
-    names(results) <- c("Extrema df1","Extrema df2", "Extrema df3", "Original data", "isolatedPatterns", "deleteLastMax", "finalDataForAnalysis", "resultsFT", "resultsNoFT")
+    results <- list(extremaDfIntermediate, extremaDfAfterDeleteMax, finalAnalysisExtrema, 
+                    originalData, isolatedPatterns, deleteLastMax, finalDataForAnalysis, 
+                    resultsFT, resultsNoFT)
+    names(results) <- c("Extrema df1","Extrema df2", "Extrema df3", "Original data", 
+                        "isolatedPatterns", "deleteLastMax", "finalDataForAnalysis", 
+                        "resultsFT", "resultsNoFT")
 
   
   if(!is.null(attr(originalData, "comment"))) {

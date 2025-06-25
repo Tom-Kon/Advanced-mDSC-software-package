@@ -2,7 +2,7 @@
 #Function to create the baseline MHF signal, add Tgs, and add Gaussian curves on top
 #-----------------------------------------------------------------------------------------
 
-signal_generation <- function(reactiveInputs, timeGen){
+signal_generation <- function(reactiveInputs, timeGen) {
   
   sampling <- reactiveInputs$sampling
   startTemp <- reactiveInputs$startTemp

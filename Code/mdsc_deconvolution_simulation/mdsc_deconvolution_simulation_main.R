@@ -53,12 +53,14 @@ mdsc_sim_ui <- function(id) {
         configUIsim4(ns)
       )
     ),
+    
     tabPanel(
       id = ns("downloads"),
       title = "Downloads",
       icon = icon("download", class = "fa-solid"),
       fluidPage(configUI5(ns))
-    ), 
+    ),
+    
     tabPanel(
       title = "Tutorial",
       icon = icon("book", class = "fa-solid"),
@@ -179,12 +181,16 @@ mdsc_sim_server <- function(id) {
       }
       
       reactiveInputs$subtitle <- paste0(
-        "Sampling: ", reactiveInputs$sampling, " pts/sec. Period: ", reactiveInputs$period, " sec. ", 
-        "Melting period: ", reactiveInputs$periodSignal, " sec. Heating rate: ", reactiveInputs$heatRate * 60, " °C/min. ",
-        "MHF phase: ", reactiveInputs$phase, " rad. LOESS alpha: ", reactiveInputs$loessAlpha, ".\n Temp. amplitude: ", reactiveInputs$Atemp, " °C.",
-        "Melting amplitude: ", reactiveInputs$MeltEnth, " W/g. Other parameters (such as start temp.) are visible on the plot.")
-      
-      
+        "Sampling: ", reactiveInputs$sampling, 
+        " pts/sec. Period: ", reactiveInputs$period, " sec. ", 
+        "Melting period: ", reactiveInputs$periodSignal, 
+        " sec. Heating rate: ", reactiveInputs$heatRate * 60, " °C/min. ",
+        "MHF phase: ", reactiveInputs$phase, 
+        " rad. LOESS alpha: ", reactiveInputs$loessAlpha, 
+        ".\n Temp. amplitude: ", reactiveInputs$Atemp, " °C.",
+        "Melting amplitude: ", reactiveInputs$MeltEnth, 
+        " W/g. Other parameters (such as start temp.) are visible on the plot."
+      )
       
       
       timeGen <- time_generation(reactiveInputs)
@@ -205,7 +211,8 @@ mdsc_sim_server <- function(id) {
         resampled_points = resampled_points,
         loessAlpha = reactiveInputs$loessAlpha,
         timeGen = timeGen,
-        signalGen = signalGen)
+        signalGen = signalGen
+      )
       
       reactiveInputs$finaldf <- results[[1]]
       reactiveInputs$noFTcalc <- results[[2]]
@@ -213,9 +220,7 @@ mdsc_sim_server <- function(id) {
       enable("mDSCSimplotsDownload")
       enable("downloadExcelSimDSC")
       
-      
       hidePageSpinner()
-      
     })
     
     output$downloadExcelSimDSC <- downloadHandler(
@@ -305,7 +310,10 @@ mdsc_sim_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file, plot4_file, plot5_file, plot6_file), flags = "-j")
+        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file, 
+                                      plot4_file, plot5_file, plot6_file), 
+            flags = "-j"
+        )
         
         hidePageSpinner()
         

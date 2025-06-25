@@ -1,6 +1,5 @@
 download_excel_regular_mDSC <- function(reactiveInputs) {
   
-
   period <- reactiveInputs$period
   heatingRate <- reactiveInputs$heatingRate
   setAmplitude <- reactiveInputs$setAmplitude
@@ -46,7 +45,8 @@ download_excel_regular_mDSC <- function(reactiveInputs) {
   if(reactiveInputs$compare) {
     resultsDSC <- reactiveInputs$DSCdf
     addWorksheet(wb, "Analysis using unmodulated DSC")
-    writeData(wb, sheet = "Analysis using unmodulated DSC", calculationMinMaxResultsDSC)
+    writeData(wb, sheet = "Analysis using unmodulated DSC", 
+              calculationMinMaxResultsDSC)
   }
   
   if (reactiveInputs$HFcalcextra) {
@@ -56,6 +56,4 @@ download_excel_regular_mDSC <- function(reactiveInputs) {
   }
 
   return(wb)
-  
 }
-
