@@ -33,7 +33,7 @@ download_Excel <- function(reactiveInputs) {
   
   #Results
   finaldf <- reactiveInputs$finaldf
-  noFTcalc <-   reactiveInputs$noFTcalc
+  noFTcalc <- reactiveInputs$noFTcalc
   
   onsetVals <- c()
   for(i in seq_along(gaussianList)) {onsetVals[i] <- gaussianList[[i]][1]}
@@ -61,8 +61,9 @@ download_Excel <- function(reactiveInputs) {
                    "Slope of the Cp after the Tg (W/°C)",
                    "Starting value of the Cp before the Tg (W/°C)"),
     
-    "Values" = c(sampling, startTemp, endTemp, period, heatRate, Atemp, phase, deltaRHFPreTg, deltaRHFPostTg,
-                 StartRHFPreTg, deltaCpPreTg, deltaCpPostTg, StartCpTempPreTg),
+    "Values" = c(sampling, startTemp, endTemp, period, heatRate, Atemp, phase, 
+                 deltaRHFPreTg, deltaRHFPostTg, StartRHFPreTg, deltaCpPreTg, 
+                 deltaCpPostTg, StartCpTempPreTg),
     
     check.names = FALSE
   )
@@ -85,9 +86,8 @@ download_Excel <- function(reactiveInputs) {
       row.names = c(1:gaussianNumber),
       check.names = FALSE
     )
-    }
+  }
 
-  
   wbmDSCSim <- createWorkbook()
   
   addWorksheet(wbmDSCSim, "Settings")
@@ -95,7 +95,7 @@ download_Excel <- function(reactiveInputs) {
   writeData(wbmDSCSim, sheet <- "Settings", configTg, startCol = 4)
   
   if(gaussianNumber > 0) {
-  writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 10)
+    writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 10)
   }
   
   addWorksheet(wbmDSCSim, "FT Deconvoluted signals")
@@ -106,6 +106,4 @@ download_Excel <- function(reactiveInputs) {
 
   
   return(wbmDSCSim)
-  
 }
-
