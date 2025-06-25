@@ -176,38 +176,38 @@ normal_mDSC_server <- function(id) {
     
 
     # Create a reactiveValues object to store inputs
-    reactive_inputs <- reactiveValues()
+    reactiveInputs <- reactiveValues()
 
     observeEvent(input$analyze,{
       showPageSpinner()
       
       # Extraction
-      reactive_inputs$period <- as.numeric(input$period)
-      reactive_inputs$heatingRate <- as.numeric(input$heatingRate)
-      reactive_inputs$setAmplitude <- as.numeric(input$setAmplitude)
-      reactive_inputs$compare <- input$compare
-      reactive_inputs$ExcelmDSC <- input$ExcelmDSC$datapath
-      reactive_inputs$fileName <- as.character(input$ExcelmDSC$name)
-      reactive_inputs$HFcalcextra <- input$HFcalcextra
-      reactive_inputs$compare <- input$compare
+      reactiveInputs$period <- as.numeric(input$period)
+      reactiveInputs$heatingRate <- as.numeric(input$heatingRate)
+      reactiveInputs$setAmplitude <- as.numeric(input$setAmplitude)
+      reactiveInputs$compare <- input$compare
+      reactiveInputs$ExcelmDSC <- input$ExcelmDSC$datapath
+      reactiveInputs$fileName <- as.character(input$ExcelmDSC$name)
+      reactiveInputs$HFcalcextra <- input$HFcalcextra
+      reactiveInputs$compare <- input$compare
       
       if(input$sheetask) {
-        reactive_inputs$sheet <- 1
+        reactiveInputs$sheet <- 1
       } else {
-        reactive_inputs$sheet <- input$sheet
+        reactiveInputs$sheet <- input$sheet
       }
       
       if(input$sheetask2) {
-        reactive_inputs$sheet2 <- 1
+        reactiveInputs$sheet2 <- 1
       } else {
-        reactive_inputs$sheet2 <- input$sheet2
+        reactiveInputs$sheet2 <- input$sheet2
       }
       
       
       # Read data from Excel sheets
       import <- 1
       msg <- NULL
-      error_handling(reactive_inputs, import)
+      error_handling(reactiveInputs, import)
       
       output$errorMessage <- renderText({
         if (!is.null(msg)) {
@@ -220,9 +220,9 @@ normal_mDSC_server <- function(id) {
       
       if (!is.null(msg)) hidePageSpinner()
       
-      reactive_inputs$RHFCalcDenominator <- reactive_inputs$setAmplitude*2*pi/reactive_inputs$period
+      reactiveInputs$RHFCalcDenominator <- reactiveInputs$setAmplitude*2*pi/reactiveInputs$period
       
-      d <- excel_cleaner(reactive_inputs$ExcelmDSC, reactive_inputs$sheet, reactive_inputs$HFcalcextra, reactive_inputs$compare,import)
+      d <- excel_cleaner(reactiveInputs$ExcelmDSC, reactiveInputs$sheet, reactiveInputs$HFcalcextra, reactiveInputs$compare,import)
       
       # Update the error message output (this triggers UI update)
       if(typeof(d) == "character") {
@@ -248,27 +248,27 @@ normal_mDSC_server <- function(id) {
       #Apply functions for non-FT calculation
       extrema_df <-locate_extrema_manual(d$modHeatFlow, d$time, d$temperature)
       counts <- count_extrema(extrema_df)
-      RHFdf <- calculate_heatflow_min_max(extrema_df, reactive_inputs$RHFCalcDenominator, reactive_inputs$heatingRate)
+      calculationMinMaxResults <- calculate_heatflow_min_max(extrema_df, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
       
-      reactive_inputs$extrema_df <- extrema_df
-      reactive_inputs$RHFdf <- RHFdf
+      reactiveInputs$extrema_df <- extrema_df
+      reactiveInputs$calculationMinMaxResults <- calculationMinMaxResults
       
       
-      if(reactive_inputs$HFcalcextra) {
-        calculationMinMaxResultsTHF <- calculate_heatflow_min_max_THF(reactive_inputs$extrema_df, reactive_inputs$RHFCalcDenominator, reactive_inputs$heatingRate, d)
-        reactive_inputs$calculationMinMaxResultsTHF <- calculationMinMaxResultsTHF
+      if(reactiveInputs$HFcalcextra) {
+        calculationMinMaxResultsTHF <- calculate_heatflow_min_max_THF(reactiveInputs$extrema_df, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate, d)
+        reactiveInputs$calculationMinMaxResultsTHF <- calculationMinMaxResultsTHF
       }
 
       #Apply functions for FT calculation
-      reactive_inputs$calculate_fft <- calculate_fft(reactive_inputs$period, d, reactive_inputs$RHFCalcDenominator, reactive_inputs$heatingRate)
+      reactiveInputs$calculate_fft <- calculate_fft(reactiveInputs$period, d, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
       
       
       #Compare with DSC
-      if(reactive_inputs$compare) {
-        reactive_inputs$ExcelDSC <- input$Excel_DSC$datapath
+      if(reactiveInputs$compare) {
+        reactiveInputs$ExcelDSC <- input$Excel_DSC$datapath
         import <- 2
         
-        error_handling(reactive_inputs, import)
+        error_handling(reactiveInputs, import)
         
         output$errorMessage <- renderText({
           if (!is.null(msg)) {
@@ -281,7 +281,7 @@ normal_mDSC_server <- function(id) {
         
         if (!is.null(msg)) hidePageSpinner()
         
-        DSC <- excel_cleaner(reactive_inputs$ExcelmDSC, reactive_inputs$sheet, reactive_inputs$HFcalcextra, reactive_inputs$compare,import)
+        DSC <- excel_cleaner(reactiveInputs$ExcelmDSC, reactiveInputs$sheet, reactiveInputs$HFcalcextra, reactiveInputs$compare,import)
         
         
         # Update the error message output (this triggers UI update)
@@ -303,16 +303,16 @@ normal_mDSC_server <- function(id) {
         req(is.null(msg))  # Exit here if there's an error
         
         
-        calculationMinMaxResultsDSC <- calculate_heatflow_min_max_DSC(DSC, extrema_df, reactive_inputs$RHFCalcDenominator, reactive_inputs$heatingRate)
-        reactive_inputs$calculationMinMaxResultsDSC <- calculationMinMaxResultsDSC
+        calculationMinMaxResultsDSC <- calculate_heatflow_min_max_DSC(DSC, extrema_df, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
+        reactiveInputs$calculationMinMaxResultsDSC <- calculationMinMaxResultsDSC
    
       }
       
       enable("excelDownload")
       enable("MaxMinAnalysisDownload")
       enable("FTAnalysisDownload")
-      toggleState(id = "MaxTHFAnalysisDownload", condition = reactive_inputs$HFcalcextra)
-      toggleState(id = "MaxDSCAnalysisDownload", condition = reactive_inputs$compare)
+      toggleState(id = "MaxTHFAnalysisDownload", condition = reactiveInputs$HFcalcextra)
+      toggleState(id = "MaxDSCAnalysisDownload", condition = reactiveInputs$compare)
       
       hidePageSpinner()
 
@@ -320,12 +320,12 @@ normal_mDSC_server <- function(id) {
     
     output$excelDownload <- downloadHandler(
       filename = function() {
-        fileName <- unlist(strsplit(reactive_inputs$fileName, "\\."))[1]
+        fileName <- unlist(strsplit(reactiveInputs$fileName, "\\."))[1]
         paste0(fileName, ".xlsx")
       },
       content = function(file) {
         showPageSpinner()
-        wb <- download_excel_regular_mDSC(reactive_inputs)
+        wb <- download_excel_regular_mDSC(reactiveInputs)
         saveWorkbook(wb, file = file, overwrite = TRUE)
         hidePageSpinner()
         
@@ -335,7 +335,7 @@ normal_mDSC_server <- function(id) {
     
     output$MaxMinAnalysisDownload <- downloadHandler(
       filename = function() {
-        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
         Title <- "Plots based on Max-Min analysis of MHF"
         paste0(subtitle, " ", Title, ".zip")  # Must be .zip
       },
@@ -352,7 +352,7 @@ normal_mDSC_server <- function(id) {
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
-          plot = RHFplot(reactive_inputs$RHFdf),
+          plot = RHFplot(reactiveInputs$calculationMinMaxResults),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -361,7 +361,7 @@ normal_mDSC_server <- function(id) {
         
         ggsave(
           filename = plot2_file,
-          plot = THFplot(reactive_inputs$RHFdf),
+          plot = THFplot(reactiveInputs$calculationMinMaxResults),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -370,7 +370,7 @@ normal_mDSC_server <- function(id) {
         
         ggsave(
           filename = plot3_file,
-          plot = NRHFplot(reactive_inputs$RHFdf),
+          plot = NRHFplot(reactiveInputs$calculationMinMaxResults),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -388,7 +388,7 @@ normal_mDSC_server <- function(id) {
     
     output$FTAnalysisDownload <- downloadHandler(
       filename = function() {
-        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
         Title <- "Plots based on FT analysis"
         paste0(subtitle, " ", Title, ".zip")  # Must be .zip
       },
@@ -405,7 +405,7 @@ normal_mDSC_server <- function(id) {
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
-          plot = RHFplotFT(reactive_inputs$calculate_fft),
+          plot = RHFplotFT(reactiveInputs$calculate_fft),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -414,7 +414,7 @@ normal_mDSC_server <- function(id) {
         
         ggsave(
           filename = plot2_file,
-          plot = THFplotFT(reactive_inputs$calculate_fft),
+          plot = THFplotFT(reactiveInputs$calculate_fft),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -423,7 +423,7 @@ normal_mDSC_server <- function(id) {
         
         ggsave(
           filename = plot3_file,
-          plot = NRHFplotFT(reactive_inputs$calculate_fft),
+          plot = NRHFplotFT(reactiveInputs$calculate_fft),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -441,7 +441,7 @@ normal_mDSC_server <- function(id) {
     
     output$MaxTHFAnalysisDownload <- downloadHandler(
       filename = function() {
-        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
         Title <- "Plots based analysis of maxima and THF"
         paste0(subtitle, " ", Title, ".zip")  # Must be .zip
       },
@@ -458,7 +458,7 @@ normal_mDSC_server <- function(id) {
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
-          plot = RHFplotTRIOS(reactive_inputs$calculationMinMaxResultsTHF),
+          plot = RHFplotTRIOS(reactiveInputs$calculationMinMaxResultsTHF),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -467,7 +467,7 @@ normal_mDSC_server <- function(id) {
         
         ggsave(
           filename = plot2_file,
-          plot = THFplotTRIOS(reactive_inputs$calculationMinMaxResultsTHF),
+          plot = THFplotTRIOS(reactiveInputs$calculationMinMaxResultsTHF),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -476,7 +476,7 @@ normal_mDSC_server <- function(id) {
         
         ggsave(
           filename = plot3_file,
-          plot = NRHFplotTRIOS(reactive_inputs$calculationMinMaxResultsTHF),
+          plot = NRHFplotTRIOS(reactiveInputs$calculationMinMaxResultsTHF),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -493,7 +493,7 @@ normal_mDSC_server <- function(id) {
     
     output$MaxDSCAnalysisDownload <- downloadHandler(
       filename = function() {
-        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
         Title <- "Plots based on analysis of maxima and DSC"
         paste0(subtitle, " ", Title, ".zip")  # Must be .zip
       },
@@ -510,7 +510,7 @@ normal_mDSC_server <- function(id) {
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
-          plot = RHFplotDSC(reactive_inputs$calculationMinMaxResultsDSC),
+          plot = RHFplotDSC(reactiveInputs$calculationMinMaxResultsDSC),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -519,7 +519,7 @@ normal_mDSC_server <- function(id) {
         
         ggsave(
           filename = plot2_file,
-          plot = THFplotDSC(reactive_inputs$calculationMinMaxResultsDSC),
+          plot = THFplotDSC(reactiveInputs$calculationMinMaxResultsDSC),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -528,7 +528,7 @@ normal_mDSC_server <- function(id) {
         
         ggsave(
           filename = plot3_file,
-          plot = NRHFplotDSC(reactive_inputs$calculationMinMaxResultsDSC),
+          plot = NRHFplotDSC(reactiveInputs$calculationMinMaxResultsDSC),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -545,38 +545,38 @@ normal_mDSC_server <- function(id) {
     
     # Render the plot using the reactive sample_results
     output$plot <- renderPlotly({
-      req(reactive_inputs$calculate_fft)
+      req(reactiveInputs$calculate_fft)
       
       plot_obj <- switch(input$plot_choice,
-                         "RHF" = RHFplot(reactive_inputs$RHFdf),
-                         "THF" = THFplot(reactive_inputs$RHFdf),
-                         "NRHF" = NRHFplot(reactive_inputs$RHFdf),
-                         "THF FT" = THFplotFT(reactive_inputs$calculate_fft),
-                         "RHF FT" = RHFplotFT(reactive_inputs$calculate_fft),
-                         "NRHF FT" = NRHFplotFT(reactive_inputs$calculate_fft),
+                         "RHF" = RHFplot(reactiveInputs$calculationMinMaxResults),
+                         "THF" = THFplot(reactiveInputs$calculationMinMaxResults),
+                         "NRHF" = NRHFplot(reactiveInputs$calculationMinMaxResults),
+                         "THF FT" = THFplotFT(reactiveInputs$calculate_fft),
+                         "RHF FT" = RHFplotFT(reactiveInputs$calculate_fft),
+                         "NRHF FT" = NRHFplotFT(reactiveInputs$calculate_fft),
                          "THF TRIOS" = {
                            validate(need(input$HFcalcextra, "Please check 'Do you want to calculate RHF and NRHF using the THF as well?' to show THF TRIOS plots."))
-                           THFplotTRIOS(reactive_inputs$calculationMinMaxResultsTHF)
+                           THFplotTRIOS(reactiveInputs$calculationMinMaxResultsTHF)
                          },
                          "RHF based on THF TRIOS" = {
                            validate(need(input$HFcalcextra, "Please check 'Do you want to calculate RHF and NRHF using the THF as well?' to show RHF based on THF TRIOS plots."))
-                           RHFplotTRIOS(reactive_inputs$calculationMinMaxResultsTHF)
+                           RHFplotTRIOS(reactiveInputs$calculationMinMaxResultsTHF)
                          },
                          "NRHF based on THF TRIOS" = {
                            validate(need(input$HFcalcextra, "Please check 'Do you want to calculate RHF and NRHF using the THF as well?' to show NRHF based on THF TRIOS plots."))
-                           NRHFplotTRIOS(reactive_inputs$calculationMinMaxResultsTHF)
+                           NRHFplotTRIOS(reactiveInputs$calculationMinMaxResultsTHF)
                          },
                          "THF unmodulated DSC" = {
                            validate(need(input$compare, "Please check 'Do you want to compare with unmodulated DSC?' to show THF unmodulated DSC plots."))
-                           THFplotDSC(reactive_inputs$calculationMinMaxResultsDSC)
+                           THFplotDSC(reactiveInputs$calculationMinMaxResultsDSC)
                          },
                          "RHF based on unmodulated DSC" = {
                            validate(need(input$compare, "Please check 'Do you want to compare with unmodulated DSC?' to show RHF unmodulated DSC plots."))
-                           RHFplotDSC(reactive_inputs$calculationMinMaxResultsDSC)
+                           RHFplotDSC(reactiveInputs$calculationMinMaxResultsDSC)
                          },
                          "NRHF based on unmodulated DSC" = {
                            validate(need(input$compare, "Please check 'Do you want to compare with unmodulated DSC?' to show NRHF unmodulated DSC plots."))
-                           NRHFplotDSC(reactive_inputs$calculationMinMaxResultsDSC)
+                           NRHFplotDSC(reactiveInputs$calculationMinMaxResultsDSC)
                          }
       )
       

@@ -1,13 +1,13 @@
-download_excel_regular_mDSC <- function(reactive_inputs) {
+download_excel_regular_mDSC <- function(reactiveInputs) {
   
 
-  period <- reactive_inputs$period
-  heatingRate <- reactive_inputs$heatingRate
-  setAmplitude <- reactive_inputs$setAmplitude
+  period <- reactiveInputs$period
+  heatingRate <- reactiveInputs$heatingRate
+  setAmplitude <- reactiveInputs$setAmplitude
   tempModAmplitude <- setAmplitude*2*pi/period
-  compare <- reactive_inputs$compare
-  HFcalcextra <- reactive_inputs$HFcalcextra
-  fileName <- reactive_inputs$fileName
+  compare <- reactiveInputs$compare
+  HFcalcextra <- reactiveInputs$HFcalcextra
+  fileName <- reactiveInputs$fileName
 
   config <- data.frame(
     Parameter = c("Period (sec)",
@@ -30,8 +30,8 @@ download_excel_regular_mDSC <- function(reactive_inputs) {
   
   wb <- createWorkbook(fileName)
   
-  resultsMaxMinfullmanual <- reactive_inputs$RHFdf
-  resultsfft <- reactive_inputs$fftCalc
+  resultsMaxMinfullmanual <- reactiveInputs$calculationMinMaxResults
+  calculate_fft <- reactiveInputs$calculate_fft
   
  
   addWorksheet(wb, "Settings")
@@ -41,18 +41,18 @@ download_excel_regular_mDSC <- function(reactive_inputs) {
   writeData(wb, sheet = "Analysis Min and Max", resultsMaxMinfullmanual)
   
   addWorksheet(wb, "Analysis using FT")
-  writeData(wb, sheet = "Analysis using FT", resultsfft)
+  writeData(wb, sheet = "Analysis using FT", calculate_fft)
   
-  if(reactive_inputs$compare) {
-    resultsDSC <- reactive_inputs$DSCdf
+  if(reactiveInputs$compare) {
+    resultsDSC <- reactiveInputs$DSCdf
     addWorksheet(wb, "Analysis using unmodulated DSC")
-    writeData(wb, sheet = "Analysis using unmodulated DSC", resultsDSC)
+    writeData(wb, sheet = "Analysis using unmodulated DSC", calculationMinMaxResultsDSC)
   }
   
-  if (reactive_inputs$HFcalcextra) {
-    resultsMaxMinTHF <- reactive_inputs$RHFdf2
+  if (reactiveInputs$HFcalcextra) {
+    resultsMaxMinTHF <- reactiveInputs$RHFdf2
     addWorksheet(wb, "Analysis Max and THF")
-    writeData(wb, sheet = "Analysis Max and THF", resultsMaxMinTHF)
+    writeData(wb, sheet = "Analysis Max and THF", calculationMinMaxResultsTHF)
   }
 
   return(wb)
