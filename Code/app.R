@@ -9,19 +9,20 @@ if (requireNamespace("rstudioapi", quietly = TRUE) &&
   setwd(normalizePath("."))
 }
 
-source("Overarching app/router_setup.R")
-source("Overarching app/HTML styling.R")
+source("overarching_app/router_setup.R")
 
 
 home_page <- div(
   tags$div(
     navbarPage(
       title = "Home page",
+      
       tabPanel(
         title = "Select a sub-app",
         icon = icon("hand-pointer", class = "fa-solid"),
         tags$head(
-          tags$style(source("Overarching app/HTML styling.R"))
+          tags$script(src = "goBack.js"),
+          tags$style(source("overarching_app/html_styling.R"))
         ),
         
         fluidPage(
@@ -101,11 +102,12 @@ home_page <- div(
         icon = icon("book", class = "fa-solid"),
         fluidPage(
           withMathJax(
-            includeMarkdown("Overarching app/Tutorial/Overarching_Tutorial.md")
+            includeMarkdown("overarching_app/tutorial/overarching_app_tutorial.md")
           )
         )
         
-      )
+      ),
+      
     )
   ),
   
@@ -113,6 +115,20 @@ home_page <- div(
 
 ui <- fluidPage(
   useShinyjs(),
+  tags$head(
+    tags$script(src = "goBack.js"),
+    tags$style(HTML("
+      #goBack {
+        position: fixed;
+        top: 10px;
+        right: 20px;
+        z-index: 9999;
+      }
+    "))
+  ),
+  actionButton("goBack", "← Back to Home",
+               style = "position: fixed; top: 10px; right: 20px; z-index: 9999; display: block; color: white; background: transparent; border: none;"),
+  
   router_ui(
     route("/", home_page),
     route("mDScSim", mdsc_sim_ui("mDScSim")),
@@ -124,6 +140,11 @@ ui <- fluidPage(
 
 # Define the server logic
 server <- function(input, output, session) {
+  
+  observeEvent(input$goBack, {
+    session$sendCustomMessage("goBack", list())
+  })
+  
   # Start the router server logic
   router_server(root_page = "/")
   mdsc_sim_server("mDScSim")

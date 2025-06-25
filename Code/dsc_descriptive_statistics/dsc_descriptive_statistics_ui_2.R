@@ -58,8 +58,11 @@ tagList(
     column(
       12,
       mainPanel(
-        actionButton(ns("Next"), "Next tab")
-      ),
+        div(
+          actionButton(ns("Next"), "Next tab", class = "btn btn-primary btn-lg"),
+          style = "text-align: right;"
+        )
+      )
     )
   ),
 )

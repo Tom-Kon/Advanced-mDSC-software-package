@@ -1,13 +1,12 @@
-# mdsc_module.R
-source("Modulated DSC deconvolution simulation/libraries.R")
-source("Modulated DSC deconvolution simulation/configapp_modDSCSim.R")
-source("Modulated DSC deconvolution simulation/downloadsDSCSim.R")
-source("Modulated DSC deconvolution simulation/Time point generation.R")
-source("Modulated DSC deconvolution simulation/Signal generation.R")
-source("Modulated DSC deconvolution simulation/Equally-spaced y-values.R")
-source("Modulated DSC deconvolution simulation/Final calculations.R")
-source("Modulated DSC deconvolution simulation/Plot generation and control.R")
-source("Modulated DSC deconvolution simulation/mDSCSimErrorHandling.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_libraries.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_ui.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_downloads.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_time_point_generation.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_signal_generation.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_equally_spaced_y_values.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_final_calculations.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_plots.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_error_handling.R")
 
 
 mdsc_sim_ui <- function(id) {
@@ -65,7 +64,7 @@ mdsc_sim_ui <- function(id) {
       icon = icon("book", class = "fa-solid"),
       fluidPage(
         withMathJax(
-          includeMarkdown("Modulated DSC deconvolution simulation/simulation tutorial.md")
+          includeMarkdown("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_tutorial.md")
         )
       )
     )

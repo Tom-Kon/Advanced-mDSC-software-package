@@ -1,10 +1,10 @@
-source("Quasi-Isothermal modulated DSC deconvolution/libraries.R")
-source("Quasi-Isothermal modulated DSC deconvolution/configapp.R")
-source("Quasi-Isothermal modulated DSC deconvolution/error_handling.R")
-source("Quasi-Isothermal modulated DSC deconvolution/Processing and cleaning overall function.R")
-source("Quasi-Isothermal modulated DSC deconvolution/plots.R")
-source("Quasi-Isothermal modulated DSC deconvolution/quickly recalculate for different mods.R")
-source("Quasi-Isothermal modulated DSC deconvolution/download.R")
+source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_libraries.R")
+source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_ui.R")
+source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_error_handling.R")
+source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_functions.R")
+source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
+source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_quickly_recalculate_function.R")
+source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_downloads.R")
 
 
 
@@ -54,7 +54,7 @@ quasiIsotherm_ui <- function(id) {
       icon = icon("book", class = "fa-solid"),
       fluidPage(
         withMathJax(
-          includeMarkdown("Quasi-Isothermal modulated DSC deconvolution/quasiisothermal mDSC tutorial.md")
+          includeMarkdown("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_tutorial.md")
         )
       )
     )
@@ -240,7 +240,7 @@ output$excelDownload <- downloadHandler(
         paste0(subtitle, " ", plotTitleNRHF, input$extension)
       },
       content = function(file) {
-        source("Quasi-Isothermal modulated DSC deconvolution/plots.R")
+        source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
         res <- reactive_inputs$sample_results
         
         NRHF_plot(
@@ -267,7 +267,7 @@ output$excelDownload <- downloadHandler(
         paste0(subtitle, " ", plotTitleRevCp, input$extension)
       },
       content = function(file) {
-        source("Quasi-Isothermal modulated DSC deconvolution/plots.R")
+        source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
         res <- reactive_inputs$sample_results
         
         RevCp_plot(
@@ -294,7 +294,7 @@ output$excelDownload <- downloadHandler(
         paste0(subtitle, " ", plottitleRevCpmanual, input$extension)
       },
       content = function(file) {
-        source("Quasi-Isothermal modulated DSC deconvolution/plots.R")
+        source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
         res <- reactive_inputs$sample_results
         
         Manual_RevCp_plot(
@@ -369,15 +369,6 @@ output$excelDownload <- downloadHandler(
           height = as.numeric(input$exportHeight),
           units = "cm"
         )
-        
-        # ggsave(
-        #   filename = plot4_file,
-        #   plot = RevCp_NRHF_plotggplot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
-        #   dpi = as.numeric(input$exportDpi),
-        #   width = as.numeric(input$exportWidth),
-        #   height = as.numeric(input$exportHeight),
-        #   units = "cm"
-        # )
         
         ggsave(
           filename = plot5_file,

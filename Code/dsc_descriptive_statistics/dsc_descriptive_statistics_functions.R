@@ -1,5 +1,5 @@
-source("DSC descriptive statistics/functions.R")
-source("DSC descriptive statistics/errorhandling.R", local= TRUE)
+source("dsc_descriptive_statistics/dsc_descriptive_statistics_detailed_functions.R")
+source("dsc_descriptive_statistics/dsc_descriptive_statistics_error_handling.R", local= TRUE)
 
 #---------------------------------------------------------------------------------------------------------------
 # Code
@@ -20,6 +20,7 @@ source("DSC descriptive statistics/errorhandling.R", local= TRUE)
 # Extract variables: include files, numCycles, tableTitle, outputLocation, outputExcel, outputSheet, Number of pans, outputSheetRaw
 #------------------------------------------------------------------------------------------------------------------------------------
 analysisAndExcel <- function(input, extraInput) {
+
   numTables <- extraInput$numTables
   msg <- NULL
   

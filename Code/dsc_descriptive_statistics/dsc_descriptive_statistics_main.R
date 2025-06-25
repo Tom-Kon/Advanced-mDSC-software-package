@@ -1,6 +1,6 @@
-source("DSC descriptive statistics/libraries.R")
-source("DSC descriptive statistics/functions.R")
-source("DSC descriptive statistics/analysisandExcel.R")
+source("dsc_descriptive_statistics/dsc_descriptive_statistics_libraries.R")
+source("dsc_descriptive_statistics/dsc_descriptive_statistics_functions.R")
+source("dsc_descriptive_statistics/dsc_descriptive_statistics_detailed_functions.R")
 
 
 mdsc_analyzer_ui<- function(id) {
@@ -28,7 +28,7 @@ mdsc_analyzer_ui<- function(id) {
       
       #Actual input tabs are here---------------------------------------------------------------------------------------------------------------------------
       
-      source("DSC descriptive statistics/main.R", local = TRUE)$value,
+      source("dsc_descriptive_statistics/dsc_descriptive_statistics_ui_2.R", local = TRUE)$value,
     ),
     
     tabPanel(
@@ -36,7 +36,7 @@ mdsc_analyzer_ui<- function(id) {
       id= ns("outputInputTab"),
       icon = icon("file-import", class = "fa-solid"),
       value = "outputInputTab",
-      source("DSC descriptive statistics/inputoutputtab.R", local = TRUE)$value),
+      source("dsc_descriptive_statistics/dsc_descriptive_statistics_ui_1.R", local = TRUE)$value),
 
     
     #-----------------------------------------------------------
@@ -48,7 +48,7 @@ mdsc_analyzer_ui<- function(id) {
       "Tutorial",
       icon = icon("book", class = "fa-solid"),
       value = "tutorialTab",
-      source("DSC descriptive statistics/tutorial.R", local = TRUE)$value),
+      source("dsc_descriptive_statistics/dsc_descriptive_statistics_tutorial.R", local = TRUE)$value),
     
    )
 }
@@ -62,7 +62,7 @@ mdsc_analyzer_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns  # make sure ns is defined for use in dynamicui.R
     extraInput <- list()
-    source("DSC descriptive statistics/dynamicui.R", local= TRUE)
+    source("dsc_descriptive_statistics/dsc_descriptive_statistics_dynamic_ui.R", local= TRUE)
     
     disable("excelDownload")
     
@@ -104,35 +104,9 @@ mdsc_analyzer_server <- function(id) {
         
       })
       
-    
-      # observeEvent(input$runAnalysis, {
-      #   
-      # 
-      #   #------------------------------------------------------------------------------------------------------------------------------------
-      #   # Reset outputmessages in case user runs multiple analyses and one of them results in an error
-      #   #------------------------------------------------------------------------------------------------------------------------------------
-      #   
-      #   output$errorMessage <- renderText({
-      #     NULL
-      #   })
-      #   
-      #   output$analysisMessage <- renderText({
-      #     NULL
-      #   })
-      #   
-      # 
-      #   data_ready(TRUE)
-      #   
-      #   #The users see this text if the analysis worked well. 
-      #   output$analysisMessage <- renderText({
-      #     "Analysis completed! Your file is now available in the directory you chose :)"
-      #   })
-      # })
-      
-      
       
       observeEvent(input$errorCheck, {
-        source("DSC descriptive statistics/dynamicui.R", local= TRUE)
+        source("dsc_descriptive_statistics/dsc_descriptive_statistics_dynamic_ui.R", local= TRUE)
         
         wb <<- analysisAndExcel(input, extraInput)
         if(typeof(wb) == "character") {

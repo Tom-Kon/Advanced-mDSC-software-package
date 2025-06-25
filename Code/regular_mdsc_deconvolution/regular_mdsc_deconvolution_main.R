@@ -1,8 +1,8 @@
-source("Regular modulated DSC deconvolution/functions.R")
-source("Regular modulated DSC deconvolution/Libraries.R")
-source("Regular modulated DSC deconvolution/error handling.R")
-source("Regular modulated DSC deconvolution/downloads.R")
-source("Regular modulated DSC deconvolution/plots regular mDSC.R")
+source("regular_mdsc_deconvolution/regular_mdsc_deconvolution_functions.R")
+source("regular_mdsc_deconvolution/regular_mdsc_deconvolution_libraries.R")
+source("regular_mdsc_deconvolution/regular_mdsc_deconvolution_error_handling.R")
+source("regular_mdsc_deconvolution/regular_mdsc_deconvolution_downloads.R")
+source("regular_mdsc_deconvolution/regular_mdsc_deconvolution_plots.R")
 
 
 
@@ -147,10 +147,11 @@ normal_mDSC_ui <- function(id) {
       icon = icon("book", class = "fa-solid"),
       fluidPage(
         withMathJax(
-          includeMarkdown("Regular modulated DSC deconvolution/Regular mDSC tutorial.md")
+          includeMarkdown("regular_mdsc_deconvolution/regular_mdsc_deconvolution_tutorial.md")
         )
       )
-    )
+    ),
+    
   )
 }
 
