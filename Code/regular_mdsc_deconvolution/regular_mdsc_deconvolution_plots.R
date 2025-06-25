@@ -1,8 +1,8 @@
 
-RHFplot <- function(RHFdf) {
+RHFplot <- function(calculationMinMaxResults) {
   
 # Plot the results
-ggplot(RHFdf, aes(x = meantemp, y = RHF)) +
+ggplot(calculationMinMaxResults, aes(x = meantemp, y = RHF)) +
   geom_line(color = "blue", linewidth = 1.25) +
   labs(
     title = "RHF as a function of temperature",
@@ -16,18 +16,18 @@ ggplot(RHFdf, aes(x = meantemp, y = RHF)) +
     axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
     axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
     axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-    axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-    panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+    axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+    panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
     panel.grid.minor = element_blank(),  # Minor grid lines removed
     plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-    axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+    axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
   )
 }
 
-THFplot <- function(RHFdf) {
+THFplot <- function(calculationMinMaxResults) {
 
 # Plot the results
-ggplot(RHFdf, aes(x = meantemp, y = THF)) +
+ggplot(calculationMinMaxResults, aes(x = meantemp, y = THF)) +
   geom_line(color = "blue", linewidth = 1.25) +
   labs(
     title = "THF as a function of temperature",
@@ -41,18 +41,18 @@ ggplot(RHFdf, aes(x = meantemp, y = THF)) +
     axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
     axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
     axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-    axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-    panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+    axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+    panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
     panel.grid.minor = element_blank(),  # Minor grid lines removed
     plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-    axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+    axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
   ) 
 }
 
-NRHFplot <- function(RHFdf) {
+NRHFplot <- function(calculationMinMaxResults) {
   
 # Plot the results
-ggplot(RHFdf, aes(x = meantemp, y = NRHF)) +
+ggplot(calculationMinMaxResults, aes(x = meantemp, y = NRHF)) +
   geom_line(color = "blue", linewidth = 1.25) +
   labs(
     title = "NRHF as a function of temperature",
@@ -66,18 +66,18 @@ ggplot(RHFdf, aes(x = meantemp, y = NRHF)) +
     axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
     axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
     axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-    axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-    panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+    axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+    panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
     panel.grid.minor = element_blank(),  # Minor grid lines removed
     plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-    axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+    axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
   ) 
 }
 
-THFplotFT <- function(fftCalc) {
+THFplotFT <- function(calculate_fft) {
   
   # Plot the results
-  ggplot(fftCalc, aes(x = temperature, y = rollmean)) +
+  ggplot(calculate_fft, aes(x = temperature, y = THF)) +
     geom_line(color = "blue", linewidth = 1.25) +
     labs(
       title = "THF as a function of temperature",
@@ -91,18 +91,18 @@ THFplotFT <- function(fftCalc) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) 
 }
 
-RHFplotFT <- function(fftCalc) {
+RHFplotFT <- function(calculate_fft) {
   
   # Plot the results
-  ggplot(fftCalc, aes(x = temperature, y = RHF)) +
+  ggplot(calculate_fft, aes(x = temperature, y = RHF)) +
     geom_line(color = "blue", linewidth = 1.25) +
     labs(
       title = "RHF as a function of temperature",
@@ -116,18 +116,18 @@ RHFplotFT <- function(fftCalc) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) 
 }
 
-NRHFplotFT <- function(fftCalc) {
+NRHFplotFT <- function(calculate_fft) {
   
   # Plot the results
-  ggplot(fftCalc, aes(x = temperature, y = NRHF)) +
+  ggplot(calculate_fft, aes(x = temperature, y = NRHF)) +
     geom_line(color = "blue", linewidth = 1.25) +
     labs(
       title = "NRHF as a function of temperature",
@@ -141,17 +141,17 @@ NRHFplotFT <- function(fftCalc) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) 
 }
 
-RHFplotTRIOS <- function(RHFdf2) {
+RHFplotTRIOS <- function(calculationMinMaxResultsTHF) {
   # Plot the results
-  ggplot(RHFdf2, aes(x = temperature, y = RHF)) +
+  ggplot(calculationMinMaxResultsTHF, aes(x = temperature, y = RHF)) +
     geom_line(color = "blue", linewidth = 1.25) +
     labs(
       title = "RHF as a function of temperature",
@@ -165,18 +165,18 @@ RHFplotTRIOS <- function(RHFdf2) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) 
 }
 
-THFplotTRIOS <- function(RHFdf2) {
+THFplotTRIOS <- function(calculationMinMaxResultsTHF) {
   
   # Plot the results
-  ggplot(RHFdf2, aes(x = temperature, y = THF)) +
+  ggplot(calculationMinMaxResultsTHF, aes(x = temperature, y = THF)) +
     geom_line(color = "blue", linewidth = 1.25) +
     labs(
       title = "THF as a function of temperature",
@@ -190,18 +190,18 @@ THFplotTRIOS <- function(RHFdf2) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) 
 }
 
-NRHFplotTRIOS <- function(RHFdf2) {
+NRHFplotTRIOS <- function(calculationMinMaxResultsTHF) {
   
   # Plot the results
-  ggplot(RHFdf2, aes(x = temperature, y = NRHF)) +
+  ggplot(calculationMinMaxResultsTHF, aes(x = temperature, y = NRHF)) +
     geom_line(color = "blue", linewidth = 1.25) +
     labs(
       title = "NRHF as a function of temperature",
@@ -215,17 +215,17 @@ NRHFplotTRIOS <- function(RHFdf2) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) 
 }
 
-RHFplotDSC <- function(DSCdf) {
+RHFplotDSC <- function(CalculationMinMaxResultsDSC) {
   # Plot the results
-  ggplot(DSCdf, aes(x = temperature, y = RHF)) +
+  ggplot(CalculationMinMaxResultsDSC, aes(x = temperature, y = RHF)) +
     geom_line(color = "blue", linewidth = 1.25) +
     labs(
       title = "RHF as a function of temperature",
@@ -239,18 +239,18 @@ RHFplotDSC <- function(DSCdf) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) 
 }
 
-THFplotDSC <- function(DSCdf) {
+THFplotDSC <- function(CalculationMinMaxResultsDSC) {
   
   # Plot the results
-  ggplot(DSCdf, aes(x = temperature, y = THF)) +
+  ggplot(CalculationMinMaxResultsDSC, aes(x = temperature, y = THF)) +
     geom_line(color = "blue", linewidth = 1.25) +
     labs(
       title = "THF as a function of temperature",
@@ -264,18 +264,18 @@ THFplotDSC <- function(DSCdf) {
       axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
       axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
       axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-      axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-      panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+      axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+      panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
       panel.grid.minor = element_blank(),  # Minor grid lines removed
       plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-      axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+      axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
     ) 
 }
 
-NRHFplotDSC <- function(DSCdf) {
+NRHFplotDSC <- function(CalculationMinMaxResultsDSC) {
   
     # Plot the results
-    ggplot(DSCdf, aes(x = temperature, y = NRHF)) +
+    ggplot(CalculationMinMaxResultsDSC, aes(x = temperature, y = NRHF)) +
       geom_line(color = "blue", linewidth = 1.25) +
       labs(
         title = "NRHF as a function of temperature",
@@ -289,11 +289,11 @@ NRHFplotDSC <- function(DSCdf) {
         axis.title.x = element_text(size = 18, face = "bold", color = "black"),  # Bold axis labels
         axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 10)),  # Bold and separated y-axis title
         axis.text = element_text(size = 18, color = "black"),  # Clear and readable axis text
-        axis.line = element_line(color = "black", size = 0.5),  # Black axis lines for better contrast
-        panel.grid.major = element_line(color = "gray", size = 0.25),  # Light gray grid lines for a clean look
+        axis.line = element_line(color = "black", linewidth = 0.5),  # Black axis lines for better contrast
+        panel.grid.major = element_line(color = "gray", linewidth = 0.25),  # Light gray grid lines for a clean look
         panel.grid.minor = element_blank(),  # Minor grid lines removed
         plot.margin = margin(20, 20, 20, 20),  # Increase space around the plot
-        axis.ticks = element_line(color = "black", size = 0.5)  # Ticks for axes
+        axis.ticks = element_line(color = "black", linewidth = 0.5)  # Ticks for axes
       ) 
 }
 

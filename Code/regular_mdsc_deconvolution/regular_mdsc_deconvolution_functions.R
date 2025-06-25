@@ -1,3 +1,8 @@
+#-----------------------------------------------------------------------------------------
+#This first function identifies the appropriate columns in the Excel file and assigns names to them that can be used later. It also contains 
+#some error hanlding in case the columns are not present. 
+#-----------------------------------------------------------------------------------------
+
 excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
   sheet <- as.numeric(sheet)
   
@@ -7,6 +12,7 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
   }  
   
   Excel <- read_excel(Excel, sheet, col_names = FALSE)
+  
   row_idx <- match(TRUE, apply(Excel, 1, function(r) any(tolower(r) == "time")))
   headers <- as.vector(unlist(Excel[row_idx, ]))
   Excel <- na.omit(Excel)
@@ -117,8 +123,10 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
   return(Excel)
 }
 
-
+#-----------------------------------------------------------------------------------------
 # Define the function to locate maxima and minima and output their indices and values
+#-----------------------------------------------------------------------------------------
+
 locate_extrema_manual <- function(modHeatFlow_values, time_values, temperature_values) {
   window_size <- 50  # Number of surrounding points to check
   
@@ -131,25 +139,25 @@ locate_extrema_manual <- function(modHeatFlow_values, time_values, temperature_v
   maxima_HFs <- c()
   minima_HFs <- c()
   
-  for (i in (window_size + 1):(length(modHeatFlow_values) - window_size)) {
+  for (i in (window_size + 1):(length(modHeatFlow_values) - window_size)) { #Define window
     local_window <- modHeatFlow_values[(i - window_size):(i + window_size)]
     
-    if (i == (i - window_size) + which.max(local_window) - 1) {  # Ensure unique max
+    if (i == (i - window_size) + which.max(local_window) - 1) {  # Ensure unique max in each window and find it 
       maxima_indices <- c(maxima_indices, i)
       maxima_times <- c(maxima_times, time_values[i])
       maxima_temps <- c(maxima_temps, temperature_values[i])
       maxima_HFs <- c(maxima_HFs, modHeatFlow_values[i])
     } 
     
-    if (i == (i - window_size) + which.min(local_window) - 1) {  # Ensure unique min
+    if (i == (i - window_size) + which.min(local_window) - 1) {  # Ensure unique min in each window and find it 
       minima_indices <- c(minima_indices, i)
       minima_times <- c(minima_times, time_values[i])
-      minima_temps <- c(minima_temps, temperature_values[i])  # Fixed this line
+      minima_temps <- c(minima_temps, temperature_values[i])
       minima_HFs <- c(minima_HFs, modHeatFlow_values[i])
     }
   }
   
-  extrema_df <- data.frame(
+  extrema_df <- data.frame(                                      # Make the extrema_df dataframe that will be used everywhere later
     type = c(rep("maxima", length(maxima_indices)), rep("minima", length(minima_indices))),
     index = c(maxima_indices, minima_indices),
     time = c(maxima_times, minima_times),
@@ -160,7 +168,9 @@ locate_extrema_manual <- function(modHeatFlow_values, time_values, temperature_v
   return(extrema_df)
 }
 
-#Counting functions
+#-----------------------------------------------------------------------------------------
+#Counting function
+#-----------------------------------------------------------------------------------------
 count_extrema <- function(extrema_df) {
   maxima_count <- sum(extrema_df$type == "maxima")
   minima_count <- sum(extrema_df$type == "minima")
@@ -168,8 +178,10 @@ count_extrema <- function(extrema_df) {
   return(counts)
 }
 
-#Manual calculation functions
-HFcalc <- function(extrema_df, heat_amplitude, heating_rate) {
+#-----------------------------------------------------------------------------------------
+#Function defining the calculation based on the maxima and minima
+#-----------------------------------------------------------------------------------------
+calculate_heatflow_min_max <- function(extrema_df, RHFCalcDenominator, heatingRate) {
   
   # Check that the number of rows is even; if not, drop the last row
   if (nrow(extrema_df) %% 2 != 0) {
@@ -198,24 +210,30 @@ HFcalc <- function(extrema_df, heat_amplitude, heating_rate) {
     minima <- minima[-(nrow(minima)-diff+1:nrow(minima)),]
   }
   
+  #Remove the first few columns because they're generally just noise
   maxima <- maxima[-(1:7),]
   minima <- minima[-(1:7),]
   
+  #Calculations
   diffsHF <- maxima$modHeatFlow-minima$modHeatFlow
   THF <- (maxima$modHeatFlow+minima$modHeatFlow)/2
   temp <- maxima$temperature+minima$temperature
   
   meantemp <- temp/2
   amplitudes <- diffsHF/2
-  RHF <- -amplitudes/heat_amplitude*heating_rate/60
+  RHF <- -amplitudes/RHFCalcDenominator*heatingRate/60
   NRHF <- THF-RHF 
 
-  RHFdf <- data.frame(meantemp, RHF, THF, NRHF)
+  calculationMinMaxResults <- data.frame(meantemp, RHF, THF, NRHF)
   
-  return(RHFdf)
+  return(calculationMinMaxResults)
 }
 
-HFcalc2 <- function(extrema_df, heat_amplitude, heating_rate, d){
+
+#-----------------------------------------------------------------------------------------
+#Function defining the calculation based on comparing extrema_df and THF
+#-----------------------------------------------------------------------------------------
+calculate_heatflow_min_max_THF <- function(extrema_df, RHFCalcDenominator, heatingRate, d){
   
   maxima <- extrema_df %>%
     filter(type == "maxima")
@@ -226,16 +244,19 @@ HFcalc2 <- function(extrema_df, heat_amplitude, heating_rate, d){
   THF <- filtered$heatFlow
   
   amplitudes <- filtered$modHeatFlow - THF
-  RHF <- -amplitudes/heat_amplitude*heating_rate/60
+  RHF <- -amplitudes/RHFCalcDenominator*heatingRate/60
   NRHF <- filtered$heatFlow-RHF 
   temperature <- filtered$temperature
-  RHFdf2 <- data.frame(temperature, RHF, THF, NRHF)
+  calculationMinMaxResultsTHF <- data.frame(temperature, RHF, THF, NRHF)
   
-  return(RHFdf2)
+  return(calculationMinMaxResultsTHF)
 }
 
 
-fftCalc <- function(period, d, heat_amplitude, heating_rate){
+#-----------------------------------------------------------------------------------------
+#Function defining the calculation based on the Fourier transform
+#-----------------------------------------------------------------------------------------
+calculate_fft <- function(period, d, RHFCalcDenominator, heatingRate){
   
   dt <- mean(diff(d$time*60))
   freq <- 1/period
@@ -243,13 +264,13 @@ fftCalc <- function(period, d, heat_amplitude, heating_rate){
   
   # output <- fftfunc(period, dt, resampled_points)
   window_size <- period/dt
-  finaldf <- data.frame(time = d$time, temperature = d$temperature)
-  finaldf$rollmean <- rollmean(d$modHeatFlow, k = window_size, fill = NA, align = "center")
-  finaldf$baselinecorrHF <- d$modHeatFlow - finaldf$rollmean
+  calculate_fft <- data.frame(time = d$time, temperature = d$temperature)
+  calculate_fft$THF <- rollmean(d$modHeatFlow, k = window_size, fill = NA, align = "center")
+  calculate_fft$baselinecorrHF <- d$modHeatFlow - calculate_fft$THF
 
   
   # Perform rolling FFT and extract the amplitude at the user-defined frequency
-  finaldf$amplitude <- rollapply(finaldf$baselinecorrHF, width = window_size, FUN = function(x) {
+  calculate_fft$amplitude <- rollapply(calculate_fft$baselinecorrHF, width = window_size, FUN = function(x) {
     
     # Perform the Fast Fourier Transform (FFT) on the window
     fft_result <- fft(x)
@@ -270,13 +291,19 @@ fftCalc <- function(period, d, heat_amplitude, heating_rate){
     return(amplitude_at_user_freq)
   }, by = 1, fill = NA, align = "center")
   
-  finaldf$RHF <- finaldf$amplitude/heat_amplitude*(-heating_rate/60)
-  finaldf$NRHF <- finaldf$rollmean-finaldf$RHF
+  calculate_fft$RHF <- calculate_fft$amplitude/RHFCalcDenominator*(-heatingRate/60)
+  calculate_fft$NRHF <- calculate_fft$THF - calculate_fft$RHF
   
-  return(finaldf)
+  
+  return(calculate_fft)
 }
 
-funcMatchingDSCMDSC <- function(DSC, extrema_df, heat_amplitude, heating_rate) {
+
+
+#-----------------------------------------------------------------------------------------
+#Function defining the calculation based on comparing extrema_df and unmodulated DSC
+#-----------------------------------------------------------------------------------------
+calculate_heatflow_min_max_DSC <- function(DSC, extrema_df, RHFCalcDenominator, heatingRate) {
   
   matchingDSCmDSC <- extrema_df %>%
     filter(type == "maxima") %>%
@@ -290,13 +317,13 @@ funcMatchingDSCMDSC <- function(DSC, extrema_df, heat_amplitude, heating_rate) {
     ungroup()
   
   THF <- matchingDSCmDSC$heat_flowDSC
-  RHF <- -matchingDSCmDSC$amplitudes/heat_amplitude*heating_rate/60
+  RHF <- -matchingDSCmDSC$amplitudes/RHFCalcDenominator*heatingRate/60
   NRHF <- matchingDSCmDSC$heat_flowDSC-RHF 
   temperature <- matchingDSCmDSC$temperatureDSC
   
-  DSCdf <- data.frame(temperature, THF, RHF, NRHF)
+  CalculationMinMaxResultsDSC <- data.frame(temperature, THF, RHF, NRHF)
   
-  return(DSCdf)
+  return(CalculationMinMaxResultsDSC)
 }
 
 

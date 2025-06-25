@@ -1,8 +1,8 @@
-downloadExcelRegmDSC <- function(reactive_inputs) {
+download_excel_regular_mDSC <- function(reactive_inputs) {
   
 
   period <- reactive_inputs$period
-  heating_rate <- reactive_inputs$heating_rate
+  heatingRate <- reactive_inputs$heatingRate
   setAmplitude <- reactive_inputs$setAmplitude
   tempModAmplitude <- setAmplitude*2*pi/period
   compare <- reactive_inputs$compare
@@ -18,7 +18,7 @@ downloadExcelRegmDSC <- function(reactive_inputs) {
                   "Did you compare with the THF calculated by the software?"),
     
     Value = c(period,
-              heating_rate,
+              heatingRate,
               setAmplitude, 
               tempModAmplitude, 
               compare,
