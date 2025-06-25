@@ -44,9 +44,9 @@ final_calculation <- function(sampling, startTemp, endTemp, period, heatRate, At
   
   
   Atemp <- 2*pi*Atemp/period
-  extrema_df <-locate_extrema(finaldf$MHF, finaldf$time, finaldf$TRef)
-  counts <- count_extrema(extrema_df)
-  noFTcalc <- calculate_heatflow_min_max(extrema_df, Atemp, heatRate)
+  extremaDf <-locate_extrema(finaldf$MHF, finaldf$time, finaldf$TRef)
+  counts <- count_extrema(extremaDf)
+  noFTcalc <- calculate_heatflow_min_max(extremaDf, Atemp, heatRate)
   
 
   # Add the rolling amplitude to the data frame

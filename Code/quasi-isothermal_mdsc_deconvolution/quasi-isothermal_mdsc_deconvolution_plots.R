@@ -2,13 +2,13 @@ num_ticks <- 10
 
 #***--------------------------------Normal resulting plots------------------------**#
 
-NRHF_plot <- function(sample_results, modulations_back, fileName) {
+NRHF_plot <- function(results, modulationsBack, fileName) {
   
-  plotTitleTHF <- paste0("NRHF based on FT (frequency = 0), ", modulations_back, " modulations")
+  plotTitleTHF <- paste0("NRHF based on FT (frequency = 0), ", modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
 
-  NRHF_p <- ggplot(sample_results, aes(x = TRef)) +
-          geom_line(aes(y = dc_value), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
+  NRHF_p <- ggplot(results, aes(x = TRef)) +
+          geom_line(aes(y = NRHF), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
           labs(
             title = plotTitleTHF,
             subtitle = subtitle,
@@ -35,13 +35,13 @@ NRHF_plot <- function(sample_results, modulations_back, fileName) {
  return(NRHF_p)  # <--- Ensure the function returns the ggplot object
  }
 
-RevCp_plot <- function(sample_results, modulations_back, fileName) {
+RevCp_plot <- function(results, modulationsBack, fileName) {
   
-  plottitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", modulations_back, " modulations")
+  plottitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
-    RevCp_p <- ggplot(sample_results, aes(x = TRef)) +
-      geom_line(aes(y = reversing_heat_flow), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
+    RevCp_p <- ggplot(results, aes(x = TRef)) +
+      geom_line(aes(y = RevCp), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
       labs(
         title = plottitleRevCp,
         subtitle = subtitle,
@@ -70,12 +70,12 @@ RevCp_plot <- function(sample_results, modulations_back, fileName) {
 } 
 
 
-Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, fileName) {
+Manual_RevCp_plot <- function(resultsNoFT, modulationsBack, fileName) {
   
-  plottitleRevCpmanual <- paste0("RevCp calculated manually, ", modulations_back, " modulations")
+  plottitleRevCpmanual <- paste0("RevCp calculated manually, ", modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
 
-  manRevCp_p <- ggplot(average_heat_flow_per_pattern, aes(x = Tref)) +
+  manRevCp_p <- ggplot(resultsNoFT, aes(x = Tref)) +
     geom_line(aes(y = RevCpManual), color = "black", linewidth = 1.2) +     # Smoothed data with thicker line
     labs(
       title = plottitleRevCpmanual,
@@ -104,27 +104,23 @@ Manual_RevCp_plot <- function(average_heat_flow_per_pattern, modulations_back, f
 }
 
 
-
-
-
-
 #***--------------------------------Overlays------------------------**#
 
-RevCp_NRHF_plot <- function(sample_results, modulations_back, fileName) {
-  plottitleoverlay <- paste0("Overlay of RevCp and NRHF, ", modulations_back, " modulations")
+RevCp_NRHF_plot <- function(results, modulationsBack, fileName) {
+  plottitleoverlay <- paste0("Overlay of RevCp and NRHF, ", modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
-  plot_ly(sample_results) %>%
+  plot_ly(results) %>%
     add_lines(
       x = ~TRef, 
-      y = ~reversing_heat_flow, 
+      y = ~RevCp, 
       name = "Reversing Heat Flow",
       line = list(color = "black", width = 3),  # Line width matches ggplot linewidth = 1.2 (~3 px)
       yaxis = "y"
     ) %>%
     add_lines(
       x = ~TRef, 
-      y = ~dc_value, 
+      y = ~NRHF, 
       name = "NRHF",
       line = list(color = "red", width = 3),  # Match line width for consistency
       yaxis = "y2"
@@ -201,7 +197,7 @@ RevCp_NRHF_plot <- function(sample_results, modulations_back, fileName) {
 
 #***--------------------------------Raw data------------------------**#
 
-Original_data <- function(orgData, modulations_back, fileName) {
+Original_data <- function(orgData, modulationsBack, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
@@ -242,14 +238,14 @@ Original_data <- function(orgData, modulations_back, fileName) {
 }
 
 
-Datasteps_plot_1 <- function(d_steps_cleaned, modulations_back, fileName) {
-  d_steps_cleanedSlice <- d_steps_cleaned %>% 
+Datasteps_plot_1 <- function(isolatedPatterns, modulationsBack, fileName) {
+  isolatedPatternsSlice <- isolatedPatterns %>% 
     slice(seq(1, n(), by = 50))
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   
-  dStepsCleanedSlice <- ggplot(d_steps_cleanedSlice, aes(x = time, y = modHeatFlow)) +
+  dStepsCleanedSlice <- ggplot(isolatedPatternsSlice, aes(x = time, y = modHeatFlow)) +
     geom_line(color = "black", size = 1) +  
     labs(
       title = "Cleaned raw total heat flow data after\nremoving temperatures between steps",
@@ -275,8 +271,8 @@ Datasteps_plot_1 <- function(d_steps_cleaned, modulations_back, fileName) {
   # Convert to plotly and add hover text
   dStepsCleanedSlice <- plotly::ggplotly(dStepsCleanedSlice, tooltip = "text") %>%
     plotly::style(text = paste0(
-      "Time: ", d_steps_cleanedSlice$time, " min", "<br>",
-      "Heat Flow: ", d_steps_cleanedSlice$modHeatFlow, "<br>"
+      "Time: ", isolatedPatternsSlice$time, " min", "<br>",
+      "Heat Flow: ", isolatedPatternsSlice$modHeatFlow, "<br>"
     ))
   
   return(dStepsCleanedSlice)  
@@ -284,14 +280,14 @@ Datasteps_plot_1 <- function(d_steps_cleaned, modulations_back, fileName) {
 
 
 
-Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileName) {
-  d_steps_cleaned_2Slice <- d_steps_cleaned_2 %>% 
+Datasteps_plot_prefinal <- function(deleteLastMax, modulationsBack, fileName) {
+  deleteLastMaxSlice <- deleteLastMax %>% 
     slice(seq(1, n(), by = 50))
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   
-  dStepsCleaned_2Slice <- ggplot(d_steps_cleaned_2Slice, aes(x = time, y = modHeatFlow)) +
+  dStepsCleaned_2Slice <- ggplot(deleteLastMaxSlice, aes(x = time, y = modHeatFlow)) +
     geom_line(color = "black", linewidth = 1) +  
     labs(
       title = "Cleaned raw total heat flow data after\nremoving noisy pattern at the end of each step",
@@ -316,8 +312,8 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileNam
   # Convert to plotly and add hover text
   dStepsCleaned_2Slice <- plotly::ggplotly(dStepsCleaned_2Slice, tooltip = "text") %>%
     plotly::style(text = paste0(
-      "Time: ", d_steps_cleaned_2Slice$time, " min", "<br>",
-      "Heat Flow: ", d_steps_cleaned_2Slice$modHeatFlow, "<br>"
+      "Time: ", deleteLastMaxSlice$time, " min", "<br>",
+      "Heat Flow: ", deleteLastMaxSlice$modHeatFlow, "<br>"
     ))
   
   return(dStepsCleaned_2Slice)  
@@ -325,15 +321,15 @@ Datasteps_plot_prefinal <- function(d_steps_cleaned_2, modulations_back, fileNam
 
 
 
-Datasteps_plot_final <- function(d_steps_cleaned_3, modulations_back, fileName) {
-  d_steps_cleaned_3Slice <- d_steps_cleaned_3 %>% 
+Datasteps_plot_final <- function(finalDataForAnalysis, modulationsBack, fileName) {
+  finalDataForAnalysisSlice <- finalDataForAnalysis %>% 
     slice(seq(1, n(), by = 1))
   
-  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulations_back, " modulations")
+  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
-  dStepsCleaned_3Slice <- ggplot(d_steps_cleaned_3Slice, aes(x = time, y = modHeatFlow)) +
-    geom_line(color = "black", size = 1) +  
+  dStepsCleaned_3Slice <- ggplot(finalDataForAnalysisSlice, aes(x = time, y = modHeatFlow)) +
+    geom_line(color = "black", linewidth = 1) +  
     labs(
       title = plottitledStepsCleaned_3Slice,
       subtitle = subtitle,
@@ -358,9 +354,9 @@ Datasteps_plot_final <- function(d_steps_cleaned_3, modulations_back, fileName) 
   # Convert to plotly and add hover text
   dStepsCleaned_3Slice <- plotly::ggplotly(dStepsCleaned_3Slice, tooltip = "text") %>%
     plotly::style(text = paste0(
-      "Time: ", d_steps_cleaned_3Slice$time, " min", "<br>",
-      "Heat Flow: ", d_steps_cleaned_3Slice$modHeatFlow, "<br>",
-      "TRef: ", d_steps_cleaned_3Slice$TRef
+      "Time: ", finalDataForAnalysisSlice$time, " min", "<br>",
+      "Heat Flow: ", finalDataForAnalysisSlice$modHeatFlow, "<br>",
+      "TRef: ", finalDataForAnalysisSlice$TRef
     ))
   
   return(dStepsCleaned_3Slice)  
@@ -369,7 +365,7 @@ Datasteps_plot_final <- function(d_steps_cleaned_3, modulations_back, fileName) 
 
 
 #****-------------------------Extremas-------------------------------------*
-Maxima_minima <- function(extramadf, modulations_back, fileName) {
+Maxima_minima <- function(extramadf, modulationsBack, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
@@ -400,7 +396,7 @@ Maxima_minima <- function(extramadf, modulations_back, fileName) {
 }
 
 
-Maxima_minima_1 <- function(extramadf2, modulations_back, fileName) {
+Maxima_minima_1 <- function(extramadf2, modulationsBack, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
@@ -430,9 +426,9 @@ Maxima_minima_1 <- function(extramadf2, modulations_back, fileName) {
   return(Max_min_1)  
 }
 
-Maxima_minima_2 <- function(extramadf3, modulations_back, fileName) {
+Maxima_minima_2 <- function(extramadf3, modulationsBack, fileName) {
   
-  plottitlemaxmin2 <- paste0("Maxima and minima of oscillations used in calculations, ", modulations_back, " modulations")
+  plottitlemaxmin2 <- paste0("Maxima and minima of oscillations used in calculations, ", modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
   Max_min_2 <- ggplot(extramadf3, aes(x = time, y = modHeatFlow)) +
@@ -462,7 +458,7 @@ Maxima_minima_2 <- function(extramadf3, modulations_back, fileName) {
 }
 
 #***--------------------------------Data to accommodate export-----------------------**#
-Original_dataggplot <- function(orgData, modulations_back, fileName) {
+Original_dataggplot <- function(orgData, modulationsBack, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
@@ -496,7 +492,7 @@ Original_dataggplot <- function(orgData, modulations_back, fileName) {
 }
 
 
-Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulations_back, fileName) {
+Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulationsBack, fileName) {
   d_steps_cleanedSlice <- d_steps_cleaned %>% 
     slice(seq(1, n(), by = 50))
   
@@ -532,14 +528,14 @@ Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulations_back, fileName) 
 
 
 
-Datasteps_plot_prefinalggplot <- function(d_steps_cleaned_2, modulations_back, fileName) {
-  d_steps_cleaned_2Slice <- d_steps_cleaned_2 %>% 
+Datasteps_plot_prefinalggplot <- function(deleteLastMax, modulationsBack, fileName) {
+  deleteLastMaxSlice <- deleteLastMax %>% 
     slice(seq(1, n(), by = 50))
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
   
-  dStepsCleaned_2Slice <- ggplot(d_steps_cleaned_2Slice, aes(x = time, y = modHeatFlow)) +
+  dStepsCleaned_2Slice <- ggplot(deleteLastMaxSlice, aes(x = time, y = modHeatFlow)) +
     geom_line(color = "black", linewidth = 1) +  
     labs(
       title = "Cleaned raw total heat flow data after\nremoving noisy pattern at the end of each step",
@@ -567,14 +563,14 @@ Datasteps_plot_prefinalggplot <- function(d_steps_cleaned_2, modulations_back, f
 
 
 
-Datasteps_plot_finalggplot <- function(d_steps_cleaned_3, modulations_back, fileName) {
-  d_steps_cleaned_3Slice <- d_steps_cleaned_3 %>% 
+Datasteps_plot_finalggplot <- function(finalDataForAnalysis, modulationsBack, fileName) {
+  finalDataForAnalysisSlice <- finalDataForAnalysis %>% 
     slice(seq(1, n(), by = 1))
   
-  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulations_back, " modulations")
+  plottitledStepsCleaned_3Slice <- paste0("Raw modulated heat flow data used in final calculation, ", modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
-  dStepsCleaned_3Slice <- ggplot(d_steps_cleaned_3Slice, aes(x = time, y = modHeatFlow)) +
+  dStepsCleaned_3Slice <- ggplot(finalDataForAnalysisSlice, aes(x = time, y = modHeatFlow)) +
     geom_line(color = "black", size = 1) +  
     labs(
       title = plottitledStepsCleaned_3Slice,
@@ -596,7 +592,6 @@ Datasteps_plot_finalggplot <- function(d_steps_cleaned_3, modulations_back, file
     ) +
     scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = num_ticks)) +
     scale_y_continuous(expand = c(0, 0))
-  
   
   return(dStepsCleaned_3Slice)  
 }

@@ -4,18 +4,18 @@ configUI1<- function(ns) {
   tagList(
     fluidRow(
       column(6,
-             textInput(ns("period_in"), "What was your modulation period (in minutes)", "2/3"), 
-             textInput(ns("step_size_in"), "What was your step size (in °C)", "3"),
-             textInput(ns("isotherm_length_in"), "What was your isotherm length (in minutes)", "20"),
-             textInput(ns("starting_temp_in"), "What was your starting temperature (in °C)", "13")
+             textInput(ns("period"), "What was your modulation period (in minutes)", "2/3"), 
+             textInput(ns("stepSize"), "What was your step size (in °C)", "3"),
+             textInput(ns("isothermLength"), "What was your isotherm length (in minutes)", "20"),
+             textInput(ns("startingTemp"), "What was your starting temperature (in °C)", "13")
             
              ),
  
       column(6,
-             textInput(ns("setAmplitude_in"), "What was your temperature modulation amplitude (in °C)", "0.212"),
-             textInput(ns("modulations_back_in"), "How many modulations should be used for the final calculation?", "15"),
+             textInput(ns("setAmplitude"), "What was your temperature modulation amplitude (in °C)", "0.212"),
+             textInput(ns("modulationsBack"), "How many modulations should be used for the final calculation?", "15"),
              textInput(ns("sampling"), "What was your sampling rate in pts/s?", "10"),
-             fileInput(ns("Excel_in"), "Upload your Excel here"),
+             fileInput(ns("Excel"), "Upload your Excel here"),
              checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
              conditionalPanel(
                condition = sprintf("!input['%s']", ns("sheetask")),

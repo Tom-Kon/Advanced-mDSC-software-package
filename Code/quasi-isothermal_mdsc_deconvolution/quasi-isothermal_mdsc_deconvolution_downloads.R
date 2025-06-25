@@ -1,11 +1,9 @@
-downloadExcel <- function(fileName, sample_results, modulations_back, period, setAmplitude, starting_temp, step_size, isothermLength, sampling) {
+downloadExcel <- function(fileName, results, modulationsBack, period, setAmplitude, startingTemp, stepSize, isothermLength, sampling) {
       
+  RevCpDenominator <- setAmplitude*2*pi/period
+  tempMarginFirstCleanup <- 0.05
+  pointsDistanceMinimumMargin <- (sampling*period*60)/2/10
   
-  tempModAmplitude <- setAmplitude*2*pi/period
-  temp_margin_first_cleanup <- 0.05
-  points_distance_minimum_margin <- (sampling*period*60)/2/10
-  
-    
       config <- data.frame(
         Parameter = c("Starting temperature (°C)", 
                       "Period (sec)",
@@ -22,57 +20,57 @@ downloadExcel <- function(fileName, sample_results, modulations_back, period, se
                   period*60,
                   isothermLength,
                   step_size, 
-                  modulations_back, 
+                  modulationsBack, 
                   setAmplitude, 
-                  temp_margin_first_cleanup, 
-                  points_distance_minimum_margin, 
-                  tempModAmplitude, 
+                  tempMarginFirstCleanup, 
+                  pointsDistanceMinimumMargin, 
+                  RevCpDenominator, 
                   sampling)
       )
       
       
-      ft_averages <- sample_results$ft_averages
-      ft_averagesexport <- data.frame("Step number" = ft_averages$pattern, "Temperature at that modulation" = ft_averages$TRef, "Non-reversing heat flow" = ft_averages$dc_value, "Reversing heat flow" = ft_averages$reversing_heat_flow)
+      resultsFT <- results$resultsFT
+      resultsFTexport <- data.frame("Step number" = resultsFT$pattern, "Temperature at that modulation" = resultsFT$TRef, "Non-reversing heat flow" = resultsFT$NRHF, "Reversing heat flow" = resultsFT$RevCp)
       
       
-      average_heat_flow_per_pattern <- sample_results$average_heat_flow_per_pattern
-      d_steps_cleaned <- sample_results$d_steps_cleaned
-      extrema_df1 <- sample_results$extrema_df1
-      d_steps_cleaned_2 <- sample_results$d_steps_cleaned_2
-      extrema_df2 <- sample_results$extrema_df2
-      d_steps_cleaned_3 <- sample_results$d_steps_cleaned_3
-      extrema_df3 <- sample_results$extrema_df3
+      resultsNoFT <- results$resultsNoFT
+      isolatedPatterns <- results$isolatedPatterns
+      extremaDfIntermediate <- results$extremaDfIntermediate
+      deleteLastMax <- results$deleteLastMax
+      extremaDfAfterDeleteMax <- results$extremaDfAfterDeleteMax
+      finalDataForAnalysis <- results$finalDataForAnalysis
+      finalAnalysisExtrema <- results$finalAnalysisExtrema
       
       fileName <- unlist(strsplit(fileName, "\\."))[1]
-      fileName <- paste0(fileName, " ", modulations_back, " modulations analysed.xlsx")
+      fileName <- paste0(fileName, " ", modulationsBack, " modulations analysed.xlsx")
       wb <- createWorkbook(fileName)
 
       addWorksheet(wb, "0.Settings")
       writeData(wb, sheet = "0.Settings", config)
       
       addWorksheet(wb, "1.Analysed results")
-      writeData(wb, sheet = "1.Analysed results", ft_averagesexport)
+      writeData(wb, sheet = "1.Analysed results", resultsFTexport)
       
       addWorksheet(wb, "2.Non-FT calc. RevCp")
-      writeData(wb, sheet = "2.Non-FT calc. RevCp", average_heat_flow_per_pattern)
+      writeData(wb, sheet = "2.Non-FT calc. RevCp", resultsNoFT)
       
       addWorksheet(wb, "3.Data with isolated patterns")
-      writeData(wb, sheet = "3.Data with isolated patterns", d_steps_cleaned)
+      writeData(wb, sheet = "3.Data with isolated patterns", isolatedPatterns)
       
       addWorksheet(wb, "4.Extrema of sheet 3")
-      writeData(wb, sheet = "4.Extrema of sheet 3", extrema_df1)
+      writeData(wb, sheet = "4.Extrema of sheet 3", extremaDfIntermediate)
       
       addWorksheet(wb, "5.Delete last max of sheet 3")
-      writeData(wb, sheet = "5.Delete last max of sheet 3", d_steps_cleaned_2)
+      writeData(wb, sheet = "5.Delete last max of sheet 3", deleteLastMax)
       
       addWorksheet(wb, "6.Extrema of sheet 5")
-      writeData(wb, sheet = "6.Extrema of sheet 5", extrema_df2)
+      writeData(wb, sheet = "6.Extrema of sheet 5", extremaDfAfterDeleteMax)
       
       addWorksheet(wb, "7.Data used in final analysis")
-      writeData(wb, sheet = "7.Data used in final analysis", d_steps_cleaned_3)
+      writeData(wb, sheet = "7.Data used in final analysis", finalDataForAnalysis)
       
       addWorksheet(wb, "8.Extrema of sheet 7")      
-      writeData(wb, sheet = "8.Extrema of sheet 7", extrema_df3)
+      writeData(wb, sheet = "8.Extrema of sheet 7", finalAnalysisExtrema)
       
       
 return(wb)

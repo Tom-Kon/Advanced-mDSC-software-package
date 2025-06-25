@@ -54,7 +54,7 @@ quasiIsotherm_ui <- function(id) {
       icon = icon("book", class = "fa-solid"),
       fluidPage(
         withMathJax(
-          includeMarkdown("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_tutorial.md")
+          includeMarkdown("quasi-isothermal_mdsc_deconvolution/tutorial/quasi-isothermal_mdsc_deconvolution_tutorial.md")
         )
       )
     )
@@ -73,41 +73,38 @@ mdsc_quasiIso_server <- function(id) {
     disable("allPlotsDownload")
     
     # Create a reactiveValues object to store inputs
-    reactive_inputs <- reactiveValues()
+    reactiveInputs <- reactiveValues()
     
     # This part is separate and independent of your server logic
     observeEvent(input$analyze, {
       
       showPageSpinner()
       
-      
       # Handle checkboxes
       if(input$sheetask) {
-        reactive_inputs$sheet <- 1
+        reactiveInputs$sheet <- 1
       } else {
-        reactive_inputs$sheet <- input$sheet
+        reactiveInputs$sheet <- input$sheet
       }
       
       # Store numerical/text inputs with proper reactive evaluation
-      reactive_inputs$period <- eval(parse(text = input$period_in))  # Assuming input is numeric
-      reactive_inputs$stepSize <- eval(parse(text = input$step_size_in))
-      reactive_inputs$isothermLength <- eval(parse(text = input$isotherm_length_in))
-      reactive_inputs$startingTemp <- eval(parse(text = input$starting_temp_in))
-      reactive_inputs$modulations_back <- eval(parse(text = input$modulations_back_in))
-      reactive_inputs$setAmplitude <- eval(parse(text = input$setAmplitude_in))
-      reactive_inputs$sampling <- eval(parse(text = input$sampling))
-      reactive_inputs$recalc <- 1
+      reactiveInputs$period <- eval(parse(text = input$period))  # Assuming input is numeric
+      reactiveInputs$stepSize <- eval(parse(text = input$stepSize))
+      reactiveInputs$isothermLength <- eval(parse(text = input$isothermLength))
+      reactiveInputs$startingTemp <- eval(parse(text = input$startingTemp))
+      reactiveInputs$modulationsBack <- eval(parse(text = input$modulationsBack))
+      reactiveInputs$setAmplitude <- eval(parse(text = input$setAmplitude))
+      reactiveInputs$sampling <- eval(parse(text = input$sampling))
+      reactiveInputs$recalc <- 1
       
     
     # Update reactive values when calculate button is pressed
-    
-      
       # Store file input
-      reactive_inputs$Excel <- input$Excel_in$datapath
-      reactive_inputs$fileName <- as.character(input$Excel_in$name)
+      reactiveInputs$Excel <- input$Excel$datapath
+      reactiveInputs$fileName <- as.character(input$Excel$name)
       
       # Call error_handling with the actual input value
-      msg <- error_handling_quasiIso(reactive_inputs)
+      msg <- error_handling_quasiIso(reactiveInputs)
 
       # Update the error message output (this triggers UI update)
       output$errorMessage <- renderText({
@@ -120,21 +117,21 @@ mdsc_quasiIso_server <- function(id) {
       
       
       # Call the processing function and store results in reactive value
-      sample_results <- processDSC(
-        fileName = reactive_inputs$fileName,
-        sheet = reactive_inputs$sheet,
-        Excel = reactive_inputs$Excel,
-        starting_temp = reactive_inputs$startingTemp,
-        step_size = reactive_inputs$stepSize,
-        modulations_back = reactive_inputs$modulations_back,
-        period = reactive_inputs$period,
-        isothermLength = reactive_inputs$isothermLength,
-        setAmplitude = reactive_inputs$setAmplitude,
-        sampling = reactive_inputs$sampling
+      results <- processDSC(
+        fileName = reactiveInputs$fileName,
+        sheet = reactiveInputs$sheet,
+        Excel = reactiveInputs$Excel,
+        startingTemp = reactiveInputs$startingTemp,
+        stepSize = reactiveInputs$stepSize,
+        modulationsBack = reactiveInputs$modulationsBack,
+        period = reactiveInputs$period,
+        isothermLength = reactiveInputs$isothermLength,
+        setAmplitude = reactiveInputs$setAmplitude,
+        sampling = reactiveInputs$sampling
       )
       
-      if(typeof(sample_results) == "character") {
-        msg <- sample_results
+      if(typeof(results) == "character") {
+        msg <- results
         # Update the error message output (this triggers UI update)
         output$errorMessage <- renderText({
           if (!is.null(msg)) msg else ""
@@ -146,14 +143,14 @@ mdsc_quasiIso_server <- function(id) {
         
       }
       
-      if(!is.null(attr(sample_results, "comment"))) {
+      if(!is.null(attr(results, "comment"))) {
         output$errorMessage <- renderText({
-          attr(sample_results, "comment")
+          attr(results, "comment")
         })        
       }
       
       # Store the processed results in reactiveValues()
-      reactive_inputs$sample_results <- sample_results
+      reactiveInputs$results <- results
       
       enable("excelDownload")
       enable("NRHFdownload")
@@ -171,9 +168,9 @@ mdsc_quasiIso_server <- function(id) {
       showPageSpinner()
       msg <- NULL
       
-      reactive_inputs$modulations_back <- eval(parse(text = input$modulations_back_in_new))
+      reactiveInputs$modulationsBack <- eval(parse(text = input$modulations_back_in_new))
       
-      if (is.null(reactive_inputs$modulations_back)){
+      if (is.null(reactiveInputs$modulationsBack)){
         msg <- "Error: the new value for the number of modulations is missing"
       }
       
@@ -189,14 +186,14 @@ mdsc_quasiIso_server <- function(id) {
       
       req(is.null(msg))  # Exit here if there's an error
       
-      reactive_inputs$sample_results <- processDSCrecalc(
-        fileName = reactive_inputs$fileName,
-        sample_results = reactive_inputs$sample_results,
-        modulations_back = reactive_inputs$modulations_back,
-        period = reactive_inputs$period,
-        setAmplitude = reactive_inputs$setAmplitude,
-        starting_temp = reactive_inputs$startingTemp,
-        step_size = reactive_inputs$stepSize,
+      reactiveInputs$results <- processDSCrecalc(
+        fileName = reactiveInputs$fileName,
+        results = reactiveInputs$results,
+        modulationsBack = reactiveInputs$modulationsBack,
+        period = reactiveInputs$period,
+        setAmplitude = reactiveInputs$setAmplitude,
+        startingTemp = reactiveInputs$startingTemp,
+        stepSize = reactiveInputs$stepSize,
       )
       
       hidePageSpinner()
@@ -207,23 +204,23 @@ mdsc_quasiIso_server <- function(id) {
     
 output$excelDownload <- downloadHandler(
   filename = function() {
-    fileName <- unlist(strsplit(reactive_inputs$fileName, "\\."))[1]
-    paste0(fileName, " ", reactive_inputs$modulations_back, " modulations analysed.xlsx")
+    fileName <- unlist(strsplit(reactiveInputs$fileName, "\\."))[1]
+    paste0(fileName, " ", reactiveInputs$modulationsBack, " modulations analysed.xlsx")
   },
   
   content = function(file) {
     showPageSpinner()
     
     wb <- downloadExcel(
-      sample_results = reactive_inputs$sample_results,
-      fileName = reactive_inputs$fileName,
-      modulations_back = reactive_inputs$modulations_back,
-      period = reactive_inputs$period,
-      setAmplitude = reactive_inputs$setAmplitude,
-      starting_temp = reactive_inputs$startingTemp,
-      step_size = reactive_inputs$stepSize,
-      isothermLength = reactive_inputs$isothermLength,
-      sampling = reactive_inputs$sampling
+      results = reactiveInputs$results,
+      fileName = reactiveInputs$fileName,
+      modulationsBack = reactiveInputs$modulationsBack,
+      period = reactiveInputs$period,
+      setAmplitude = reactiveInputs$setAmplitude,
+      startingTemp = reactiveInputs$startingTemp,
+      stepSize = reactiveInputs$stepSize,
+      isothermLength = reactiveInputs$isothermLength,
+      sampling = reactiveInputs$sampling
     )   
     
     saveWorkbook(wb, file = file, overwrite = TRUE)
@@ -235,18 +232,18 @@ output$excelDownload <- downloadHandler(
     
     output$NRHFdownload <- downloadHandler(
       filename = function() {
-        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
-        plotTitleNRHF <- paste0("NRHF based on FT (frequency = 0), ", reactive_inputs$modulations_back, " modulations")
+        subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
+        plotTitleNRHF <- paste0("NRHF based on FT (frequency = 0), ", reactiveInputs$modulationsBack, " modulations")
         paste0(subtitle, " ", plotTitleNRHF, input$extension)
       },
       content = function(file) {
         source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
-        res <- reactive_inputs$sample_results
+        res <- reactiveInputs$results
         
         NRHF_plot(
-          res$ft_averages,
-          reactive_inputs$modulations_back,
-          reactive_inputs$fileName,
+          res$resultsFT,
+          reactiveInputs$modulationsBack,
+          reactiveInputs$fileName,
           FALSE
         )
         
@@ -262,18 +259,18 @@ output$excelDownload <- downloadHandler(
     
     output$RevCpdownload <- downloadHandler(
       filename = function() {
-        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
-        plotTitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", reactive_inputs$modulations_back, " modulations")
+        subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
+        plotTitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", reactiveInputs$modulationsBack, " modulations")
         paste0(subtitle, " ", plotTitleRevCp, input$extension)
       },
       content = function(file) {
         source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
-        res <- reactive_inputs$sample_results
+        res <- reactiveInputs$results
         
         RevCp_plot(
-          res$ft_averages,
-          reactive_inputs$modulations_back,
-          reactive_inputs$fileName,
+          res$resultsFT,
+          reactiveInputs$modulationsBack,
+          reactiveInputs$fileName,
           FALSE
         )
         
@@ -289,18 +286,18 @@ output$excelDownload <- downloadHandler(
     
     output$nonFTrevCpdownload <- downloadHandler(
       filename = function() {
-        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
-        plottitleRevCpmanual <- paste0("RevCp calculated manually, ", reactive_inputs$modulations_back, " modulations")
+        subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
+        plottitleRevCpmanual <- paste0("RevCp calculated manually, ", reactiveInputs$modulationsBack, " modulations")
         paste0(subtitle, " ", plottitleRevCpmanual, input$extension)
       },
       content = function(file) {
         source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
-        res <- reactive_inputs$sample_results
+        res <- reactiveInputs$results
         
         Manual_RevCp_plot(
-          res$ft_averages,
-          reactive_inputs$modulations_back,
-          reactive_inputs$fileName,
+          res$resultsFT,
+          reactiveInputs$modulationsBack,
+          reactiveInputs$fileName,
           FALSE
         )
         
@@ -316,13 +313,13 @@ output$excelDownload <- downloadHandler(
     
     output$allPlotsDownload <- downloadHandler(
       filename = function() {
-        subtitle <- unlist(strsplit(reactive_inputs$fileName, "[.]"))[1]
+        subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
         Title <- "Plots based on FT analysis"
         paste0(subtitle, " ", Title, ".zip")  # Must be .zip
       },
       content = function(file) {
         showPageSpinner()
-        res <- reactive_inputs$sample_results
+        res <- reactiveInputs$results
         
         tmpdir <- tempdir()
         
@@ -345,7 +342,7 @@ output$excelDownload <- downloadHandler(
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
-          plot = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -354,7 +351,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot2_file,
-          plot = RevCp_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = RevCp_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -363,7 +360,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot3_file,
-          plot = Manual_RevCp_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = Manual_RevCp_plot(res$resultsNoFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -372,7 +369,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot5_file,
-          plot = Maxima_minima(res$`Extrema df1`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = Maxima_minima(res$`Extrema df1`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -381,7 +378,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot6_file,
-          plot = Maxima_minima_1(res$`Extrema df2`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = Maxima_minima_1(res$`Extrema df2`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -390,7 +387,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot7_file,
-          plot = Maxima_minima_2(res$`Extrema df3`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = Maxima_minima_2(res$`Extrema df3`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -399,7 +396,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot8_file,
-          plot = Original_dataggplot(res$`Original data`, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = Original_dataggplot(res$`Original data`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -408,7 +405,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot9_file,
-          plot = Datasteps_plot_1ggplot(res$d_steps_cleaned, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = Datasteps_plot_1ggplot(res$isolatedPatterns, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -417,7 +414,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot10_file,
-          plot = Datasteps_plot_prefinalggplot(res$d_steps_cleaned_2, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = Datasteps_plot_prefinalggplot(res$deleteLastMax, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -426,7 +423,7 @@ output$excelDownload <- downloadHandler(
         
         ggsave(
           filename = plot11_file,
-          plot = Datasteps_plot_finalggplot(res$d_steps_cleaned_3, reactive_inputs$modulations_back, reactive_inputs$fileName),
+          plot = Datasteps_plot_finalggplot(res$finalDataForAnalysis, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -441,23 +438,23 @@ output$excelDownload <- downloadHandler(
       }
     )
     
-    # Render the plot using the reactive sample_results
+    # Render the plot using the reactive results
     output$plot <- renderPlotly({
-      req(reactive_inputs$sample_results)  # Ensure results exist
-      res <- reactive_inputs$sample_results
+      req(reactiveInputs$results)  # Ensure results exist
+      res <- reactiveInputs$results
       
       plot_obj <- switch(input$plot_choice,
-                         "NRHF" = NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "RevCp" = RevCp_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "Manual RevCp" = Manual_RevCp_plot(res$average_heat_flow_per_pattern, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "RevCp and NRHF" = RevCp_NRHF_plot(res$ft_averages, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "Original data" = Original_data(res$`Original data`, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "First cleaned up data" = Datasteps_plot_1(res$d_steps_cleaned, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "Prefinal cleaned up data" = Datasteps_plot_prefinal(res$d_steps_cleaned_2, reactive_inputs$modulations_back, reactive_inputs$fileName),
-                         "Final data used for analysis" = Datasteps_plot_final(res$d_steps_cleaned_3, reactive_inputs$modulations_back, reactive_inputs$fileName))
+                         "NRHF" = NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "RevCp" = RevCp_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "Manual RevCp" = Manual_RevCp_plot(res$resultsNoFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "RevCp and NRHF" = RevCp_NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "Original data" = Original_data(res$`Original data`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "First cleaned up data" = Datasteps_plot_1(res$isolatedPatterns, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "Prefinal cleaned up data" = Datasteps_plot_prefinal(res$deleteLastMax, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+                         "Final data used for analysis" = Datasteps_plot_final(res$finalDataForAnalysis, reactiveInputs$modulationsBack, reactiveInputs$fileName))
       
       ggplotly(plot_obj, tooltip = c("x", "y", "text"))
     })

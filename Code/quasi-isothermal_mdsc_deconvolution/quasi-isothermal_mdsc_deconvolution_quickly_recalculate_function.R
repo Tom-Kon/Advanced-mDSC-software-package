@@ -1,24 +1,24 @@
-processDSCrecalc <- function(fileName, sample_results, modulations_back, period, setAmplitude, step_size, starting_temp) {
+processDSCrecalc <- function(fileName, results, modulationsBack, period, setAmplitude, stepSize, startingTemp) {
   
-  tempModAmplitude <- setAmplitude*2*pi/period
+  RevCpDenominator <- setAmplitude*2*pi/period
   
   source("Quasi-Isothermal modulated DSC deconvolution/detailed functions.R")
 
   # Recompute extrema on the cleaned data for the subsequent steps
-  extrema_counts2 <- sample_results$d_steps_cleaned_2 %>%
+  extrema_counts2 <- results$deleteLastMax %>%
     group_by(pattern) %>%
-    summarise(extrema_info = list(locate_extrema_manual(modHeatFlow, time, modTemp)))
+    summarise(extrema_info = list(locate_extrema(modHeatFlow, time, modTemp)))
   
-  extrema_df2 <- extrema_counts2 %>% unnest(cols = c(extrema_info))
+  extremaDfAfterDeleteMax <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
-  d_steps_cleaned_3 <- delete_data_until_equil(sample_results$d_steps_cleaned_2, extrema_df2, period, modulations_back)
-  TRef <- d_steps_cleaned_3$pattern*step_size+starting_temp
-  d_steps_cleaned_3 <- cbind(d_steps_cleaned_3, TRef)
+  finalDataForAnalysis <- delete_data_until_equil(results$deleteLastMax, extremaDfAfterDeleteMax, period, modulationsBack)
+  TRef <- finalDataForAnalysis$pattern*stepSize+startingTemp
+  finalDataForAnalysis <- cbind(finalDataForAnalysis, TRef)
   
   # 2. Compute the FFT and extract the dc component ----------------------
   
   # Group the data and store the time vector for each group
-  ft_averages <- d_steps_cleaned_3 %>%
+  resultsFT <- finalDataForAnalysis %>%
     group_by(pattern) %>%
     summarise(
       n_points = n(),
@@ -53,7 +53,7 @@ processDSCrecalc <- function(fileName, sample_results, modulations_back, period,
       dt_group = map_dbl(time_vector, ~ mean(diff(.x)) * 60),
       
       # DC component remains unchanged:
-      dc_value = map2_dbl(fft_result_dc, n_points, ~ Re(.x[1]) / .y),
+      NRHF = map2_dbl(fft_result_dc, n_points, ~ Re(.x[1]) / .y),
       
       # Compute the first harmonic with quadratic (peak) interpolation,
       # and correct for the amplitude reduction due to the Hanning window.
@@ -93,39 +93,37 @@ processDSCrecalc <- function(fileName, sample_results, modulations_back, period,
       ),
       
       # Calculate reversing heat flow:
-      reversing_heat_flow = first_harmonic / tempModAmplitude,
-      TRef = pattern * step_size + starting_temp
+      RevCp = first_harmonic / RevCpDenominator,
+      TRef = pattern * stepSize + startingTemp
     )
   
   
     #3. Manual RHF calculation
-    # Apply the function to your extrema_df2 data
-    extrema_df3 <- delete_extrema_until_equil(extrema_df2, sample_results$d_steps_cleaned_2, period, modulations_back)
+    # Apply the function to your extremaDfAfterDeleteMax data
+    finalAnalysisExtrema <- delete_extrema_until_equil(extremaDfAfterDeleteMax, results$deleteLastMax, period, modulationsBack)
     
     # Now average the heat_flow values per pattern
-    average_heat_maxima <- extrema_df3 %>%
+    averageHeatMaxima <- finalAnalysisExtrema %>%
       filter(type == "maxima") %>%
       group_by(pattern) %>%
       summarise(avg_heat_flow = mean(modHeatFlow, na.rm = TRUE))
     
-    average_heat_minima <- extrema_df3 %>%
+    averageHeatMinima <- finalAnalysisExtrema %>%
       filter(type == "minima") %>%
       group_by(pattern) %>%
       summarise(avg_heat_flow = mean(modHeatFlow, na.rm = TRUE))
     
-    average_amplitude <- (average_heat_maxima-average_heat_minima)*0.5
+    averageAmplitude <- (averageHeatMaxima-averageHeatMinima)*0.5
     
-    RevCpManual <- (average_amplitude$avg_heat_flow)/tempModAmplitude
-    Tref <- step_size * average_heat_maxima$pattern + starting_temp
-    average_heat_flow_per_pattern <- cbind(average_amplitude, RevCpManual, Tref)
+    RevCpManual <- (average_amplitude$avg_heat_flow)/RevCpDenominator
+    Tref <- step_size * averageHeatMaxima$pattern + startingTemp
+    resultsNoFT <- cbind(averageAmplitude, RevCpManual, Tref)
     
-    TrefCleaned4 <- as.character(c(step_size * d_steps_cleaned_3$pattern + starting_temp))
+    TrefCleaned4 <- as.character(c(step_size * finalDataForAnalysis$pattern + startingTemp))
     
-    sample_results$d_steps_cleaned_3 <- d_steps_cleaned_3
-    sample_results$ft_averages <- ft_averages
-    sample_results$average_heat_flow_per_pattern <- average_heat_flow_per_pattern
+    results$finalDataForAnalysis <- finalDataForAnalysis
+    results$resultsFT <- resultsFT
+    results$resultsNoFT <- resultsNoFT
     
-    
-  print("Done!")
-  return(sample_results)
+  return(results)
 }

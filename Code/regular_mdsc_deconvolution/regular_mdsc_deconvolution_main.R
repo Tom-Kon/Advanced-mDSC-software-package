@@ -246,16 +246,16 @@ normal_mDSC_server <- function(id) {
       
       
       #Apply functions for non-FT calculation
-      extrema_df <-locate_extrema(d$modHeatFlow, d$time, d$temperature)
-      counts <- count_extrema(extrema_df)
-      calculationMinMaxResults <- calculate_heatflow_min_max(extrema_df, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
+      extremaDf <-locate_extrema(d$modHeatFlow, d$time, d$temperature)
+      counts <- count_extrema(extremaDf)
+      calculationMinMaxResults <- calculate_heatflow_min_max(extremaDf, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
       
-      reactiveInputs$extrema_df <- extrema_df
+      reactiveInputs$extremaDf <- extremaDf
       reactiveInputs$calculationMinMaxResults <- calculationMinMaxResults
       
       
       if(reactiveInputs$HFcalcextra) {
-        calculationMinMaxResultsTHF <- calculate_heatflow_min_max_THF(reactiveInputs$extrema_df, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate, d)
+        calculationMinMaxResultsTHF <- calculate_heatflow_min_max_THF(reactiveInputs$extremaDf, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate, d)
         reactiveInputs$calculationMinMaxResultsTHF <- calculationMinMaxResultsTHF
       }
 
@@ -303,7 +303,7 @@ normal_mDSC_server <- function(id) {
         req(is.null(msg))  # Exit here if there's an error
         
         
-        calculationMinMaxResultsDSC <- calculate_heatflow_min_max_DSC(DSC, extrema_df, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
+        calculationMinMaxResultsDSC <- calculate_heatflow_min_max_DSC(DSC, extremaDf, reactiveInputs$RHFCalcDenominator, reactiveInputs$heatingRate)
         reactiveInputs$calculationMinMaxResultsDSC <- calculationMinMaxResultsDSC
    
       }

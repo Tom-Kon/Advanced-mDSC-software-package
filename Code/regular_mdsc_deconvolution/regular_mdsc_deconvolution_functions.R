@@ -157,7 +157,7 @@ locate_extrema <- function(modHeatFlow_values, time_values, temperature_values) 
     }
   }
   
-  extrema_df <- data.frame(                                      # Make the extrema_df dataframe that will be used everywhere later
+  extremaDf <- data.frame(                                      # Make the extremaDf dataframe that will be used everywhere later
     type = c(rep("maxima", length(maxima_indices)), rep("minima", length(minima_indices))),
     index = c(maxima_indices, minima_indices),
     time = c(maxima_times, minima_times),
@@ -165,15 +165,15 @@ locate_extrema <- function(modHeatFlow_values, time_values, temperature_values) 
     modHeatFlow = c(maxima_HFs, minima_HFs)
   )
   
-  return(extrema_df)
+  return(extremaDf)
 }
 
 #-----------------------------------------------------------------------------------------
 #Counting function
 #-----------------------------------------------------------------------------------------
-count_extrema <- function(extrema_df) {
-  maxima_count <- sum(extrema_df$type == "maxima")
-  minima_count <- sum(extrema_df$type == "minima")
+count_extrema <- function(extremaDf) {
+  maxima_count <- sum(extremaDf$type == "maxima")
+  minima_count <- sum(extremaDf$type == "minima")
   counts <- data.frame(maxima_count, minima_count)
   return(counts)
 }
@@ -181,25 +181,25 @@ count_extrema <- function(extrema_df) {
 #-----------------------------------------------------------------------------------------
 #Function defining the calculation based on the maxima and minima
 #-----------------------------------------------------------------------------------------
-calculate_heatflow_min_max <- function(extrema_df, RHFCalcDenominator, heatingRate) {
+calculate_heatflow_min_max <- function(extremaDf, RHFCalcDenominator, heatingRate) {
   
   # Check that the number of rows is even; if not, drop the last row
-  if (nrow(extrema_df) %% 2 != 0) {
-    extrema_df <- extrema_df[-nrow(extrema_df), ]
+  if (nrow(extremaDf) %% 2 != 0) {
+    extremaDf <- extremaDf[-nrow(extremaDf), ]
   }
   
   # Sort by index (which ensures time order)
-  extrema_sorted <- extrema_df %>%
+  extrema_sorted <- extremaDf %>%
     arrange(index)
   
   # Subtract every even from the next odd (i.e., row n+1 - row n)
   diffsHF <- numeric()
   diffstime <- numeric()
   
-  maxima <- extrema_df %>%
+  maxima <- extremaDf %>%
     filter(type == "maxima")
   
-  minima <- extrema_df %>%
+  minima <- extremaDf %>%
     filter(type == "minima")
   
   diff <- abs(nrow(maxima)-nrow(minima))
@@ -231,11 +231,11 @@ calculate_heatflow_min_max <- function(extrema_df, RHFCalcDenominator, heatingRa
 
 
 #-----------------------------------------------------------------------------------------
-#Function defining the calculation based on comparing extrema_df and THF
+#Function defining the calculation based on comparing extremaDf and THF
 #-----------------------------------------------------------------------------------------
-calculate_heatflow_min_max_THF <- function(extrema_df, RHFCalcDenominator, heatingRate, d){
+calculate_heatflow_min_max_THF <- function(extremaDf, RHFCalcDenominator, heatingRate, d){
   
-  maxima <- extrema_df %>%
+  maxima <- extremaDf %>%
     filter(type == "maxima")
   
   filtered <- d %>% 
@@ -301,11 +301,11 @@ calculate_fft <- function(period, d, RHFCalcDenominator, heatingRate){
 
 
 #-----------------------------------------------------------------------------------------
-#Function defining the calculation based on comparing extrema_df and unmodulated DSC
+#Function defining the calculation based on comparing extremaDf and unmodulated DSC
 #-----------------------------------------------------------------------------------------
-calculate_heatflow_min_max_DSC <- function(DSC, extrema_df, RHFCalcDenominator, heatingRate) {
+calculate_heatflow_min_max_DSC <- function(DSC, extremaDf, RHFCalcDenominator, heatingRate) {
   
-  matchingDSCmDSC <- extrema_df %>%
+  matchingDSCmDSC <- extremaDf %>%
     filter(type == "maxima") %>%
     rowwise() %>%
     mutate(
