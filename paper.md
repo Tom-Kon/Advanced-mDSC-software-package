@@ -28,20 +28,11 @@ date: xx July 2025
 bibliography: paper.bib
 ---
 
-`Gala` was designed to be used by both astronomical researchers and by students in
-courses on gravitational dynamics or astronomy. It has already been used in a number of
-scientific publications [@Pearson:2017] and has also been used in graduate courses on
-Galactic dynamics to, e.g., provide interactive visualizations of textbook material
-[@Binney:2008]. The combination of speed, design, and support for Astropy functionality
-in `Gala` will enable exciting scientific explorations of forthcoming data releases from
-the _Gaia_ mission [@gaia] by students and experts alike. The source code for `Gala` has
-been archived to Zenodo with the linked DOI: [@zenodo]
-
 # Summary
 The Advanced mDSC software package is a collection of four user-friendly RShiny apps that helps users without programming knowledge to decode their modulated differntial scanning calorimetry (mDSC) data. Differential scanning calorimetry (DSC) is a thermal analysis technique that is commonly used in pharmaceutical and material science to detect the different transitions and thermal events undergone by a material when it is heated. mDSC is an improved version of DSC in the sense that it can be used to deconvolute different events, but it also presents additional complexity and technical difficulty. Moreover, the data generated using this method must be analyzed by computational methods, since it generally involves datasets with hundreds of thousands of datapoints.  
 
 # Statement of need 
-Differential scanning calorimetry (DSC) is one of the most common methods to study the thermal properties of materials. It is of crucial importance in polymer chemistry and physics, material science, pharmaceutical science, and so forth. It allows the user to characterize material properties such as glass transitions, crystallization and melting events, solvent evaporation, degradation, or any other detectable event that involves a change in enthalpy or heat capacity. A significant upgrade with respect to unmodulated DSC is modulated DSC, which allows for deconvoluting different signals. Where unmodulated DSC uses a simple constant heating rate, mDSC superimposes a sinusoidal signal. Certain thermal events (such as glass transitions) can react to this faster heating rate, but others (such as most crystallisation events) can not, allowing the user to deconvolute the signal. The Advanced mDSC software package groups several sub-apps that help the user gain a better understanding not only of their mDSC data, but also of the technique in general. 
+Differential scanning calorimetry (DSC) is one of the most common methods to study the thermal properties of materials. [@Knopp:2016] It is of crucial importance in polymer chemistry and physics, material science, pharmaceutical science, and so forth. It allows the user to characterize material properties such as glass transitions, crystallization and melting events, solvent evaporation, degradation, or any other detectable event that involves a change in enthalpy or heat capacity. A significant upgrade with respect to unmodulated DSC is modulated DSC, which allows for deconvoluting different signals. Where unmodulated DSC uses a simple constant heating rate, mDSC superimposes a sinusoidal signal. Certain thermal events (such as glass transitions) can react to this faster heating rate, but others (such as most crystallisation events) can not, allowing the user to deconvolute the signal. The Advanced mDSC software package groups several sub-apps that help the user gain a better understanding not only of their mDSC data, but also of the technique in general. 
 
 The problem with mDSC is that since the technique is more complex, blind interpretation of the results can be risky. A Fourier transform is generally used to devonvolute the data, but this can, in some cases, lead to artifacts in the deconvoluted signals. This is where the "Regular modulated DSC deconvolution" application comes in. It offers different tools and methods for deconvoluting the data, allowing the user to avoid performing a Fourier transform. 
 
@@ -62,8 +53,8 @@ $$NRHF = THF-RHF, $$
 
 where $\frac{dQ}{dt}$ is the modulated heat flow, $\beta$ is the underlying (constant) heating rate, $T$ is the period of the temperature modulation, and $A_{Temp}$ is the amplitude of the temperature modulation.
 
-# Citations
-[@Knopp:2016]
+# References
+
 
 # Acknowledgments
 The authors would like to acknowledge the help from Els Verdonck (TA Instruments) and Guy Van Assche (Vrije Universiteit Brussel) for providing help with the theoretical background of the software. Additionally, this research was funded through an FWO grant (1SH0S24N). 
