@@ -14,7 +14,7 @@ authors:
     affiliation: 1
     corresponding: true # (This is how to denote the corresponding author)
   - name: Julia Bandera
-    orcid: xxxx-xxxx-xxxx-xxxx
+    orcid: 0009-0000-1104-7232
     equal-contrib: false
     affiliation: 2
 
