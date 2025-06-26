@@ -68,7 +68,7 @@ configUI2<- function(ns) {
                                 "Recalculate with different number of modulations")
             ),
             column(6, 
-                   numericInput(ns("modulations_back_in_new"), 
+                   numericInput(ns("modulations_back_new"), 
                                 "New number of modulations", value=2)
             )
           )

@@ -2,7 +2,7 @@ processDSCrecalc <- function(fileName, results, modulationsBack, period, setAmpl
   
   RevCpDenominator <- setAmplitude*2*pi/period
   
-  source("Quasi-Isothermal modulated DSC deconvolution/detailed functions.R")
+  source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_detailed_functions.R")
 
   # Recompute extrema on the cleaned data for the subsequent steps
   extrema_counts2 <- results$deleteLastMax %>%
@@ -11,8 +11,8 @@ processDSCrecalc <- function(fileName, results, modulationsBack, period, setAmpl
   
   extremaDfAfterDeleteMax <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
-  finalDataForAnalysis <- delete_data_until_equil(results$deleteLastMax, 
-                                                  extremaDfAfterDeleteMax, 
+  finalDataForAnalysis <- delete_data_until_equil(extremaDfAfterDeleteMax,
+                                                  results$deleteLastMax, 
                                                   period, modulationsBack)
   TRef <- finalDataForAnalysis$pattern*stepSize+startingTemp
   finalDataForAnalysis <- cbind(finalDataForAnalysis, TRef)
@@ -110,20 +110,20 @@ processDSCrecalc <- function(fileName, results, modulationsBack, period, setAmpl
     averageHeatMaxima <- finalAnalysisExtrema %>%
       filter(type == "maxima") %>%
       group_by(pattern) %>%
-      summarise(avg_heat_flow = mean(modHeatFlow, na.rm = TRUE))
+      summarise(avgHF = mean(modHeatFlow, na.rm = TRUE))
     
     averageHeatMinima <- finalAnalysisExtrema %>%
       filter(type == "minima") %>%
       group_by(pattern) %>%
-      summarise(avg_heat_flow = mean(modHeatFlow, na.rm = TRUE))
+      summarise(avgHF = mean(modHeatFlow, na.rm = TRUE))
     
     averageAmplitude <- (averageHeatMaxima-averageHeatMinima)*0.5
     
-    RevCpManual <- (average_amplitude$avg_heat_flow)/RevCpDenominator
-    Tref <- step_size * averageHeatMaxima$pattern + startingTemp
+    RevCpManual <- (averageAmplitude$avgHF)/RevCpDenominator
+    Tref <- stepSize * averageHeatMaxima$pattern + startingTemp
     resultsNoFT <- cbind(averageAmplitude, RevCpManual, Tref)
     
-    TrefCleaned4 <- as.character(c(step_size * finalDataForAnalysis$pattern + startingTemp))
+    TrefCleaned4 <- as.character(c(stepSize * finalDataForAnalysis$pattern + startingTemp))
     
     results$finalDataForAnalysis <- finalDataForAnalysis
     results$resultsFT <- resultsFT

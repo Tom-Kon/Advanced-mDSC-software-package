@@ -154,20 +154,36 @@ mdsc_sim_server <- function(id) {
       reactiveInputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
       
       
-      reactiveInputs$locationTgTHF <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
-      reactiveInputs$locationTgRHF <- as.numeric(unlist(strsplit(input$locationTgRHF, ",")))
-      reactiveInputs$deltaCpTg <- as.numeric(unlist(strsplit(input$deltaCpTg, ",")))
+      reactiveInputs$locationTgTHF <- tryCatch({
+        vec <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
+        if (any(is.na(vec))) NA else vec
+      }, error = function(e) NA)
       
-
+      reactiveInputs$locationTgRHF <- tryCatch({
+        vec <- as.numeric(unlist(strsplit(input$locationTgRHF, ",")))
+        if (any(is.na(vec))) NA else vec
+      }, error = function(e) NA)
+      
+      reactiveInputs$deltaCpTg <- as.numeric(input$deltaCpTg)
       reactiveInputs$gaussianNumber <- as.numeric(input$gaussianNumber)
       reactiveInputs$gaussianList <- list()
       
       
-      if(reactiveInputs$gaussianNumber != 0) {
-        for(i in 1:reactiveInputs$gaussianNumber) {
-          reactiveInputs$gaussianList[[length(reactiveInputs$gaussianList) + 1]] <- as.numeric(unlist(strsplit(input[[paste0("gaussian", i)]], ",")))
+      if (reactiveInputs$gaussianNumber != 0) {
+        for (i in 1:reactiveInputs$gaussianNumber) {
+          reactiveInputs$gaussianList[[length(reactiveInputs$gaussianList) + 1]] <- tryCatch({
+            vec <- as.numeric(unlist(strsplit(input[[paste0("gaussian", i)]], ",")))
+            if (any(is.na(vec))) NA else vec
+          }, error = function(e) NA)
         }
-      } else {NULL}
+        
+        ## error-handling only: if ANY element is NA, nuke the whole list
+        if (any(vapply(reactiveInputs$gaussianList,
+                       function(x) length(x) == 1 && is.na(x),
+                       logical(1L)))) {
+          reactiveInputs$gaussianList <- NA
+        }
+      } else { NULL }
 
       msg <- simulation_error_handling(reactiveInputs)
       

@@ -55,7 +55,7 @@ configUIsim2 <- function(ns) {
       column(4,
              textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "30, 40, 35"),
              textInput(ns("locationTgRHF"), "Where is the Tg on the reversing heat flow? Input start, end, and midpoint separated by commas (°C)", "35, 45, 40"),
-             textInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", "0.268")
+             numericInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", 0.268)
       )
     ),
     fluidRow(

@@ -108,13 +108,13 @@ excel_cleaner <- function(Excel, sheet, startingTemp) {
 
 
 # Define a function to filter out rows with duplicate neighbor temperatures
-filter_duplicates <- function(data_steps) {
+filter_duplicates <- function(originalDataFilteredUniquePatterns) {
   # Create a new column 'neighbor_temp' which holds the temperature of the previous row
-  data_steps <- data_steps %>%
+  originalDataFilteredUniquePatterns <- originalDataFilteredUniquePatterns %>%
     mutate(neighbor_temp = lag(modTemp)) # lag shifts the vector to the previous row
   
   # Remove rows where the temperature is the same as the previous one
-  filtered_data <- data_steps %>%
+  filtered_data <- originalDataFilteredUniquePatterns %>%
     filter(modTemp != neighbor_temp | is.na(neighbor_temp)) %>%
     select(-neighbor_temp) # Remove the 'neighbor_temp' column as it's no longer needed
   
@@ -163,7 +163,7 @@ locate_extrema <- function(heat_flow_values, time_values, temperature_values) {
     }
   }
   
-  extrema_df <- data.frame(
+  extremaDfIntermediate <- data.frame(
     type = c(rep("maxima", length(maxima_indices)), rep("minima", length(minima_indices))),
     index = c(maxima_indices, minima_indices),
     time = c(maxima_times, minima_times),
@@ -171,22 +171,25 @@ locate_extrema <- function(heat_flow_values, time_values, temperature_values) {
     modHeatFlow = c(maxima_HFs, minima_HFs)
   )
   
-  return(extrema_df)
+  return(extremaDfIntermediate)
 }
 
 # Define a function to delete data after the last maximum for each pattern
-delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df, step_size, starting_temp, sampling, period, points_distance_minimum_margin) {
+delete_data_after_last_maximum <- function(isolatedPatterns, extremaDfIntermediate, 
+                                           stepSize, startingTemp, sampling, period, 
+                                           pointsDistanceMinimumMargin) {
+  
   # Initialize an empty dataframe to store the filtered results (First Pass)
-  data_steps_cleaned_2 <- data.frame()
+  deleteLastMax <- data.frame()
   
   # Step 1: Apply only the Tref_for_pattern condition
-  for (pattern_id in unique(data_steps_cleaned$pattern)) {
+  for (pattern_id in unique(isolatedPatterns$pattern)) {
     # Filter extrema_df to get minima and maxima for the current pattern
-    minima_for_pattern <- extrema_df %>%
+    minima_for_pattern <- extremaDfIntermediate %>%
       filter(type == "minima" & pattern == pattern_id) %>%
       arrange(index)  # Ensure minima are sorted in order
     
-    maxima_for_pattern <- extrema_df %>%
+    maxima_for_pattern <- extremaDfIntermediate %>%
       filter(type == "maxima" & pattern == pattern_id) %>%
       arrange(index)  # Ensure maxima are sorted in order
     
@@ -208,32 +211,32 @@ delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df, step_
     min_temp <- last_minimum$modTemp
     
     # Calculate the reference temperature Tref for this pattern
-    Tref_for_pattern <- step_size * pattern_id + starting_temp
+    Tref_for_pattern <- stepSize * pattern_id + startingTemp
     
     # Apply Tref condition
     if (min_temp > Tref_for_pattern) {
       # Keep data up to last maximum time
-      data_up_to_maximum <- data_steps_cleaned %>%
+      data_up_to_maximum <- isolatedPatterns %>%
         filter(pattern == pattern_id & time <= max_time)
     } else {
       # Keep all data
-      data_up_to_maximum <- data_steps_cleaned %>%
+      data_up_to_maximum <- isolatedPatterns %>%
         filter(pattern == pattern_id)
     }
     
     # Append to the new dataframe
-    data_steps_cleaned_2 <- bind_rows(data_steps_cleaned_2, data_up_to_maximum)
+    deleteLastMax <- bind_rows(deleteLastMax, data_up_to_maximum)
   }
   
   # Step 2: Apply the 180 points condition
-  for (pattern_id in unique(data_steps_cleaned_2$pattern)) {
+  for (pattern_id in unique(deleteLastMax$pattern)) {
     # Extract maxima again (now from the cleaned dataset)
-    maxima_for_pattern <- extrema_df %>%
+    maxima_for_pattern <- extremaDfIntermediate %>%
       filter(type == "maxima" & pattern == pattern_id) %>%
       arrange(index)  # Ensure maxima are sorted in order
     
     # Extract minima again
-    minima_for_pattern <- extrema_df %>%
+    minima_for_pattern <- extremaDfIntermediate %>%
       filter(type == "minima" & pattern == pattern_id)
     
     # If there are no minima or maxima, skip this pattern
@@ -256,23 +259,23 @@ delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df, step_
     num_points_between <- abs(last_min_index - last_max_index)
     
     # Apply the 180 points condition
-    if (num_points_between < (sampling*period*60)/2 - points_distance_minimum_margin) {
+    if (num_points_between < (sampling*period)/2 - pointsDistanceMinimumMargin) {
       # Print temperature where this condition is met
       print(paste("Deleting data after second-to-last maximum at temperature:", second_last_maximum$modTemp))
       
       # Remove data after the second-to-last maximum
-      data_steps_cleaned_2 <- data_steps_cleaned_2 %>%
+      deleteLastMax <- deleteLastMax %>%
         filter(!(pattern == pattern_id & time > second_last_maximum$time))
     }
   }
   
-  return(data_steps_cleaned_2)
+  return(deleteLastMax)
 }
 
 # Define a function to delete data after the last minimum for each pattern -UNUSED!!!
 # delete_data_after_last_minimum <- function(data_steps_cleaned_2, extremaDfAfterDeleteMax) {
 #   # Initialize an empty dataframe to store the filtered results
-#   data_steps_cleaned_3 <- data.frame()
+#   deleteLastMax <- data.frame()
 #   
 #   # Loop through each pattern to apply the deletion condition
 #   for (pattern_id in unique(data_steps_cleaned_2$pattern)) {
@@ -293,21 +296,22 @@ delete_data_after_last_maximum <- function(data_steps_cleaned, extrema_df, step_
 #       filter(pattern == pattern_id & time <= min_time)
 #     
 #     # Add the filtered data to the new dataframe
-#     data_steps_cleaned_3 <- bind_rows(data_steps_cleaned_3, data_up_to_minimum)
+#     deleteLastMax <- bind_rows(deleteLastMax, data_up_to_minimum)
 #     
 #   }
-#   return(data_steps_cleaned_3)
+#   return(deleteLastMax)
 #   
 # }
 
 
 # Define a function to only keep data after an equilibrium is reached
-delete_data_until_equil <- function(data_steps_cleaned_3, extremaDfAfterDeleteMax, period, modulationsBack) {
+delete_data_until_equil <- function(extremaDfAfterDeleteMax, deleteLastMax, period, modulationsBack) {
   # Initialize an empty dataframe to store the filtered results
-  data_steps_cleaned_4 <- data.frame()
-  
+  finalDataForAnalysis <- data.frame()
+
   # Loop through each pattern to apply the deletion condition
-  for (pattern_id in unique(data_steps_cleaned_3$pattern)) {
+  for (pattern_id in unique(deleteLastMax$pattern)) {
+    
     # Filter extremaDfAfterDeleteMax to get minima for the current pattern
     maxima_for_pattern <- extremaDfAfterDeleteMax %>%
       filter(type == "maxima" & pattern == pattern_id)
@@ -318,7 +322,7 @@ delete_data_until_equil <- function(data_steps_cleaned_3, extremaDfAfterDeleteMa
     
     # Get the time and temperature of the last minimum
     max_time <- last_maximum$time
-    target_time <- max_time-(period*modulationsBack)
+    target_time <- max_time-(period/60*modulationsBack)
     max_temp <- last_maximum$modTemp
     
     
@@ -330,24 +334,24 @@ delete_data_until_equil <- function(data_steps_cleaned_3, extremaDfAfterDeleteMa
     start_time <- closest_row$time
     
     # Check the condition: if the minimum is larger than Tref
-    data_from_start <- data_steps_cleaned_3 %>%
+    data_from_start <- deleteLastMax %>%
       filter(pattern == pattern_id & time >= start_time)
     
     # Add the filtered data to the new dataframe
-    data_steps_cleaned_4 <- bind_rows(data_steps_cleaned_4, data_from_start)
+    finalDataForAnalysis <- bind_rows(finalDataForAnalysis, data_from_start)
     
   }
-  return(data_steps_cleaned_4)
+  return(finalDataForAnalysis)
   
 }
 
 # Define a function to only keep data after an equilibrium is reached in extremaDfAfterDeleteMax
-delete_extrema_until_equil <- function(extremaDfAfterDeleteMax, data_steps_cleaned_3, period, modulationsBack) {
+delete_extrema_until_equil <- function(extremaDfAfterDeleteMax, deleteLastMax, period, modulationsBack) {
   # Initialize an empty dataframe to store the filtered results
   finalAnalysisExtrema <- data.frame()
   
   # Loop through each pattern to apply the deletion condition
-  for (pattern_id in unique(data_steps_cleaned_3$pattern)) {
+  for (pattern_id in unique(deleteLastMax$pattern)) {
     # Filter extremaDfAfterDeleteMax to get minima and maxima for the current pattern
     extrema_for_pattern <- extremaDfAfterDeleteMax %>%
       filter(pattern == pattern_id)

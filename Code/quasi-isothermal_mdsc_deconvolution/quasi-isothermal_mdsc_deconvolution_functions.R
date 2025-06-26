@@ -89,11 +89,12 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
   extremaDfAfterDeleteMax <- extrema_counts2 %>% unnest(cols = c(extrema_info))
   
   # finalDataForAnalysis <- delete_data_after_last_minimum(deleteLastMax, extremaDfAfterDeleteMax)
-  finalDataForAnalysis <- delete_data_until_equil(deleteLastMax, extremaDfAfterDeleteMax, 
+  finalDataForAnalysis <- delete_data_until_equil(extremaDfAfterDeleteMax, deleteLastMax, 
                                                   period, modulationsBack)
+  
   TRef <- finalDataForAnalysis$pattern*stepSize+startingTemp
   finalDataForAnalysis <- cbind(finalDataForAnalysis, TRef)
-  
+
   # Apply the function to your extremaDfAfterDeleteMax data
   finalAnalysisExtrema <- delete_extrema_until_equil(extremaDfAfterDeleteMax, deleteLastMax, period, modulationsBack)
   

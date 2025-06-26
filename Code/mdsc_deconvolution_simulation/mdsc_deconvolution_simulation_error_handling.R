@@ -11,16 +11,11 @@ simulation_error_handling <- function(reactiveInputs){
     return(msg)
   }
   
-  # if (!is.numeric(c(reactiveInputs$sampling,
-  #                   reactiveInputs$startTemp,
-  #                   reactiveInputs$endTemp,
-  #                   reactiveInputs$period,
-  #                   reactiveInputs$heatRate,
-  #                   reactiveInputs$Atemp,
-  #                   reactiveInputs$phase,
-  #                   reactiveInputs$loessAlpha))) {
-  #   msg <- "Error: one of your basic inputs is not a numerical value. This is not possible."
-  # }
+  if (anyNA(c(reactiveInputs$locationTgRHF,
+              reactiveInputs$locationTgTHF))) {
+    msg <- "Error: The input for the Tg location must contain 3 values; the onset, the endset, and the midpoint, separated by commas. Something is wrong with your input"
+    return(msg)
+  }
 
   if (any(c(reactiveInputs$sampling,
             reactiveInputs$period,
@@ -88,6 +83,19 @@ simulation_error_handling <- function(reactiveInputs){
     msg <- "According to your input, the onset of your Tg on the THF occurs before the start of your mDSC run" 
     return(msg)
   }
+  
+
+  if (reactiveInputs$gaussianNumber != 0 &&
+      isTRUE(is.na(reactiveInputs$gaussianList))) {
+    
+    msg <- paste(
+      "The input for all Gaussian signals must contain 3 comma-separated values",
+      "(onset, endset, enthalpy). Your input had missing/extra values,",
+      "or non-numeric characters."
+    )
+    return(msg)
+  }
+  
   
   onsetValsGaussian <- c()
   for(i in seq_along(reactiveInputs$gaussianList)) {onsetValsGaussian[i] <- reactiveInputs$gaussianList[[i]][1]}

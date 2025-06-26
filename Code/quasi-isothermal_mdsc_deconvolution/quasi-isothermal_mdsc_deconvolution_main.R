@@ -171,7 +171,7 @@ mdsc_quasiIso_server <- function(id) {
       showPageSpinner()
       msg <- NULL
       
-      reactiveInputs$modulationsBack <- eval(parse(text = input$modulations_back_in_new))
+      reactiveInputs$modulationsBack <- input$modulations_back_new
       
       if (is.null(reactiveInputs$modulationsBack)) {
         msg <- "Error: the new value for the number of modulations is missing"
@@ -196,7 +196,7 @@ mdsc_quasiIso_server <- function(id) {
         period = reactiveInputs$period,
         setAmplitude = reactiveInputs$setAmplitude,
         startingTemp = reactiveInputs$startingTemp,
-        stepSize = reactiveInputs$stepSize,
+        stepSize = reactiveInputs$stepSize
       )
       
       hidePageSpinner()
