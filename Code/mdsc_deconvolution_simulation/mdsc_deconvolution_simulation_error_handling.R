@@ -11,6 +11,26 @@ simulation_error_handling <- function(reactiveInputs){
     return(msg)
   }
   
+  # if (!is.numeric(c(reactiveInputs$sampling,
+  #                   reactiveInputs$startTemp,
+  #                   reactiveInputs$endTemp,
+  #                   reactiveInputs$period,
+  #                   reactiveInputs$heatRate,
+  #                   reactiveInputs$Atemp,
+  #                   reactiveInputs$phase,
+  #                   reactiveInputs$loessAlpha))) {
+  #   msg <- "Error: one of your basic inputs is not a numerical value. This is not possible."
+  # }
+
+  if (any(c(reactiveInputs$sampling,
+            reactiveInputs$period,
+            reactiveInputs$heatRate,
+            reactiveInputs$Atemp,
+            reactiveInputs$loessAlpha) < 0)) {
+    msg <- "Error: one of your basic inputs is negative. This is not possible."
+    return(msg)
+  }
+  
   if(is.null(reactiveInputs$deltaRHFPreTg) || is.null(reactiveInputs$deltaRHFPostTg) || is.null(reactiveInputs$StartRHFPreTg) ||
      is.null(reactiveInputs$deltaCpPreTg) || is.null(reactiveInputs$deltaCpPostTg) || is.null(reactiveInputs$StartCpTempPreTg) ||
      is.null(reactiveInputs$locationTgTHF) || is.null(reactiveInputs$locationTgRHF) || is.null(reactiveInputs$deltaCpTg)) {
@@ -68,7 +88,6 @@ simulation_error_handling <- function(reactiveInputs){
     msg <- "According to your input, the onset of your Tg on the THF occurs before the start of your mDSC run" 
     return(msg)
   }
-  
   
   onsetValsGaussian <- c()
   for(i in seq_along(reactiveInputs$gaussianList)) {onsetValsGaussian[i] <- reactiveInputs$gaussianList[[i]][1]}
