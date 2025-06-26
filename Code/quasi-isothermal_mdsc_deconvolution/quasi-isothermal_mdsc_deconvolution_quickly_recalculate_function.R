@@ -70,7 +70,7 @@ processDSCrecalc <- function(fileName, results, modulationsBack, period, setAmpl
           # Build frequency axis using the group-specific dt:
           freqs <- seq(0, padded_length - 1) / (padded_length * dt_group)
           # Target modulation frequency in Hz:
-          mod_freq <- 1 / period / 60  
+          mod_freq <- 1 / period
           
           # Find the FFT bin index closest to mod_freq:
           i0 <- which.min(abs(freqs - mod_freq))

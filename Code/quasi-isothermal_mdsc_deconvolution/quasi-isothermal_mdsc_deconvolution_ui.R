@@ -4,7 +4,7 @@ configUI1<- function(ns) {
   tagList(
     fluidRow(
       column(6,
-             textInput(ns("period"), "What was your modulation period (in minutes)", "2/3"), 
+             textInput(ns("period"), "What was your modulation period (in seconds)", "40"), 
              textInput(ns("stepSize"), "What was your step size (in °C)", "3"),
              textInput(ns("isothermLength"), "What was your isotherm length (in minutes)", "20"),
              textInput(ns("startingTemp"), "What was your starting temperature (in °C)", "13")
@@ -36,6 +36,10 @@ configUI1<- function(ns) {
              div(
                class = "error-text",
                textOutput(ns("errorMessage"))
+             ),
+             div(
+               class = "succes-text",
+               textOutput(ns("succesMessage"))
              )
       ),
       column(4)

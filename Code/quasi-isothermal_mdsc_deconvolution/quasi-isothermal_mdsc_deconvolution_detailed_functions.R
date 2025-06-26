@@ -1,5 +1,5 @@
 #FUNCTIONS------------------------------------------
-excel_cleaner <- function(Excel, sheet) {
+excel_cleaner <- function(Excel, sheet, startingTemp) {
   
   if (length(excel_sheets(Excel)) < sheet) {
     msg <- paste0("Error: you're trying to select a sheet that does not exist. You Excel only has ", 
@@ -94,6 +94,11 @@ excel_cleaner <- function(Excel, sheet) {
       attr(Excel, "comment") <- errorSigFig
       break
     } 
+  }
+  
+  if(startingTemp < Excel$modTemp[1]) {
+    msg <- "Error: the starting temperature that you entered as input is lower than the first temperature in the Excel"
+    return(msg)  
   }
   
   return(Excel)

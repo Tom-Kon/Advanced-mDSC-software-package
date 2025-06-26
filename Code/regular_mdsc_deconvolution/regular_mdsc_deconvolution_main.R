@@ -58,7 +58,11 @@ normal_mDSC_ui <- function(id) {
                  div(
                    class = "error-text",
                    textOutput(ns("errorMessage"))
-                 )
+                 ),
+                 div(
+                   class = "succes-text",
+                   textOutput(ns("succesMessage"))
+                 ),
           ),
           column(4)
         ),
@@ -198,6 +202,8 @@ normal_mDSC_server <- function(id) {
 
     observeEvent(input$analyze,{
       showPageSpinner()
+      output$errorMessage <- NULL
+      output$succesMessage <- NULL
       
       # Extraction
       reactiveInputs$period <- as.numeric(input$period)
@@ -225,33 +231,36 @@ normal_mDSC_server <- function(id) {
       # Read data from Excel sheets
       import <- 1
       msg <- NULL
-      error_handling(reactiveInputs, import)
+
+      msg <- error_handling_regmDSC(reactiveInputs, import)
       
       output$errorMessage <- renderText({
         if (!is.null(msg)) {
           msg
-        } else if (!is.null(attr(d, "comment"))) {
-          (attr(d, "comment"))
+        } else if (!is.null(attr(Excel, "comment"))) {
+          (attr(Excel, "comment"))
         } else {""
         }
       })
       
       if (!is.null(msg)) hidePageSpinner()
       
+      req(is.null(msg))
+      
       reactiveInputs$RHFCalcDenominator <- reactiveInputs$setAmplitude*2*pi/reactiveInputs$period
       
-      d <- excel_cleaner(reactiveInputs$ExcelmDSC, reactiveInputs$sheet, reactiveInputs$HFcalcextra, reactiveInputs$compare,import)
+      Excel <- excel_cleaner(reactiveInputs$ExcelmDSC, reactiveInputs$sheet, reactiveInputs$HFcalcextra, reactiveInputs$compare,import)
       
       # Update the error message output (this triggers UI update)
-      if(typeof(d) == "character") {
-        msg <- d
+      if(typeof(Excel) == "character") {
+        msg <- Excel
       }
       
       output$errorMessage <- renderText({
         if (!is.null(msg)) {
           msg
-        } else if (!is.null(attr(d, "comment"))) {
-          (attr(d, "comment"))
+        } else if (!is.null(attr(Excel, "comment"))) {
+          (attr(Excel, "comment"))
         } else {""
           }
       })
@@ -264,7 +273,7 @@ normal_mDSC_server <- function(id) {
       
       
       #Apply functions for non-FT calculation
-      extremaDf <-locate_extrema(d$modHeatFlow, d$time, d$temperature)
+      extremaDf <-locate_extrema(Excel$modHeatFlow, Excel$time, Excel$temperature)
       counts <- count_extrema(extremaDf)
       calculationMinMaxResults <- calculate_heatflow_min_max(extremaDf, 
                                                              reactiveInputs$RHFCalcDenominator, 
@@ -278,12 +287,12 @@ normal_mDSC_server <- function(id) {
         calculationMinMaxResultsTHF <- calculate_heatflow_min_max_THF(reactiveInputs$extremaDf, 
                                                                       reactiveInputs$RHFCalcDenominator, 
                                                                       reactiveInputs$heatingRate, 
-                                                                      d)
+                                                                      Excel)
         reactiveInputs$calculationMinMaxResultsTHF <- calculationMinMaxResultsTHF
       }
 
       #Apply functions for FT calculation
-      reactiveInputs$calculate_fft <- calculate_fft(reactiveInputs$period, d,
+      reactiveInputs$calculate_fft <- calculate_fft(reactiveInputs$period, Excel,
                                                     reactiveInputs$RHFCalcDenominator, 
                                                     reactiveInputs$heatingRate)
       
@@ -298,8 +307,8 @@ normal_mDSC_server <- function(id) {
         output$errorMessage <- renderText({
           if (!is.null(msg)) {
             msg
-          } else if (!is.null(attr(d, "comment"))) {
-            (attr(d, "comment"))
+          } else if (!is.null(attr(Excel, "comment"))) {
+            (attr(Excel, "comment"))
           } else {""
           }
         })
@@ -312,15 +321,15 @@ normal_mDSC_server <- function(id) {
         
         
         # Update the error message output (this triggers UI update)
-        if(typeof(d) == "character") {
-          msg <- d
+        if(typeof(Excel) == "character") {
+          msg <- Excel
         }
         
         output$errorMessage <- renderText({
           if (!is.null(msg)) {
             msg
-          } else if (!is.null(attr(d, "comment"))) {
-            (attr(d, "comment"))
+          } else if (!is.null(attr(Excel, "comment"))) {
+            (attr(Excel, "comment"))
           } else {""
           }
         })
@@ -342,6 +351,10 @@ normal_mDSC_server <- function(id) {
       enable("FTAnalysisDownload")
       toggleState(id = "MaxTHFAnalysisDownload", condition = reactiveInputs$HFcalcextra)
       toggleState(id = "MaxDSCAnalysisDownload", condition = reactiveInputs$compare)
+      
+      output$succesMessage <- renderText({
+        "Analysis succesful! You can now head over to the \"Graphs\" or \"Downloads\" tab."
+      })  
       
       hidePageSpinner()
 

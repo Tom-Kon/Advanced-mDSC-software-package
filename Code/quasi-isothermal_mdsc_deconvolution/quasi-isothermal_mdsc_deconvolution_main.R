@@ -79,6 +79,8 @@ mdsc_quasiIso_server <- function(id) {
     observeEvent(input$analyze, {
       
       showPageSpinner()
+      output$errorMessage <- NULL
+      output$succesMessage <- NULL
       
       # Handle checkboxes
       if(input$sheetask) {
@@ -88,13 +90,13 @@ mdsc_quasiIso_server <- function(id) {
       }
       
       # Store numerical/text inputs with proper reactive evaluation
-      reactiveInputs$period <- eval(parse(text = input$period))  # Assuming input is numeric
-      reactiveInputs$stepSize <- eval(parse(text = input$stepSize))
-      reactiveInputs$isothermLength <- eval(parse(text = input$isothermLength))
-      reactiveInputs$startingTemp <- eval(parse(text = input$startingTemp))
-      reactiveInputs$modulationsBack <- eval(parse(text = input$modulationsBack))
-      reactiveInputs$setAmplitude <- eval(parse(text = input$setAmplitude))
-      reactiveInputs$sampling <- eval(parse(text = input$sampling))
+      reactiveInputs$period <- as.numeric(input$period) 
+      reactiveInputs$stepSize <- as.numeric(input$stepSize)
+      reactiveInputs$isothermLength <- as.numeric(input$isothermLength)
+      reactiveInputs$startingTemp <- as.numeric(input$startingTemp)
+      reactiveInputs$modulationsBack <- as.numeric(input$modulationsBack)
+      reactiveInputs$setAmplitude <- as.numeric(input$setAmplitude)
+      reactiveInputs$sampling <- as.numeric(input$sampling)
       reactiveInputs$recalc <- 1
       
     
@@ -114,7 +116,6 @@ mdsc_quasiIso_server <- function(id) {
       if (!is.null(msg)) hidePageSpinner()
       
       req(is.null(msg))  # Exit here if there's an error
-      
       
       # Call the processing function and store results in reactive value
       results <- processDSC(
@@ -157,6 +158,9 @@ mdsc_quasiIso_server <- function(id) {
       enable("nonFTrevCpdownload")
       enable("allPlotsDownload")
       
+      output$succesMessage <- renderText({
+        "Analysis succesful! You can now head over to the \"Graphs\" or \"Downloads\" tab."
+      })  
       
       hidePageSpinner()
       

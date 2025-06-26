@@ -3,18 +3,52 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
 
   #Intermediate calculations for later----
   tempMarginFirstCleanup <- 0.05
-  pointsDistanceMinimumMargin <- (sampling*period*60)/2/10
+  pointsDistanceMinimumMargin <- (sampling*period)/2/10
   subtitle <- paste0("Dataset: ", "test")
   RevCpDenominator <- setAmplitude*2*pi/period
 
   source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_detailed_functions.R")
   
-  # 1. Load and pre‐process the data -------------------------------
-  originalData <- excel_cleaner(Excel, sheet)
-  if(typeof(originalData) == "character") {
+  # ---- 1. Load and pre-process the data -------------------------------
+  originalData <- excel_cleaner(Excel, sheet, startingTemp)
+  if (is.character(originalData))           # excel_cleaner already returned a message
     return(originalData)
-  }
+  
+  #Perform a series of checks mainly to ensure that the user picked the right startingTemp
+  temps <- originalData$modTemp
+  n_max <- 0.5 * isothermLength * sampling * 60   # cap at available rows
+  
+  ok <- FALSE                                                # flag we'll set to TRUE if all checks pass
+  
+  for (i in seq_len(n_max)) {
+    
+    ## slice *by index*, not by value
+    window <- temps[i:n_max]
+    
+    win_min  <- min(window, na.rm = TRUE)                    # the minimum *value*
+    in_band <- all(window >= win_min) &&                                 # allow the min itself
+               all(window <= win_min + 1.05 * setAmplitude)               #   ″
 
+    if (in_band) {
+      window <- temps[i+(0.1 * isothermLength * sampling * 60): n_max+(0.1 * isothermLength * sampling * 60)]
+      avgtemp <- mean(window, na.rm = TRUE)
+
+      ## is avgtemp within ± stepSize/4 of startingTemp?
+      if (abs(avgtemp - startingTemp) <= 0.20) {
+        ok <- TRUE                                           # looks good – stop checking
+        break
+      }
+    }
+  }
+  
+  if (!ok) {
+    msg <- paste0("There is a problem with your starting temperature, amplitude, or step size. 
+          The first stabilised temperature is not what you claim it is. 
+          Plot your data in external software and confirm the true starting temperature. The detected temperature was ", avgtemp, " °C. You could also try adding your step size to your starting temperature.")
+    return(msg)
+  }
+  
+  
   # Define the temperature ranges----
   rangesn <- c(0:(((round(originalData$modTemp[length(originalData$modTemp)]))/stepSize)+10))
   rangesmax <- startingTemp + rangesn * stepSize + setAmplitude + tempMarginFirstCleanup
@@ -59,6 +93,22 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
                                                   period, modulationsBack)
   TRef <- finalDataForAnalysis$pattern*stepSize+startingTemp
   finalDataForAnalysis <- cbind(finalDataForAnalysis, TRef)
+  
+  # Apply the function to your extremaDfAfterDeleteMax data
+  finalAnalysisExtrema <- delete_extrema_until_equil(extremaDfAfterDeleteMax, deleteLastMax, period, modulationsBack)
+  
+  #Some more error handling regarding modulationsBack
+  extrema_counts <- finalAnalysisExtrema %>%
+    filter(type == "maxima") %>%
+    count(pattern)
+  
+  # Check if any pattern has fewer maxima than modulationsBack
+  if (any(extrema_counts$n < modulationsBack)) {
+    msg <- "You want to go back more modulations than you have extrema in at least one of your patterns, which is impossible. Reduce your modulationsBack."
+    return(msg)
+  }
+  
+    
   
   # 2. Compute the FFT and extract the dc component ----------------------
   
@@ -113,7 +163,7 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
           # Build frequency axis using the group-specific dt:
           freqs <- seq(0, padded_length - 1) / (padded_length * dt_group)
           # Target modulation frequency in Hz:
-          mod_freq <- 1 / period / 60  
+          mod_freq <- 1 / period 
           
           # Find the FFT bin index closest to mod_freq:
           i0 <- which.min(abs(freqs - mod_freq))
@@ -144,8 +194,6 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
   
   
     #3. Manual RevCp calculation
-    # Apply the function to your extremaDfAfterDeleteMax data
-    finalAnalysisExtrema <- delete_extrema_until_equil(extremaDfAfterDeleteMax, deleteLastMax, period, modulationsBack)
     
     # Now average the heat_flow values per pattern
     average_heat_maxima <- finalAnalysisExtrema %>%

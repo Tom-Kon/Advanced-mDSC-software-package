@@ -16,10 +16,10 @@ downloadExcel <- function(fileName, results, modulationsBack, period, setAmplitu
                   "Calculated amplitude of the derived temperature function (°C)", 
                   "Sampling interval (pts/sec)"),
     
-    Value = c(starting_temp, 
+    Value = c(startingTemp, 
               period*60,
               isothermLength,
-              step_size, 
+              stepSize, 
               modulationsBack, 
               setAmplitude, 
               tempMarginFirstCleanup, 

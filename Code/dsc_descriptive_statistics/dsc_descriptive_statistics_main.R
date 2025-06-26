@@ -104,6 +104,10 @@ mdsc_analyzer_server <- function(id) {
       
       
       observeEvent(input$errorCheck, {
+        output$errorMessage <- NULL
+        output$analysisMessage <- NULL
+        
+        
         wb <<- analysisAndExcel(input, extraInput)
         if(typeof(wb) == "character") {
           output$errorMessage <- renderText({wb})
@@ -121,6 +125,7 @@ mdsc_analyzer_server <- function(id) {
         },
         content = function(file) {
           showPageSpinner()
+          output$analysisMessage <- NULL
           saveWorkbook(wb, file = file, overwrite = TRUE)
           hidePageSpinner()
           shinyjs::disable(ns("excelDownload"))

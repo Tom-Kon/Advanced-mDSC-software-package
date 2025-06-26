@@ -232,12 +232,12 @@ calculate_heatflow_min_max <- function(extremaDf, RHFCalcDenominator, heatingRat
 #-----------------------------------------------------------------------------------------
 #Function defining the calculation based on comparing extremaDf and THF
 #-----------------------------------------------------------------------------------------
-calculate_heatflow_min_max_THF <- function(extremaDf, RHFCalcDenominator, heatingRate, d) {
+calculate_heatflow_min_max_THF <- function(extremaDf, RHFCalcDenominator, heatingRate, Excel) {
   
   maxima <- extremaDf %>%
     filter(type == "maxima")
   
-  filtered <- d %>% 
+  filtered <- Excel %>% 
     filter(time %in% maxima$time)
   
   THF <- filtered$heatFlow
@@ -255,18 +255,18 @@ calculate_heatflow_min_max_THF <- function(extremaDf, RHFCalcDenominator, heatin
 #-----------------------------------------------------------------------------------------
 #Function defining the calculation based on the Fourier transform
 #-----------------------------------------------------------------------------------------
-calculate_fft <- function(period, d, RHFCalcDenominator, heatingRate) {
+calculate_fft <- function(period, Excel, RHFCalcDenominator, heatingRate) {
   
-  dt <- mean(diff(d$time*60))
+  dt <- mean(diff(Excel$time*60))
   freq <- 1/period
   
   
   # output <- fftfunc(period, dt, resampled_points)
   window_size <- period/dt
-  calculate_fft <- data.frame(time = d$time, temperature = d$temperature)
-  calculate_fft$THF <- rollmean(d$modHeatFlow, k = window_size, fill = NA, 
+  calculate_fft <- data.frame(time = Excel$time, temperature = Excel$temperature)
+  calculate_fft$THF <- rollmean(Excel$modHeatFlow, k = window_size, fill = NA, 
                                 align = "center")
-  calculate_fft$baselinecorrHF <- d$modHeatFlow - calculate_fft$THF
+  calculate_fft$baselinecorrHF <- Excel$modHeatFlow - calculate_fft$THF
 
   
   # Perform rolling FFT and extract the amplitude at the user-defined frequency

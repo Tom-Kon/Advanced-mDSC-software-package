@@ -97,6 +97,10 @@ configUIsim3 <- function(ns) {
                div(
                  class = "error-text",
                  textOutput(ns("errorMessage"))
+               ),
+               div(
+                 class = "succes-text",
+                 textOutput(ns("succesMessage"))
                )
              )
       ),

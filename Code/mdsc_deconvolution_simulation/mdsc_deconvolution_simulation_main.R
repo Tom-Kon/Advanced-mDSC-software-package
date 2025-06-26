@@ -133,6 +133,8 @@ mdsc_sim_server <- function(id) {
     
     observeEvent(input$analyze, {
       showPageSpinner()
+      output$errorMessage <- NULL
+      output$succesMessage <- NULL
       
       reactiveInputs$sampling <- eval(parse(text = input$sampling))
       reactiveInputs$startTemp <- eval(parse(text = input$startTemp))
@@ -219,6 +221,10 @@ mdsc_sim_server <- function(id) {
       
       enable("mDSCSimplotsDownload")
       enable("downloadExcelSimDSC")
+
+      output$succesMessage <- renderText({
+        "Analysis succesful! You can now head over to the \"Graphs\" or \"Downloads\" tab."
+        })      
       
       hidePageSpinner()
     })
