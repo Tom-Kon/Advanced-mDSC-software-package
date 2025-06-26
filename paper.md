@@ -21,7 +21,7 @@ authors:
 affiliations:
  - name: Tom Konings, Drug Delivery and Disposition, KU Leuven, Department of Pharmaceutical and Pharmacological Sciences, Campus Gasthuisberg ON2, Herestraat 49 b921, 3000 Leuven, Belgium.
    index: 1
- - name: Julia Bandera, XXX, Belgium
+ - name: Julia Bandera, VIB-KU Leuven Center for Brain & Disease Research, Herestraat 49 Box 602, Leuven, 3000, Belgium; Department of Neurosciences, Leuven Brain Institute, KU Leuven, Herestraat 49 Box 602, Leuven, 3000, Belgium
    index: 2
 
 date: xx July 2025
