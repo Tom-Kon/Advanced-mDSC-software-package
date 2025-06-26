@@ -60,10 +60,8 @@ mdsc_analyzer_server <- function(id) {
   
   
   moduleServer(id, function(input, output, session) {
-    ns <- session$ns  # make sure ns is defined for use in dynamicui.R
+    ns <- session$ns  
     extraInput <- list()
-    source("dsc_descriptive_statistics/dsc_descriptive_statistics_dynamic_ui.R", local= TRUE)
-    
     disable("excelDownload")
     
 
@@ -106,8 +104,6 @@ mdsc_analyzer_server <- function(id) {
       
       
       observeEvent(input$errorCheck, {
-        source("dsc_descriptive_statistics/dsc_descriptive_statistics_dynamic_ui.R", local= TRUE)
-        
         wb <<- analysisAndExcel(input, extraInput)
         if(typeof(wb) == "character") {
           output$errorMessage <- renderText({wb})
