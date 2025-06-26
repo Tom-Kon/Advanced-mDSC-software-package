@@ -28,6 +28,15 @@ date: xx July 2025
 bibliography: paper.bib
 ---
 
+`Gala` was designed to be used by both astronomical researchers and by students in
+courses on gravitational dynamics or astronomy. It has already been used in a number of
+scientific publications [@Pearson:2017] and has also been used in graduate courses on
+Galactic dynamics to, e.g., provide interactive visualizations of textbook material
+[@Binney:2008]. The combination of speed, design, and support for Astropy functionality
+in `Gala` will enable exciting scientific explorations of forthcoming data releases from
+the _Gaia_ mission [@gaia] by students and experts alike. The source code for `Gala` has
+been archived to Zenodo with the linked DOI: [@zenodo]
+
 # Summary
 The Advanced mDSC software package is a collection of four user-friendly RShiny apps that helps users without programming knowledge to decode their modulated differntial scanning calorimetry (mDSC) data. Differential scanning calorimetry (DSC) is a thermal analysis technique that is commonly used in pharmaceutical and material science to detect the different transitions and thermal events undergone by a material when it is heated. mDSC is an improved version of DSC in the sense that it can be used to deconvolute different events, but it also presents additional complexity and technical difficulty. Moreover, the data generated using this method must be analyzed by computational methods, since it generally involves datasets with hundreds of thousands of datapoints.  
 
