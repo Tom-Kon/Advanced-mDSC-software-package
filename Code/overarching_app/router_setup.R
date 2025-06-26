@@ -25,7 +25,10 @@ if (require("markdown") == FALSE) {
 library(markdown)
 
 
-
+if (require("zip") == FALSE) {
+  install.packages("zip")
+}
+library(zip)
 
 # Source the module
 source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_main.R")
