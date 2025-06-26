@@ -6,17 +6,17 @@ configUIsim1 <- function(ns) {
   tagList(
     fluidRow(
       column(6,
-             textInput(ns("sampling"), "Sampling rate in points per second", "10"),
-             textInput(ns("startTemp"), "Starting temperature of the mDSC run (°C)", "0"),
-             textInput(ns("endTemp"), "Final temperature of the mDSC run (°C)", "180"),
-             textInput(ns("period"), "Period of the modulations in seconds", "40"),
-             textInput(ns("heatRate"), "Heating rate of the mDSC runs in °C/min", "2")
+             numericInput(ns("sampling"), "Sampling rate in points per second", 10),
+             numericInput(ns("startTemp"), "Starting temperature of the mDSC run (°C)", 0),
+             numericInput(ns("endTemp"), "Final temperature of the mDSC run (°C)", 180),
+             numericInput(ns("period"), "Period of the modulations in seconds", 40),
+             numericInput(ns("heatRate"), "Heating rate of the mDSC runs in °C/min", 2)
              
       ),
       column(6,
-             textInput(ns("Atemp"), "Amplitude of the temperature modulation (°C)", "0.212"),
-             textInput(ns("phase"), "Phase of the modulated heat flow with respect to the temperature modulation (rad)", "-0.2"),
-             textInput(ns("loessAlpha"), "Degree of smoothing (higher = more smoothing)", "0.05"),
+             numericInput(ns("Atemp"), "Amplitude of the temperature modulation (°C)", 0.212, step=0.001),
+             numericInput(ns("phase"), "Phase of the modulated heat flow with respect to the temperature modulation (rad)", -0.2, step=0.1),
+             numericInput(ns("loessAlpha"), "Degree of smoothing (higher = more smoothing)", 0.05, step=0.01),
              selectInput(inputId = ns("gaussianNumber"), 
                          label ="How many Gaussian-shaped events do you want to add?", 
                          choices = c(0:10)),
@@ -41,15 +41,15 @@ configUIsim2 <- function(ns) {
   tagList(
     fluidRow(
       column(4,
-             textInput(ns("deltaRHFPreTg"), "What is the slope of the reversing heat flow before the Tg (J/(g*°C))", "-0.0001"),
-             textInput(ns("deltaRHFPostTg"), "What is the slope of the reversing heat flow after the Tg (J/(g*°C))", "-0.0001"),
-             textInput(ns("StartRHFPreTg"), "What value does your reversing heat flow start at (J/g)", "-0.040"),
+             numericInput(ns("deltaRHFPreTg"), "What is the slope of the reversing heat flow before the Tg (J/(g*°C))", -0.0001, step = 0.0001),
+             numericInput(ns("deltaRHFPostTg"), "What is the slope of the reversing heat flow after the Tg (J/(g*°C))", -0.0001, step = 0.0001),
+             numericInput(ns("StartRHFPreTg"), "What value does your reversing heat flow start at (J/g)", -0.040, step = 0.001),
              
       ),
       column(4,
-             textInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C))", "0.0008"),
-             textInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C))", "0.0009"),
-             textInput(ns("StartCpTempPreTg"), "What value does your total heat capacity start at (J/g)", "1.05")
+             numericInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C))", 0.0008, step = 0.0001),
+             numericInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C))", 0.0009, step = 0.0001),
+             numericInput(ns("StartCpTempPreTg"), "What value does your total heat capacity start at (J/g)", 1.05, step = 0.01)
              
       ),
       column(4,
@@ -131,10 +131,10 @@ configUI5 <- function(ns) {
       h4("Plot export settings"),
       selectInput(ns("extension"), "What should the plot's extension be?", 
                   c(".png", ".jpg", ".tiff")), 
-      textInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
-      textInput(ns("exportWidth"), "What should the plot width be in cm?",  
+      numericInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
+      numericInput(ns("exportWidth"), "What should the plot width be in cm?",  
                 value= 20),
-      textInput(ns("exportHeight"), "What should the plot height be in cm?", 
+      numericInput(ns("exportHeight"), "What should the plot height be in cm?", 
                 value= 20)
     ),
     

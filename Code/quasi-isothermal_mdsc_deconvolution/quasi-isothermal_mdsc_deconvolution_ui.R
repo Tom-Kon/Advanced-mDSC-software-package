@@ -4,17 +4,17 @@ configUI1<- function(ns) {
   tagList(
     fluidRow(
       column(6,
-             textInput(ns("period"), "What was your modulation period (in seconds)", "40"), 
-             textInput(ns("stepSize"), "What was your step size (in °C)", "3"),
-             textInput(ns("isothermLength"), "What was your isotherm length (in minutes)", "20"),
-             textInput(ns("startingTemp"), "What was your starting temperature (in °C)", "13")
+             numericInput(ns("period"), "What was your modulation period (in seconds)", 40), 
+             numericInput(ns("stepSize"), "What was your step size (in °C)", 3),
+             numericInput(ns("isothermLength"), "What was your isotherm length (in minutes)", 20),
+             numericInput(ns("startingTemp"), "What was your starting temperature (in °C)", 13)
             
              ),
  
       column(6,
-             textInput(ns("setAmplitude"), "What was your temperature modulation amplitude (in °C)", "0.212"),
-             textInput(ns("modulationsBack"), "How many modulations should be used for the final calculation?", "15"),
-             textInput(ns("sampling"), "What was your sampling rate in pts/s?", "10"),
+             numericInput(ns("setAmplitude"), "What was your temperature modulation amplitude (in °C)", 0.212, step=0.001),
+             numericInput(ns("modulationsBack"), "How many modulations should be used for the final calculation?", 15),
+             numericInput(ns("sampling"), "What was your sampling rate in pts/s?", 10),
              fileInput(ns("Excel"), "Upload your Excel here"),
              checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
              conditionalPanel(
@@ -68,8 +68,8 @@ configUI2<- function(ns) {
                                 "Recalculate with different number of modulations")
             ),
             column(6, 
-                   textInput(ns("modulations_back_in_new"), 
-                             "New number of modulations")
+                   numericInput(ns("modulations_back_in_new"), 
+                                "New number of modulations", value=2)
             )
           )
         ))
@@ -90,11 +90,11 @@ configUI3 <- function(ns) {
       h4("Plot export settings"),
       selectInput(ns("extension"), "What should the plot's extension be?", 
                   c(".png", ".jpg", ".tiff")), 
-      textInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
-      textInput(ns("exportWidth"), "What should the plot width be in cm?",  
-                value= 20),
-      textInput(ns("exportHeight"), "What should the plot height be in cm?", 
-                value= 20)
+      numericInput(ns("exportDpi"), "What should the plot dpi be?", value = 600),
+      numericInput(ns("exportWidth"), "What should the plot width be in cm?",  
+                value = 20),
+      numericInput(ns("exportHeight"), "What should the plot height be in cm?", 
+                value = 20)
     ),
     
     mainPanel(

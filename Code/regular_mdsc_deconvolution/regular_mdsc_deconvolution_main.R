@@ -22,12 +22,12 @@ normal_mDSC_ui <- function(id) {
             style = "text-align:center",
             column(6,
                    div(style = "width: 100%;",
-                       textInput(ns("period"), "Period in seconds", "40")),
+                       numericInput(ns("period"), "Period in seconds", 40)),
                    div(style = "width: 100%;",
-                       textInput(ns("heatingRate"), "Heating rate in °C/min", "2")),
+                       numericInput(ns("heatingRate"), "Heating rate in °C/min", 2)),
                    div(style = "width: 100%;",
-                       textInput(ns("setAmplitude"), "Temperature amplitude set by user (°C)", 
-                                 "0.212"))
+                       numericInput(ns("setAmplitude"), "Temperature amplitude set by user (°C)", 
+                                 0.212, step = 0.001))
             )
           ),
           column(6,
@@ -113,10 +113,10 @@ normal_mDSC_ui <- function(id) {
             h4("Plot export settings"),
             selectInput(ns("extension"), "What should the plot's extension be?", 
                         c(".png", ".jpg", ".tiff")), 
-            textInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
-            textInput(ns("exportWidth"), "What should the plot width be in cm?",  
+            numericInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
+            numericInput(ns("exportWidth"), "What should the plot width be in cm?",  
                       value= 20),
-            textInput(ns("exportHeight"), "What should the plot height be in cm?", 
+            numericInput(ns("exportHeight"), "What should the plot height be in cm?", 
                       value= 20)
           ),
           
