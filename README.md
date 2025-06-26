@@ -1,7 +1,5 @@
 # mDSC analysis software package
 
-## Overarching app
-
 Welcome to the mDSC analysis software package. If you are not familiar with mDSC, 
 we recommend you go to the section about theoretical background first (you can find this in the full documentation), since the 
 following will be technical. This package is intended to help you with:
