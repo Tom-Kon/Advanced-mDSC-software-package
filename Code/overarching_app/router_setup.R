@@ -1,8 +1,29 @@
+
+if (require("shiny.router") == FALSE) {
+  install.packages("shiny.router")
+}
 library(shiny.router)
+
+if (require("shiny") == FALSE) {
+  install.packages("shiny")
+}
 library(shiny)
+
+if (require("rstudioapi") == FALSE) {
+  install.packages("rstudioapi")
+}
 library(rstudioapi)
+
+if (require("shinycssloaders") == FALSE) {
+  install.packages("shinycssloaders")
+}
 library(shinycssloaders)
+
+if (require("markdown") == FALSE) {
+  install.packages("markdown")
+}
 library(markdown)
+
 
 
 
