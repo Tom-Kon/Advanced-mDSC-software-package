@@ -170,7 +170,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     onset <- signalToAdd[1]
     endset <- signalToAdd[2]
     midpoint <- (signalToAdd[1]+signalToAdd[2])/2
-    enthalpy <- signalToAdd[3]
+    enthalpy <- signalToAdd[3]/heatRate       #Normalize by heating rate because here the signal is being generated with respect to temperature whereas the enthalpy is normally calculated with respect to time. In other words, the AUC of a heat flow vs temperature graph is not the enthalpy; the AUC of a heat flow vs time is. 
     sigma <- (endset-onset)/sqrt(2*log(1000))
     
     
