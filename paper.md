@@ -12,12 +12,10 @@ authors:
     orcid: 0000-0003-1256-6557
     equal-contrib: true
     affiliation: 1
-    corresponding: true # (This is how to denote the corresponding author)
-    
+    corresponding: true
   - name: Julia Bandera
     orcid: 0009-0000-1104-7232
     affiliation: 2
-
   - name: Guy Van den Mooter
     orcid: 0000-0001-9166-6075
     affiliation: 1
