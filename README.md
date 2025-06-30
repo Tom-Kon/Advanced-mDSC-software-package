@@ -1,4 +1,4 @@
-# mDSC analysis software package
+# Advanced mDSC software package
 
 Welcome to the mDSC analysis software package. If you are not familiar with mDSC, 
 we recommend you go to the section about theoretical background first (you can find this in the full documentation), since the 
