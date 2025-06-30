@@ -5,7 +5,7 @@ account: tom-kon
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14988923
-bundleId: 10516981
+bundleId: 10529251
 url: https://tom-kon.shinyapps.io/Code/
 version: 1
 asMultiple: FALSE
