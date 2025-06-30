@@ -217,7 +217,8 @@ processDSC <- function(fileName, Excel, sheet, export, startingTemp, stepSize,
     results <- list(extremaDfIntermediate, extremaDfAfterDeleteMax, finalAnalysisExtrema, 
                     originalData, isolatedPatterns, deleteLastMax, finalDataForAnalysis, 
                     resultsFT, resultsNoFT)
-    names(results) <- c("Extrema df1","Extrema df2", "Extrema df3", "Original data", 
+    
+    names(results) <- c("ExtremaDf1","ExtremaDf2", "ExtremaDf3", "OriginalData", 
                         "isolatedPatterns", "deleteLastMax", "finalDataForAnalysis", 
                         "resultsFT", "resultsNoFT")
 

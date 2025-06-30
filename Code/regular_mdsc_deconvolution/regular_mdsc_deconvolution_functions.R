@@ -102,6 +102,37 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
       drop_na()
   )
   
+  if (HFcalcextra) {
+    if (import == 1) {
+      Excel <- data.frame(
+        time = Excel$time,
+        temperature = Excel$temperature,
+        modHeatFlow = Excel$modHeatFlow,
+        heatFlow = Excel$heatFlow
+      )
+    }
+  } else {
+    if (import == 1) {
+      Excel <- data.frame(
+        time = Excel$time,
+        temperature = Excel$temperature,
+        modHeatFlow = Excel$modHeatFlow
+      )
+    }
+  }
+
+  
+  if (import == 2) {
+    Excel <- data.frame(
+      time = Excel$time,
+      temperature = Excel$temperature,
+      heatFlow = Excel$heatFlow
+    )
+  }
+  
+  
+  errorSigFig <- NULL
+  
   for(i in seq_along(Excel)) {
     tempcol <- Excel[[i]]
     tempcheck <- tempcol[1]
@@ -110,7 +141,7 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
     if (nchar(tempcheck) < 5) {
       if(i == 1) {errorSigFig <- "Warning: less than 5 significant figures were detected in your time data. This might affect the quality of the results"
       }
-      if(i == 2) {errorSigFig <- "Warning: less than 5 significant figures were detected in your modulated temperature data. This might affect the quality of the results"
+      if(i == 2) {errorSigFig <- "Warning: less than 5 significant figures were detected in your (modulated) temperature data. This might affect the quality of the results"
       }
       if(i == 3) {errorSigFig <- "Warning: less than 5 significant figures were detected in your modulated heat flow data. This might affect the quality of the results"
       }

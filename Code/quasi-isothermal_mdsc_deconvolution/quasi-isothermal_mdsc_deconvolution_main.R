@@ -234,18 +234,16 @@ mdsc_quasiIso_server <- function(id) {
     output$NRHFdownload <- downloadHandler(
       filename = function() {
         subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
-        plotTitleNRHF <- paste0("NRHF based on FT (frequency = 0), ", reactiveInputs$modulationsBack, " modulations")
+        plotTitleNRHF <- paste0("NRHF based on FT, ", reactiveInputs$modulationsBack, " modulations")
         paste0(subtitle, " ", plotTitleNRHF, input$extension)
       },
       content = function(file) {
-        source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
         res <- reactiveInputs$results
         
-        NRHF_plot(
+        quasi_isothermal_NRHF_plot(
           res$resultsFT,
           reactiveInputs$modulationsBack,
-          reactiveInputs$fileName,
-          FALSE
+          reactiveInputs$fileName
         )
         
         ggsave(
@@ -261,18 +259,16 @@ mdsc_quasiIso_server <- function(id) {
     output$RevCpdownload <- downloadHandler(
       filename = function() {
         subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
-        plotTitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", reactiveInputs$modulationsBack, " modulations")
+        plotTitleRevCp <- paste0("RevCp based on FT, ", reactiveInputs$modulationsBack, " modulations")
         paste0(subtitle, " ", plotTitleRevCp, input$extension)
       },
       content = function(file) {
-        source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
         res <- reactiveInputs$results
         
-        RevCp_plot(
+        quasi_isothermal_RevCp_plot(
           res$resultsFT,
           reactiveInputs$modulationsBack,
-          reactiveInputs$fileName,
-          FALSE
+          reactiveInputs$fileName
         )
         
         ggsave(
@@ -288,18 +284,16 @@ mdsc_quasiIso_server <- function(id) {
     output$nonFTrevCpdownload <- downloadHandler(
       filename = function() {
         subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
-        plottitleRevCpmanual <- paste0("RevCp calculated manually, ", reactiveInputs$modulationsBack, " modulations")
+        plottitleRevCpmanual <- paste0("RevCp no FT, ", reactiveInputs$modulationsBack, " modulations")
         paste0(subtitle, " ", plottitleRevCpmanual, input$extension)
       },
       content = function(file) {
-        source("quasi-isothermal_mdsc_deconvolution/quasi-isothermal_mdsc_deconvolution_plots.R")
         res <- reactiveInputs$results
         
-        Manual_RevCp_plot(
-          res$resultsFT,
+        quasi_isothermal_Manual_RevCp_plot(
+          res$resultsNoFT,
           reactiveInputs$modulationsBack,
-          reactiveInputs$fileName,
-          FALSE
+          reactiveInputs$fileName
         )
         
         ggsave(
@@ -315,7 +309,7 @@ mdsc_quasiIso_server <- function(id) {
     output$allPlotsDownload <- downloadHandler(
       filename = function() {
         subtitle <- unlist(strsplit(reactiveInputs$fileName, "[.]"))[1]
-        Title <- "Plots based on FT analysis"
+        Title <- "Quasi-isothermal mDSC analysis"
         paste0(subtitle, " ", Title, ".zip")  # Must be .zip
       },
       content = function(file) {
@@ -340,7 +334,7 @@ mdsc_quasiIso_server <- function(id) {
         # Save each plot to its file
         ggsave(
           filename = plot1_file,
-          plot = NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -349,7 +343,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot2_file,
-          plot = RevCp_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_RevCp_plot(res$resultsFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -358,7 +352,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot3_file,
-          plot = Manual_RevCp_plot(res$resultsNoFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_Manual_RevCp_plot(res$resultsNoFT, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -367,7 +361,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot5_file,
-          plot = Maxima_minima(res$`Extrema df1`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_Maxima_minima(res$ExtremaDf1, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -376,7 +370,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot6_file,
-          plot = Maxima_minima_1(res$`Extrema df2`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_Maxima_minima(res$ExtremaDf2, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -385,7 +379,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot7_file,
-          plot = Maxima_minima_2(res$`Extrema df3`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_Maxima_minima_2(res$ExtremaDf3, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -394,7 +388,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot8_file,
-          plot = Original_dataggplot(res$`Original data`, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_Original_dataggplot(res$OriginalData, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -403,7 +397,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot9_file,
-          plot = Datasteps_plot_1ggplot(res$isolatedPatterns, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_Datasteps_plot_1ggplot(res$isolatedPatterns, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -412,7 +406,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot10_file,
-          plot = Datasteps_plot_prefinalggplot(res$deleteLastMax, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_Datasteps_plot_prefinalggplot(res$deleteLastMax, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -421,7 +415,7 @@ mdsc_quasiIso_server <- function(id) {
         
         ggsave(
           filename = plot11_file,
-          plot = Datasteps_plot_finalggplot(res$finalDataForAnalysis, reactiveInputs$modulationsBack, reactiveInputs$fileName),
+          plot = quasi_isothermal_Datasteps_plot_finalggplot(res$finalDataForAnalysis, reactiveInputs$modulationsBack, reactiveInputs$fileName),
           dpi = as.numeric(input$exportDpi),
           width = as.numeric(input$exportWidth),
           height = as.numeric(input$exportHeight),
@@ -429,7 +423,7 @@ mdsc_quasiIso_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file,
+        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file,
                                       plot5_file, plot6_file, plot7_file, 
                                       plot8_file, plot9_file, plot10_file, 
                                       plot11_file), flags = "-j")
@@ -445,35 +439,35 @@ mdsc_quasiIso_server <- function(id) {
       res <- reactiveInputs$results
       
       plot_obj <- switch(input$plot_choice,
-                         "NRHF" = NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, 
+                         "NRHF" = quasi_isothermal_NRHF_plot(res$resultsFT, reactiveInputs$modulationsBack, 
                                             reactiveInputs$fileName),
-                         "RevCp" = RevCp_plot(res$resultsFT, reactiveInputs$modulationsBack, 
+                         "RevCp" = quasi_isothermal_RevCp_plot(res$resultsFT, reactiveInputs$modulationsBack, 
                                               reactiveInputs$fileName),
-                         "Manual RevCp" = Manual_RevCp_plot(res$resultsNoFT,
+                         "Manual RevCp" = quasi_isothermal_Manual_RevCp_plot(res$resultsNoFT,
                                                             reactiveInputs$modulationsBack, 
                                                             reactiveInputs$fileName),
-                         "RevCp and NRHF" = RevCp_NRHF_plot(res$resultsFT, 
+                         "RevCp and NRHF" = quasi_isothermal_RevCp_NRHF_plot(res$resultsFT, 
                                                             reactiveInputs$modulationsBack, 
                                                             reactiveInputs$fileName),
-                         "Maxima and minima 1" = Maxima_minima(res$`Extrema df1`, 
+                         "Maxima and minima 1" = quasi_isothermal_Maxima_minima(res$ExtremaDf1, 
                                                                reactiveInputs$modulationsBack, 
                                                                reactiveInputs$fileName),
-                         "Maxima and minima prefinal" = Maxima_minima_1(res$`Extrema df2`,
+                         "Maxima and minima prefinal" = quasi_isothermal_Maxima_minima_1(res$ExtremaDf2,
                                                                         reactiveInputs$modulationsBack, 
                                                                         reactiveInputs$fileName),
-                         "Maxima and minima final" =  Maxima_minima_2(res$`Extrema df3`, 
+                         "Maxima and minima final" =  quasi_isothermal_Maxima_minima_2(res$ExtremaDf3, 
                                                                       reactiveInputs$modulationsBack,
                                                                       reactiveInputs$fileName),
-                         "Original data" = Original_data(res$`Original data`, 
+                         "Original data" = quasi_isothermal_Original_data(res$OriginalData, 
                                                          reactiveInputs$modulationsBack, 
                                                          reactiveInputs$fileName),
-                         "First cleaned up data" = Datasteps_plot_1(res$isolatedPatterns, 
+                         "First cleaned up data" = quasi_isothermal_Datasteps_plot_1(res$isolatedPatterns, 
                                                                     reactiveInputs$modulationsBack, 
                                                                     reactiveInputs$fileName),
-                         "Prefinal cleaned up data" = Datasteps_plot_prefinal(res$deleteLastMax, 
+                         "Prefinal cleaned up data" = quasi_isothermal_Datasteps_plot_prefinal(res$deleteLastMax, 
                                                                               reactiveInputs$modulationsBack,
                                                                               reactiveInputs$fileName),
-                         "Final data used for analysis" = Datasteps_plot_final(res$finalDataForAnalysis, 
+                         "Final data used for analysis" = quasi_isothermal_Datasteps_plot_final(res$finalDataForAnalysis, 
                                                                                reactiveInputs$modulationsBack, 
                                                                                reactiveInputs$fileName))
       

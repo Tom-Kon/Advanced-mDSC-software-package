@@ -33,7 +33,7 @@ normal_mDSC_ui <- function(id) {
           column(6,
                  checkboxInput(ns("HFcalcextra"), "Do you want to calculate RHF and NRHF using the THF as well?"),
                  checkboxInput(ns("compare"), "Do you want to compare with unmodulated DSC?"),
-                 fileInput(ns("ExcelmDSC"), "Upload your Excel here"),
+                 fileInput(ns("ExcelmDSC"), "Upload your mDSC Excel here"),
                  checkboxInput(ns("sheetask"), "Is your data in the first sheet of your Excel file?", TRUE),
                  conditionalPanel(
                    condition = sprintf("!input['%s']", ns("sheetask")),
@@ -42,7 +42,7 @@ normal_mDSC_ui <- function(id) {
                  ),
                  conditionalPanel(
                    condition = sprintf("input['%s']", ns("compare")),
-                   fileInput(ns("Excel_DSC"), "Upload your Excel here"),
+                   fileInput(ns("Excel_DSC"), "Upload your standard DSC Excel here"),
                    checkboxInput(ns("sheetask2"), "Is your data in the first sheet of your Excel file?", TRUE),
                    conditionalPanel(
                      condition = sprintf("!input['%s']", ns("sheetask2")),
@@ -302,7 +302,7 @@ normal_mDSC_server <- function(id) {
         reactiveInputs$ExcelDSC <- input$Excel_DSC$datapath
         import <- 2
         
-        error_handling(reactiveInputs, import)
+        error_handling_regmDSC(reactiveInputs, import)
         
         output$errorMessage <- renderText({
           if (!is.null(msg)) {
@@ -420,7 +420,7 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
+        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
             flags = "-j")
         
         
@@ -474,7 +474,7 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
+        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
             flags = "-j")
         
         hidePageSpinner()
@@ -528,7 +528,7 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
+        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
             flags = "-j")
         
         hidePageSpinner()
@@ -581,7 +581,7 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
+        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
             flags = "-j")
         
         hidePageSpinner()

@@ -2,9 +2,9 @@ num_ticks <- 10
 
 #***--------------------------------Normal resulting plots------------------------**#
 
-NRHF_plot <- function(results, modulationsBack, fileName) {
+quasi_isothermal_NRHF_plot <- function(results, modulationsBack, fileName) {
   
-  plotTitleTHF <- paste0("NRHF based on FT (frequency = 0), ", modulationsBack, " modulations")
+  plotTitleTHF <- paste0("NRHF based on FT, ", modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
 
   NRHF_p <- ggplot(results, aes(x = TRef)) +
@@ -38,9 +38,9 @@ NRHF_plot <- function(results, modulationsBack, fileName) {
  return(NRHF_p)  # <--- Ensure the function returns the ggplot object
  }
 
-RevCp_plot <- function(results, modulationsBack, fileName) {
+quasi_isothermal_RevCp_plot <- function(results, modulationsBack, fileName) {
   
-  plottitleRevCp <- paste0("RevCp based on FT (1st harmonic), ", 
+  plottitleRevCp <- paste0("RevCp based on FT, ", 
                            modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
@@ -77,9 +77,9 @@ RevCp_plot <- function(results, modulationsBack, fileName) {
 } 
 
 
-Manual_RevCp_plot <- function(resultsNoFT, modulationsBack, fileName) {
+quasi_isothermal_Manual_RevCp_plot <- function(resultsNoFT, modulationsBack, fileName) {
   
-  plottitleRevCpmanual <- paste0("RevCp calculated manually, ",
+  plottitleRevCpmanual <- paste0("RevCp no FT, ",
                                  modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
 
@@ -117,7 +117,7 @@ Manual_RevCp_plot <- function(resultsNoFT, modulationsBack, fileName) {
 
 #***--------------------------------Overlays------------------------**#
 
-RevCp_NRHF_plot <- function(results, modulationsBack, fileName) {
+quasi_isothermal_RevCp_NRHF_plot <- function(results, modulationsBack, fileName) {
   plottitleoverlay <- paste0("Overlay of RevCp and NRHF, ", 
                              modulationsBack, " modulations")
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
@@ -210,7 +210,7 @@ RevCp_NRHF_plot <- function(results, modulationsBack, fileName) {
 
 #***--------------------------------Raw data------------------------**#
 
-Original_data <- function(orgData, modulationsBack, fileName) {
+quasi_isothermal_Original_data <- function(orgData, modulationsBack, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
@@ -254,7 +254,7 @@ Original_data <- function(orgData, modulationsBack, fileName) {
 }
 
 
-Datasteps_plot_1 <- function(isolatedPatterns, modulationsBack, fileName) {
+quasi_isothermal_Datasteps_plot_1 <- function(isolatedPatterns, modulationsBack, fileName) {
   isolatedPatternsSlice <- isolatedPatterns %>% 
     slice(seq(1, n(), by = 50))
   
@@ -299,7 +299,7 @@ Datasteps_plot_1 <- function(isolatedPatterns, modulationsBack, fileName) {
 
 
 
-Datasteps_plot_prefinal <- function(deleteLastMax, modulationsBack, fileName) {
+quasi_isothermal_Datasteps_plot_prefinal <- function(deleteLastMax, modulationsBack, fileName) {
   deleteLastMaxSlice <- deleteLastMax %>% 
     slice(seq(1, n(), by = 50))
   
@@ -343,7 +343,7 @@ Datasteps_plot_prefinal <- function(deleteLastMax, modulationsBack, fileName) {
 
 
 
-Datasteps_plot_final <- function(finalDataForAnalysis, modulationsBack, fileName) {
+quasi_isothermal_Datasteps_plot_final <- function(finalDataForAnalysis, modulationsBack, fileName) {
   finalDataForAnalysisSlice <- finalDataForAnalysis %>% 
     slice(seq(1, n(), by = 1))
   
@@ -391,7 +391,7 @@ Datasteps_plot_final <- function(finalDataForAnalysis, modulationsBack, fileName
 
 
 #****-------------------------Extremas-------------------------------------*
-Maxima_minima <- function(extramadf, modulationsBack, fileName) {
+quasi_isothermal_Maxima_minima <- function(extramadf, modulationsBack, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
@@ -425,7 +425,7 @@ Maxima_minima <- function(extramadf, modulationsBack, fileName) {
 }
 
 
-Maxima_minima_1 <- function(extramadf2, modulationsBack, fileName) {
+quasi_isothermal_Maxima_minima_1 <- function(extramadf2, modulationsBack, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]  
   
@@ -458,7 +458,7 @@ Maxima_minima_1 <- function(extramadf2, modulationsBack, fileName) {
   return(Max_min_1)  
 }
 
-Maxima_minima_2 <- function(extramadf3, modulationsBack, fileName) {
+quasi_isothermal_Maxima_minima_2 <- function(extramadf3, modulationsBack, fileName) {
   
   plottitlemaxmin2 <- paste0("Maxima and minima of oscillations used in calculations, ", 
                              modulationsBack, " modulations")
@@ -494,7 +494,7 @@ Maxima_minima_2 <- function(extramadf3, modulationsBack, fileName) {
 }
 
 #***--------------------------------Data to accommodate export-----------------------**#
-Original_dataggplot <- function(orgData, modulationsBack, fileName) {
+quasi_isothermal_Original_dataggplot <- function(orgData, modulationsBack, fileName) {
   
   subtitle <- unlist(strsplit(fileName, "[.]"))[1]
   
@@ -531,7 +531,7 @@ Original_dataggplot <- function(orgData, modulationsBack, fileName) {
 }
 
 
-Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulationsBack, fileName) {
+quasi_isothermal_Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulationsBack, fileName) {
   d_steps_cleanedSlice <- d_steps_cleaned %>% 
     slice(seq(1, n(), by = 50))
   
@@ -570,7 +570,7 @@ Datasteps_plot_1ggplot <- function(d_steps_cleaned, modulationsBack, fileName) {
 
 
 
-Datasteps_plot_prefinalggplot <- function(deleteLastMax, modulationsBack, fileName) {
+quasi_isothermal_Datasteps_plot_prefinalggplot <- function(deleteLastMax, modulationsBack, fileName) {
   deleteLastMaxSlice <- deleteLastMax %>% 
     slice(seq(1, n(), by = 50))
   
@@ -607,7 +607,7 @@ Datasteps_plot_prefinalggplot <- function(deleteLastMax, modulationsBack, fileNa
 
 
 
-Datasteps_plot_finalggplot <- function(finalDataForAnalysis, modulationsBack, fileName) {
+quasi_isothermal_Datasteps_plot_finalggplot <- function(finalDataForAnalysis, modulationsBack, fileName) {
   finalDataForAnalysisSlice <- finalDataForAnalysis %>% 
     slice(seq(1, n(), by = 1))
   

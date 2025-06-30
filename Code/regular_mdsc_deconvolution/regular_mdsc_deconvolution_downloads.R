@@ -31,7 +31,8 @@ download_excel_regular_mDSC <- function(reactiveInputs) {
   
   resultsMaxMinfullmanual <- reactiveInputs$calculationMinMaxResults
   calculate_fft <- reactiveInputs$calculate_fft
-  
+  calculationMinMaxResultsDSC <- reactiveInputs$calculationMinMaxResultsDSC
+  calculationMinMaxResultsTHF <- reactiveInputs$calculationMinMaxResultsTHF
  
   addWorksheet(wb, "Settings")
   writeData(wb, sheet = "Settings", config)
