@@ -36,7 +36,7 @@ More information on how the different packages work, what input is required, and
 
 ## Installation
 
-To install this application on your machine, you will need to clone the repository or download the installer. A tutorial for cloning repositories can be found here: https://argoshare.is.ed.ac.uk/healthyr_book/clone-an-existing-github-project-to-new-rstudio-project.html. Or, in video format, here: https://www.youtube.com/watch?v=NInwldFZgwA.
+To install this application on your machine, you will need to clone the repository. A tutorial for cloning repositories can be found here: https://argoshare.is.ed.ac.uk/healthyr_book/clone-an-existing-github-project-to-new-rstudio-project.html. Or, in video format, here: https://www.youtube.com/watch?v=NInwldFZgwA.
 
 ## Testing
 In order to test the software, test files have been included within each sub-app folder. Specifications on what parameters to use have been included within the test files. A folder with expected results is also included in each of the test folders. 
