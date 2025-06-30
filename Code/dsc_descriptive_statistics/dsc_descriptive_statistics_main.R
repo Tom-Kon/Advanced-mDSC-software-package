@@ -44,11 +44,14 @@ mdsc_analyzer_ui<- function(id) {
     #-----------------------------------------------------------
     
     tabPanel(
-      id= ns("tutorial"),
-      "Tutorial",
+      title = "Tutorial",
       icon = icon("book", class = "fa-solid"),
-      value = "tutorialTab",
-      source("dsc_descriptive_statistics/dsc_descriptive_statistics_tutorial.R", local = TRUE)$value),
+      fluidPage(
+        withMathJax(
+          includeMarkdown("dsc_descriptive_statistics/dsc_descriptive_statistics_tutorial.md")
+        )
+      )
+    )
     
    )
 }
