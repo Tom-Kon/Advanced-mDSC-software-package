@@ -1,5 +1,5 @@
 ---
-title: 'Advanced mDSC software package: helping people unfamiliar with programming with unraveling complex mDSC data'
+title: 'Advanced mDSC software package: helping people unfamiliar with programming to unravel complex mDSC data'
 tags:
   - R
   - RShiny
@@ -10,16 +10,16 @@ tags:
 authors:
   - name: Tom Konings
     orcid: 0000-0003-1256-6557
-    equal-contrib: true
+    equal-contrib: True
     affiliation: 1
-    corresponding: true
+    corresponding: True
   - name: Julia Bandera
     orcid: 0009-0000-1104-7232
-    equal-contrib: false
+    equal-contrib: False
     affiliation: 2
   - name: Guy Van den Mooter
     orcid: 0000-0001-9166-6075
-    equal-contrib: false
+    equal-contrib: False
     affiliation: 1
 
 affiliations:
