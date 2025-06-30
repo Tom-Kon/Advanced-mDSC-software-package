@@ -29,7 +29,7 @@ affiliations:
  - name: VIB-KU Leuven Center for Brain & Disease Research, Herestraat 49 Box 602, Leuven, 3000, Belgium; Department of Neurosciences, Leuven Brain Institute, KU Leuven, Herestraat 49 Box 602, Leuven, 3000, Belgium.
    index: 2
 
-date: xx July 2025
+date: 30 June 2025
 bibliography: paper.bib
 ---
 
