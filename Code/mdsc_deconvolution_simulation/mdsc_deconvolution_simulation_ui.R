@@ -20,6 +20,11 @@ configUIsim1 <- function(ns) {
              selectInput(inputId = ns("gaussianNumber"), 
                          label ="How many Gaussian-shaped events do you want to add?", 
                          choices = c(0:10)),
+             checkboxInput(ns("specialMeltCheck"), "Do you want to add a special melting event?", FALSE),
+             conditionalPanel(
+               condition = sprintf("input['%s']", ns("specialMeltCheck")),
+               textInput(ns("specialMelt"), "What are the onset (°C), endset (°C), and melting enthalpy (J/g)?"))
+
       )
     ),
     fluidRow(

@@ -4,6 +4,9 @@
 
 signal_generation <- function(reactiveInputs, timeGen) {
   
+  specialMelt <- reactiveInputs$specialMelt
+  specialMeltCheck <- reactiveInputs$specialMeltCheck
+  
   sampling <- reactiveInputs$sampling
   startTemp <- reactiveInputs$startTemp
   endTemp <- reactiveInputs$endTemp
@@ -192,7 +195,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
       onset <- signalToAdd[1]
       endset <- signalToAdd[2]
       midpoint <- (signalToAdd[1]+signalToAdd[2])/2
-      enthalpy <- signalToAdd[3]
+      enthalpy <- signalToAdd[3]/heatRate
       sigma <- (endset-onset)/sqrt(2*log(1000))
       
       for (j in seq_along(df$TRef)) {
@@ -206,6 +209,66 @@ signal_generation <- function(reactiveInputs, timeGen) {
         )
     }
   }
+  
+  if (specialMeltCheck) {
+    signalToAdd <- specialMelt
+    onset <- signalToAdd[1]
+    endset <- signalToAdd[2]
+    midpoint <- (onset + endset) / 2
+    enthalpy <- signalToAdd[3] / heatRate
+    
+    sigma <- (endset - onset) / sqrt(2 * log(1000))
+    sharpness <- 0.1
+    sigmaSmall <- (pi - 2 * asin(0.5)) / (2 * pi / period * sqrt(8 * log(2))) * sharpness
+    
+    # Overlaying Gaussian (main signal)
+    overlayingGaussian <- enthalpy / sqrt(2 * pi * sigma^2) * exp(-((df$TRef - midpoint)^2) / (2 * sigma^2))
+    
+    # Find index of temperature closest to onset
+    onsetWindow <- which.min(abs(TRef - onset))
+    
+    # Define window safely
+    windowEnd <- onsetWindow + sampling * period
+    windowEnd <- min(windowEnd, length(times))  # prevent overflow
+    
+    # Extract windowed times and modTemp values
+    windowTimes <- times[onsetWindow:windowEnd]
+    windowmodTemp <- modTemp[onsetWindow:windowEnd]
+    
+    # Find the time where modTemp deviates least from linear expectation
+    deviation <- abs(windowmodTemp - windowTimes * heatRate)
+    firstMin <- windowTimes[which.min(deviation)] + period/8
+    
+    # Calculate number of full periods (integer)
+    numberPeriods <- floor((endset - onset) / heatRate / period)
+    
+    # Pre-allocate timeList vector
+    timeList <- numeric(numberPeriods + 1)
+    
+    # Build list of times at each period starting from firstMin
+    for (i in 0:numberPeriods) {
+      timeList[i + 1] <- firstMin + i * period  # R is 1-indexed
+    }
+    
+    # Extract corresponding TRef values from df for these times
+    tempList <- df$TRef[df$times %in% timeList]
+    
+    
+    # Small signal: sum of additional gaussians centered on reachedTemps
+    smallSignal <- rep(0, length(df$TRef))  # initialize vector
+    
+    for (temp in tempList) {
+      smallSignal <- smallSignal + overlayingGaussian/sqrt(2*pi*sigmaSmall^2)*exp(-((df$TRef - temp)^2) / (2 * sigmaSmall^2))
+    }
+    
+    # Add to MHF column
+    df <- df %>%
+      mutate(MHF = MHF + smallSignal)
+  }
+  
+  df$smallSignal <- smallSignal
+
+  write.xlsx(df, "C:/Users/u0155764/Downloads/test.xlsx")
 
   signalGen <- df
 

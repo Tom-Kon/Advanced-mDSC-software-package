@@ -135,6 +135,9 @@ mdsc_sim_server <- function(id) {
       showPageSpinner()
       output$errorMessage <- NULL
       output$succesMessage <- NULL
+     
+      reactiveInputs$specialMeltCheck <- input$specialMeltCheck
+      reactiveInputs$specialMelt <- as.numeric(unlist(strsplit(input$specialMelt, ",")))
       
       reactiveInputs$sampling <- eval(parse(text = input$sampling))
       reactiveInputs$startTemp <- eval(parse(text = input$startTemp))
