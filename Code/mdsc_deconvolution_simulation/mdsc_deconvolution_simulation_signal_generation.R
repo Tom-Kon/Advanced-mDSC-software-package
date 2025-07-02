@@ -216,9 +216,11 @@ signal_generation <- function(reactiveInputs, timeGen) {
     endset <- signalToAdd[2]
     midpoint <- (onset + endset) / 2
     enthalpy <- signalToAdd[3] / heatRate
+    sharpness <- reactiveInputs$sharpness
+    offset <- reactiveInputs$offset
+    
     
     sigma <- (endset - onset) /(2*sqrt(2 * log(1000)))
-    sharpness <- 0.1
     sigmaSmall <- (pi - 2 * asin(0.5)) / (2 * pi / period * sqrt(8 * log(2))) * sharpness
     
     # Overlaying Gaussian (main signal)
@@ -237,10 +239,11 @@ signal_generation <- function(reactiveInputs, timeGen) {
     
     # Find the time where modTemp deviates least from linear expectation
     deviation <- abs(windowmodTemp - windowTimes * heatRate)
-    firstMin <- windowTimes[which.min(deviation)] + period/8
+    firstMin <- windowTimes[which.min(deviation)] + offset
     
     # Calculate number of full periods (integer)
     numberPeriods <- floor((endset - onset) / heatRate / period)
+    print(numberPeriods)
     
     # Pre-allocate timeList vector
     timeList <- numeric(numberPeriods + 1)
@@ -256,10 +259,14 @@ signal_generation <- function(reactiveInputs, timeGen) {
     
     # Small signal: sum of additional gaussians centered on reachedTemps
     smallSignal <- rep(0, length(df$TRef))  # initialize vector
+    smallSignalDf <- data.frame(TRef = TRef, modTemp = modTemp)
     
     for (temp in tempList) {
+      smallSignalDf <- cbind(smallSignalDf, (overlayingGaussian/sqrt(2*pi*sigmaSmall^2)*exp(-((df$TRef - temp)^2) / (2 * sigmaSmall^2))))
       smallSignal <- smallSignal + overlayingGaussian/sqrt(2*pi*sigmaSmall^2)*exp(-((df$TRef - temp)^2) / (2 * sigmaSmall^2))
     }
+    
+    names(smallSignalDf) <- c("TRef", "modTemp", rep("signal", (length(smallSignalDf)-2)))
     
     # Add to MHF column
     df <- df %>%
@@ -268,7 +275,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
   
   df$smallSignal <- smallSignal
 
-  write.xlsx(df, "C:/Users/u0155764/Downloads/test.xlsx")
+  write.xlsx(smallSignalDf, "C:/Users/Tom/Downloads/smallSignalDf.xlsx")
 
   signalGen <- df
 

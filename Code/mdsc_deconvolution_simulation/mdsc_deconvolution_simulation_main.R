@@ -135,9 +135,6 @@ mdsc_sim_server <- function(id) {
       showPageSpinner()
       output$errorMessage <- NULL
       output$succesMessage <- NULL
-     
-      reactiveInputs$specialMeltCheck <- input$specialMeltCheck
-      reactiveInputs$specialMelt <- as.numeric(unlist(strsplit(input$specialMelt, ",")))
       
       reactiveInputs$sampling <- eval(parse(text = input$sampling))
       reactiveInputs$startTemp <- eval(parse(text = input$startTemp))
@@ -156,7 +153,11 @@ mdsc_sim_server <- function(id) {
       reactiveInputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
       reactiveInputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
       
-      
+      reactiveInputs$specialMeltCheck <- input$specialMeltCheck
+      reactiveInputs$specialMelt <- as.numeric(unlist(strsplit(input$specialMelt, ",")))
+      reactiveInputs$sharpness <- input$sharpness/100
+      reactiveInputs$offset <- input$offset/100*reactiveInputs$period
+
       reactiveInputs$locationTgTHF <- tryCatch({
         vec <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
         if (any(is.na(vec))) NA else vec
