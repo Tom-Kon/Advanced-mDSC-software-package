@@ -26,14 +26,20 @@ download_Excel <- function(reactiveInputs) {
   locationTgRHF <- reactiveInputs$locationTgRHF
   deltaCpTg <- reactiveInputs$deltaCpTg
   
+  #Special melting
+  specialMelt <- reactiveInputs$specialMelt
+  sharpness <- reactiveInputs$sharpness
+  offset <- reactiveInputs$offset
+  specialMeltCheck <- reactiveInputs$specialMeltCheck
+  
   #MHF generation (for loop)
   gaussianNumber <- reactiveInputs$gaussianNumber
   gaussianList <- reactiveInputs$gaussianList
-  
-  
+
   #Results
   finaldf <- reactiveInputs$finaldf
   noFTcalc <- reactiveInputs$noFTcalc
+  signalGen <- reactiveInputs$signalGen
   
   onsetVals <- c()
   for(i in seq_along(gaussianList)) {onsetVals[i] <- gaussianList[[i]][1]}
@@ -61,7 +67,7 @@ download_Excel <- function(reactiveInputs) {
                    "Slope of the Cp after the Tg (W/°C)",
                    "Starting value of the Cp before the Tg (W/°C)"),
     
-    "Values" = c(sampling, startTemp, endTemp, period, heatRate, Atemp, phase, 
+    "Values" = c(sampling, startTemp, endTemp, period, heatRate*60, Atemp, phase, 
                  deltaRHFPreTg, deltaRHFPostTg, StartRHFPreTg, deltaCpPreTg, 
                  deltaCpPostTg, StartCpTempPreTg),
     
@@ -78,6 +84,16 @@ download_Excel <- function(reactiveInputs) {
     
   )
   
+  if(specialMeltCheck) {
+    configSpecialMelt <- data.frame(
+      "Onset special melting(°C)" = specialMelt[1], 
+      "Endset special melting (°C)" = specialMelt[2], 
+      "Enthalpy special melting (J/g)" = specialMelt[3],
+      "Sharpness (% of the FWHM of a sine wave)" = sharpness*100,
+      "Offset (with respect of the minima of the modulated heat flow, in seconds)" = offset,
+      check.names = FALSE)
+  }
+  
   if(gaussianNumber > 0) {
     configGauss <- data.frame(
       "Onset(°C)" = onsetVals,
@@ -92,10 +108,14 @@ download_Excel <- function(reactiveInputs) {
   
   addWorksheet(wbmDSCSim, "Settings")
   writeData(wbmDSCSim, sheet <- "Settings", configFixed, startCol = 1)
-  writeData(wbmDSCSim, sheet <- "Settings", configTg, startCol = 4)
+  writeData(wbmDSCSim, sheet <- "Settings", configTg, startCol = 4, rowNames =  TRUE)
+  
+  if(specialMeltCheck) {
+    writeData(wbmDSCSim, sheet <- "Settings", configSpecialMelt, startCol = 10)
+  }
   
   if(gaussianNumber > 0) {
-    writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 10)
+    writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 13)
   }
   
   addWorksheet(wbmDSCSim, "FT Deconvoluted signals")
@@ -103,6 +123,9 @@ download_Excel <- function(reactiveInputs) {
   
   addWorksheet(wbmDSCSim, "Non-FT Deconvoluted signals")
   writeData(wbmDSCSim, sheet <- "Non-FT Deconvoluted signals", noFTcalc)
+  
+  addWorksheet(wbmDSCSim, "Raw signals")
+  writeData(wbmDSCSim, sheet <- "Raw signals", signalGen)
 
   
   return(wbmDSCSim)

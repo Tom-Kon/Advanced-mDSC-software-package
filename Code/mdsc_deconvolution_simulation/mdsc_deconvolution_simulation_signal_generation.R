@@ -37,10 +37,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
   locationEnthRec <- reactiveInputs$locationEnthRec
   periodSignal <- reactiveInputs$periodSignal
 
-  
   times <- timeGen$times
-  groups <- timeGen$groups
-  
   
   deltaRevCpTempPreTg <- -deltaRHFPreTg/heatRate
   deltaRevCpTempPostTg <- -deltaRHFPostTg/heatRate
@@ -102,8 +99,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     TRef = TRef,
     modTemp = modTemp,
     modTempderiv = modTempderiv,
-    modTempnoRamp = modTempnoRamp,
-    groups = groups
+    modTempnoRamp = modTempnoRamp
   ) %>%
     # Identify rows in the Tg region and compute a relative index
     mutate(
@@ -243,8 +239,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     
     # Calculate number of full periods (integer)
     numberPeriods <- floor((endset - onset) / heatRate / period)
-    print(numberPeriods)
-    
+
     # Pre-allocate timeList vector
     timeList <- numeric(numberPeriods + 1)
     
@@ -266,7 +261,10 @@ signal_generation <- function(reactiveInputs, timeGen) {
       smallSignal <- smallSignal + overlayingGaussian/sqrt(2*pi*sigmaSmall^2)*exp(-((df$TRef - temp)^2) / (2 * sigmaSmall^2))
     }
     
-    names(smallSignalDf) <- c("TRef", "modTemp", rep("signal", (length(smallSignalDf)-2)))
+    # Rename the individual Gaussian columns clearly
+    n_signals <- length(smallSignalDf) - 2
+    names(smallSignalDf) <- c("TRef", "modTemp", paste0("signal_", seq_len(n_signals)))
+    
     
     # Add to MHF column
     df <- df %>%
@@ -274,9 +272,8 @@ signal_generation <- function(reactiveInputs, timeGen) {
   }
   
   df$smallSignal <- smallSignal
-
-  write.xlsx(smallSignalDf, "C:/Users/Tom/Downloads/smallSignalDf.xlsx")
-
+  df <- cbind(df, smallSignalDf[, -(1:2)])  # drop TRef and modTemp from smallSignalDf
+  
   signalGen <- df
 
 return(signalGen)
