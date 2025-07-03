@@ -23,9 +23,9 @@ configUIsim1 <- function(ns) {
              checkboxInput(ns("specialMeltCheck"), "Do you want to add a special melting event?", FALSE),
              conditionalPanel(
                condition = sprintf("input['%s']", ns("specialMeltCheck")),
-               textInput(ns("specialMelt"), "What are the onset (°C), endset (°C), and melting enthalpy (J/g)?", value = "100, 120, -0.01"),
-               sliderInput(ns("sharpness"), "What percentage of a sine-wave-FWHM should the small melting Gaussians be?", min = 0.1, max = 200, value = 6),
-               sliderInput(ns("offset"), "What percentage of the period should the small melting Gaussians be offset when compared to the temperature modulation?", min = 0, max = 100, value = 12.5))
+               textInput(ns("specialMelt"), "What are the onset (°C), endset (°C), and melting enthalpy (J/g)?", value = "130, 150, -5"),
+               sliderInput(ns("sharpness"), "What percentage of a sine-wave-FWHM should the small melting FWHM Gaussians be?", min = 0.5, max = 50, value = 5, step = 0.5),
+               sliderInput(ns("offset"), "What percentage of the period should the small melting Gaussians be offset when compared to the temperature modulation?", min = 0, max = 50, step = 0.5, value = 12.5))
              
 
       )
