@@ -217,7 +217,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     
     
     sigma <- (endset - onset) /(2*sqrt(2 * log(1000)))
-    sigmaSmall <- 1/(2/period * sqrt(8 * log(2))) * sharpness
+    sigmaSmall <- period/(4*sqrt(2*log(2))) * sharpness
     
     # Overlaying Gaussian (main signal)
     overlayingGaussian <- enthalpy / sqrt(2 * pi * sigma^2) * exp(-((df$TRef - midpoint)^2) / (2 * sigma^2))

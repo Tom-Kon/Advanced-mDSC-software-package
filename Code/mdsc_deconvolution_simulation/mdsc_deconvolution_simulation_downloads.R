@@ -115,7 +115,7 @@ download_Excel <- function(reactiveInputs) {
   }
   
   if(gaussianNumber > 0) {
-    writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 14)
+    writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 16)
   }
   
   addWorksheet(wbmDSCSim, "FT Deconvoluted signals")
