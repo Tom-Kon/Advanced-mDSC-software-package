@@ -37,10 +37,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
   locationEnthRec <- reactiveInputs$locationEnthRec
   periodSignal <- reactiveInputs$periodSignal
 
-  
   times <- timeGen$times
-  groups <- timeGen$groups
-  
   
   deltaRevCpTempPreTg <- -deltaRHFPreTg/heatRate
   deltaRevCpTempPostTg <- -deltaRHFPostTg/heatRate
@@ -102,8 +99,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     TRef = TRef,
     modTemp = modTemp,
     modTempderiv = modTempderiv,
-    modTempnoRamp = modTempnoRamp,
-    groups = groups
+    modTempnoRamp = modTempnoRamp
   ) %>%
     # Identify rows in the Tg region and compute a relative index
     mutate(
@@ -173,7 +169,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     onset <- signalToAdd[1]
     endset <- signalToAdd[2]
     midpoint <- (signalToAdd[1]+signalToAdd[2])/2
-    enthalpy <- signalToAdd[3]/heatRate       #Normalize by heating rate because here the signal is being generated with respect to temperature whereas the enthalpy is normally calculated with respect to time. In other words, the AUC of a heat flow vs temperature graph is not the enthalpy; the AUC of a heat flow vs time is. 
+    enthalpy <- signalToAdd[3]*heatRate       #Normalize by heating rate because here the signal is being generated with respect to temperature whereas the enthalpy is normally calculated with respect to time. In other words, the AUC of a heat flow vs temperature graph is not the enthalpy; the AUC of a heat flow vs time is. 
     sigma <- (endset-onset)/(2*sqrt(2*log(1000)))
     
     
@@ -195,7 +191,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
       onset <- signalToAdd[1]
       endset <- signalToAdd[2]
       midpoint <- (signalToAdd[1]+signalToAdd[2])/2
-      enthalpy <- signalToAdd[3]/heatRate
+      enthalpy <- signalToAdd[3]*heatRate
       sigma <- (endset-onset)/(2*sqrt(2*log(1000)))
       
       for (j in seq_along(df$TRef)) {
@@ -215,35 +211,33 @@ signal_generation <- function(reactiveInputs, timeGen) {
     onset <- signalToAdd[1]
     endset <- signalToAdd[2]
     midpoint <- (onset + endset) / 2
-    enthalpy <- signalToAdd[3] / heatRate
+    enthalpy <- signalToAdd[3]*heatRate
     sharpness <- reactiveInputs$sharpness
     offset <- reactiveInputs$offset
     
     
     sigma <- (endset - onset) /(2*sqrt(2 * log(1000)))
-    sigmaSmall <- (pi - 2 * asin(0.5)) / (2 * pi / period * sqrt(8 * log(2))) * sharpness
+    sigmaSmall <- period/(4*sqrt(2*log(2))) * sharpness
     
     # Overlaying Gaussian (main signal)
     overlayingGaussian <- enthalpy / sqrt(2 * pi * sigma^2) * exp(-((df$TRef - midpoint)^2) / (2 * sigma^2))
     
-    # Find index of temperature closest to onset
-    onsetWindow <- which.min(abs(TRef - onset))
+    # Find index of temperature closest to onset.
+    onsetWindow <- which.min(abs(modTemp - onset))
     
     # Define window safely
-    windowEnd <- onsetWindow + sampling * period
-    windowEnd <- min(windowEnd, length(times))  # prevent overflow
-    
+    delta <- sampling * period * 1.1
+
     # Extract windowed times and modTemp values
-    windowTimes <- times[onsetWindow:windowEnd]
-    windowmodTemp <- modTemp[onsetWindow:windowEnd]
+    windowTimes <- times[onsetWindow: (onsetWindow + delta)]
+    windowmodTemp <- modTemp[onsetWindow: (onsetWindow + delta)]
     
     # Find the time where modTemp deviates least from linear expectation
-    deviation <- abs(windowmodTemp - windowTimes * heatRate)
-    firstMin <- windowTimes[which.min(deviation)] + offset
+    removeRamp <- windowmodTemp - ((windowTimes-windowTimes[1]) * heatRate)
+    firstMin <- windowTimes[which.min(removeRamp)] + offset
     
     # Calculate number of full periods (integer)
     numberPeriods <- floor((endset - onset) / heatRate / period)
-    print(numberPeriods)
     
     # Pre-allocate timeList vector
     timeList <- numeric(numberPeriods + 1)
@@ -266,17 +260,22 @@ signal_generation <- function(reactiveInputs, timeGen) {
       smallSignal <- smallSignal + overlayingGaussian/sqrt(2*pi*sigmaSmall^2)*exp(-((df$TRef - temp)^2) / (2 * sigmaSmall^2))
     }
     
-    names(smallSignalDf) <- c("TRef", "modTemp", rep("signal", (length(smallSignalDf)-2)))
+    # Rename the individual Gaussian columns clearly
+    n_signals <- length(smallSignalDf) - 2
+    names(smallSignalDf) <- c("TRef", "modTemp", paste0("signal_", seq_len(n_signals)))
+    
     
     # Add to MHF column
     df <- df %>%
       mutate(MHF = MHF + smallSignal)
+    
+    df$smallSignal <- smallSignal
+    
+    df <- cbind(df, smallSignalDf[, -(1:2)])  # drop TRef and modTemp from smallSignalDf
   }
   
-  df$smallSignal <- smallSignal
 
-  write.xlsx(smallSignalDf, "C:/Users/Tom/Downloads/smallSignalDf.xlsx")
-
+  
   signalGen <- df
 
 return(signalGen)
