@@ -332,9 +332,8 @@ mdsc_sim_server <- function(id) {
         )
         
         # Bundle into a zip file
-        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file, 
-                                      plot4_file, plot5_file, plot6_file), 
-            flags = "-j"
+        zip::zipr(zipfile = file, files = c(plot1_file, plot2_file, plot3_file, 
+                                      plot4_file, plot5_file, plot6_file)
         )
         
         hidePageSpinner()

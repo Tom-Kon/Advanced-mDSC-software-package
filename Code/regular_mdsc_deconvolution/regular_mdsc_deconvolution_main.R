@@ -420,8 +420,7 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
-            flags = "-j")
+        zip::zipr(zipfile = file, files = c(plot1_file, plot2_file, plot3_file))
         
         
         hidePageSpinner()
@@ -474,8 +473,7 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
-            flags = "-j")
+        zip::zipr(zipfile = file, files = c(plot1_file, plot2_file, plot3_file))
         
         hidePageSpinner()
         
@@ -528,8 +526,7 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
-            flags = "-j")
+        zip::zipr(zipfile = file, files = c(plot1_file, plot2_file, plot3_file))
         
         hidePageSpinner()
         
@@ -581,8 +578,7 @@ normal_mDSC_server <- function(id) {
         )
         
         # Bundle into a zip file
-        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file), 
-            flags = "-j")
+        zip::zipr(zipfile = file, files = c(plot1_file, plot2_file, plot3_file))
         
         hidePageSpinner()
       }

@@ -423,10 +423,10 @@ mdsc_quasiIso_server <- function(id) {
         )
         
         # Bundle into a zip file
-        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file,
+        zip::zipr(zipfile = file, files = c(plot1_file, plot2_file, plot3_file,
                                       plot5_file, plot6_file, plot7_file, 
                                       plot8_file, plot9_file, plot10_file, 
-                                      plot11_file), flags = "-j")
+                                      plot11_file))
         
         hidePageSpinner()
         
