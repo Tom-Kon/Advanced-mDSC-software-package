@@ -35,8 +35,15 @@ into the reversing, total and non-reversing heat flows.
 More information on how the different packages work, what input is required, and what their theoretical background is, can be found in the documentation file (.pdf), or in the tutorial tabs of each sub-application (visible after launching the application).
 
 ## Installation
-
-To install this application on your machine, you will need to clone the repository. A tutorial for cloning repositories can be found here: https://argoshare.is.ed.ac.uk/healthyr_book/clone-an-existing-github-project-to-new-rstudio-project.html. Or, in video format, here: https://www.youtube.com/watch?v=NInwldFZgwA.
+There are two ways to install this software:
+1. Download the Windows installer from the Github repository. It can be found under "releases", on the right side of the page. Download the .exe file and run the installer. There is no need for further action; the software will be installed and runs!
+2. If you do not have a Windows PC or are comfortable tinkering with the code, you will need to install R and clone the repository to your local machine to run it. For this:
+   - Make an account on Github.
+   - Install R (https://cran.rstudio.com). Click the right link at the top based on your operating system.
+   - Install R Studio (https://posit.co/download/rstudio-desktop).
+   - Fork the Github repository to your own account. For this, login to github, return to the main page of this repository (Advanced mDSC software package), and click "fork" next to the repository title.
+   - Open RStudio. On the top left, click "file", then "New project". Click the "version control" option. Click "Git". Go to the repository that you forked previously, and copy the page URL. Copy it and paste it into the "Repository URL" box. You can decide the name and folder where the clone should be saved.
+   - The previous steps install the app. To run it, go to the folder that has appeared where you saved the clone. Within the folder, navigate to the "Code" folder, and within that folder, click the file "App.R". This opens the app in R. To get the user-friendly interface, click "Run App" on the top of the left upper pane. This step will install all additional dependencies and packages the app needs automatically. You will need to perform this step each time you want to use the app, but the package installation will only happen once, so the first time you start the app will take significantly longer.
 
 ## Testing
 In order to test the software, test files have been included within each sub-app folder. Specifications on what parameters to use have been included within the test files. A folder with expected results is also included in each of the test folders. 
