@@ -26,10 +26,10 @@ tagList(
         choices = c("1", "2", "3", "4"),
         selected= "1"),  
       uiOutput(ns("tablesDropdowns")),
-      checkboxInput(
-        ns("keepTitles"),
-        "Are you happy with the titles you used for your table columns in your word documents? If no, uncheck this box.",
-        value = TRUE),
+      # checkboxInput(
+        # ns("keepTitles"),
+        # "Are you happy with the titles you used for your table columns in your word documents? If no, uncheck this box.",
+        # value = TRUE),
       uiOutput(ns("coltitlesInput")),
     ),
     column(
