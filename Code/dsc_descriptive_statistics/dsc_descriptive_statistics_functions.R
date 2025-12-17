@@ -21,6 +21,8 @@ source("dsc_descriptive_statistics/dsc_descriptive_statistics_error_handling.R",
 #------------------------------------------------------------------------------------------------------------------------------------
 analysisAndExcel <- function(input, extraInput) {
 
+  keepTitles <- TRUE
+
   numTables <- extraInput$numTables
   msg <- NULL
   
@@ -282,7 +284,7 @@ analysisAndExcel <- function(input, extraInput) {
   
   
   #Manipulate the colTitles so they match the rest of the data. 
-  if (input$keepTitles == TRUE) {
+  if (keepTitles == TRUE) {
     colTitles <- list()
     sumVal <- 0
     for (i in 1:numCycles) {
@@ -325,7 +327,7 @@ analysisAndExcel <- function(input, extraInput) {
   
   sumColTitles <- 0
   
-  if (input$keepTitles == FALSE) {
+  if (keepTitles == FALSE) {
     for (i in 1:numCycles) {
       sumColTitles <- (sumColTitles + length(colTitles()[[i]]))
     }
@@ -375,7 +377,7 @@ analysisAndExcel <- function(input, extraInput) {
     }
     sumVal <- (sumVal + j)
     dataFrameCycleTemp <- combinedStats[(sumCols + 1):(sumCols + numCols), ]
-    if (input$keepTitles == FALSE) {
+    if (keepTitles == FALSE) {
       colTitlesTemp <- colTitles()[[i]]
     } else {
       colTitlesTemp <- colTitles[[i]]
@@ -506,7 +508,7 @@ analysisAndExcel <- function(input, extraInput) {
       sumVal <- (sumVal + j)
       dataFrameCycleTempRaw <- dfRaw[(sumCols + 1):(sumCols + numCols), ]
       
-      if (input$keepTitles == FALSE) {
+      if (keepTitles == FALSE) {
         colTitlesTemp <- colTitles()[[i]]
       } else {
         colTitlesTemp <- colTitles[[i]]
