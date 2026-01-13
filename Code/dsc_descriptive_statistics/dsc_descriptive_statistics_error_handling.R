@@ -79,13 +79,13 @@ errorhandling <- function(files, outputExcel, outputSheet, tableTitle, pans, sav
   }
   
   # Check if the excel file name contains special characters
-  if (grepl("/|#|%|&|<|>|\\?|\\*|\\$|!|:|@|\\+|\\(|\\)|\\[|\\]|\\{|\\}|\"|\'|\\=|\\;", outputExcel) == TRUE) {
+  if (grepl("/|#|&|<|>|\\?|\\*|\\$|!|:|@|\\+|\\(|\\)|\\[|\\]|\\{|\\}|\"|\'|\\=|\\;", outputExcel) == TRUE) {
     msg <-  "Error: There is a special character in your Excel sheet name, please remove it!"
     return(msg)
   }
   
   # Check if the excel sheet name contains special characters
-  if (grepl("/|#|%|&|<|>|\\?|\\*|\\$|!|:|@|\\+|\\(|\\)|\\[|\\]|\\{|\\}|\"|\'|\\=|\\;", outputSheet) == TRUE) {
+  if (grepl("/|#|&|<|>|\\?|\\*|\\$|!|:|@|\\+|\\(|\\)|\\[|\\]|\\{|\\}|\"|\'|\\=|\\;", outputSheet) == TRUE) {
     msg <-  "Error: There is a special character in your Excel sheet name, please remove it!"
     return(msg)
   }
