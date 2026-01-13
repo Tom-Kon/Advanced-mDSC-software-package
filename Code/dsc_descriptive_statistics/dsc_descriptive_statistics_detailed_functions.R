@@ -19,10 +19,10 @@ ordinalSuffix <- function(x) {
 
 # Function for cleaning values
 cleanAndConvert <- function(x) {
+  x <- gsub("J/\\(g\\.°C\\)", "", x)
   x <- gsub("°C", "", x)
   x <- gsub("J/g", "", x)
   x <- gsub("%", "", x)
   x <- gsub("mg", "", x)
-  x <- gsub("J/(g.°C)", "", x)
   x <- gsub(",", ".", x)
 }
