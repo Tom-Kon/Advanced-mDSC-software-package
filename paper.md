@@ -71,7 +71,7 @@ $$NRHF = THF-RHF, $$
 where $\frac{dQ}{dt}$ is the modulated heat flow, $\beta$ is the underlying (constant) heating rate, $T$ is the period of the temperature modulation, and $A_{Temp}$ is the amplitude of the temperature modulation.
 
 # AI usage disclosure
-No Generative AI was used in the design, the mathematics (which are based on literature), the manuscript writing, the testing, and most of the code writing for the app. Some generative AI was used to speed up the writing of small blocks of code or to help find relevant documentation. 
+No generative AI was used in the design, the mathematics (which are based on literature), the manuscript writing, the testing, and most of the code writing for the app. Some generative AI was used to speed up the writing of small blocks of code or to help find relevant documentation. 
 
 # Acknowledgments
 The authors would like to acknowledge the help from Els Verdonck (TA Instruments) and Guy Van Assche (Vrije Universiteit Brussel) for providing help with the theoretical background of the software. Additionally, this research was funded through an FWO grant (1SH0S24N). 
