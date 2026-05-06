@@ -24,6 +24,7 @@ configUIsim1 <- function(ns) {
              conditionalPanel(
                condition = sprintf("input['%s']", ns("specialMeltCheck")),
                textInput(ns("specialMelt"), "What are the onset (°C), endset (°C), and melting enthalpy (J/g)?", value = "130, 150, -5"),
+               ##VERY IMPORTANT NOTE: a better naming convention instead of "sharpness" would have been "fractional width"; this is also what is used in the exo peak publication. However, it is still named sharpness in the code.
                sliderInput(ns("sharpness"), "What percentage of a sine-wave-FWHM should the small melting Gaussians FWHM be?", min = 0.5, max = 50, value = 5, step = 0.5),
                sliderInput(ns("offset"), "What percentage of the period should the small melting Gaussians be offset when compared to the temperature modulation?", min = 0, max = 50, step = 0.5, value = 12.5),
                checkboxInput(ns("sharpnessLinkPeriod"), "Should the sharpness and the offset of the special melting event be linked to the period of the modulation?", TRUE),
