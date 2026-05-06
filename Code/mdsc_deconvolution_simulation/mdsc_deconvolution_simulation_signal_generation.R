@@ -6,6 +6,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
   
   specialMelt <- reactiveInputs$specialMelt
   specialMeltCheck <- reactiveInputs$specialMeltCheck
+  sharpnessLinkPeriod <- reactiveInputs$sharpnessLinkPeriod
   
   sampling <- reactiveInputs$sampling
   startTemp <- reactiveInputs$startTemp
@@ -214,14 +215,18 @@ signal_generation <- function(reactiveInputs, timeGen) {
     enthalpy <- signalToAdd[3]*heatRate
     sharpness <- reactiveInputs$sharpness
     offset <- reactiveInputs$offset
-    
+    sigmasmallperiod <- reactiveInputs$sigmasmallperiod
+
     
     sigma <- (endset - onset) /(2*sqrt(2 * log(1000)))
-    sigmaSmall <- period/(4*sqrt(2*log(2))) * sharpness
+    
+    if (sharpnessLinkPeriod) {
+      sigmaSmall <- period/(4*sqrt(2*log(2))) * sharpness
+    } else {sigmaSmall <- sigmasmallperiod/(4*sqrt(2*log(2))) * sharpness}
     
     # Overlaying Gaussian (main signal)
-    overlayingGaussian <- enthalpy / sqrt(2 * pi * sigma^2) * exp(-((df$TRef - midpoint)^2) / (2 * sigma^2))
-    
+    overlayingGaussian <<- enthalpy / sqrt(2 * pi * sigma^2) * exp(-((df$TRef - midpoint)^2) / (2 * sigma^2))
+
     # Find index of temperature closest to onset.
     onsetWindow <- which.min(abs(modTemp - onset))
     
@@ -236,6 +241,9 @@ signal_generation <- function(reactiveInputs, timeGen) {
     removeRamp <- windowmodTemp - ((windowTimes-windowTimes[1]) * heatRate)
     firstMin <- windowTimes[which.min(removeRamp)] + offset
     
+    #Make sure that firstMin (and multiples hereoff) can actually be found in df$time
+    firstMin <- round(firstMin, 1)
+    
     # Calculate number of full periods (integer)
     numberPeriods <- floor((endset - onset) / heatRate / period)
     
@@ -246,16 +254,17 @@ signal_generation <- function(reactiveInputs, timeGen) {
     for (i in 0:numberPeriods) {
       timeList[i + 1] <- firstMin + i * period  # R is 1-indexed
     }
-    
+
     # Extract corresponding TRef values from df for these times
     tempList <- df$TRef[df$times %in% timeList]
-    
+
     
     # Small signal: sum of additional gaussians centered on reachedTemps
     smallSignal <- rep(0, length(df$TRef))  # initialize vector
     smallSignalDf <- data.frame(TRef = TRef, modTemp = modTemp)
     
     for (temp in tempList) {
+      test <- (overlayingGaussian/sqrt(2*pi*sigmaSmall^2)*exp(-((df$TRef - temp)^2) / (2 * sigmaSmall^2)))
       smallSignalDf <- cbind(smallSignalDf, (overlayingGaussian/sqrt(2*pi*sigmaSmall^2)*exp(-((df$TRef - temp)^2) / (2 * sigmaSmall^2))))
       smallSignal <- smallSignal + overlayingGaussian/sqrt(2*pi*sigmaSmall^2)*exp(-((df$TRef - temp)^2) / (2 * sigmaSmall^2))
     }

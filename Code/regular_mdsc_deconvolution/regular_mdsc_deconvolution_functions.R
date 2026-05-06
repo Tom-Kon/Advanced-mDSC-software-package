@@ -43,7 +43,7 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
   temp[idxhf] <- "heatFlow"
   
   headers <- unlist(temp)
-  
+
   
   if (length(idxhf) > 1) {
     msg <- "Error: there are multiple columns containing the terms \"heat flow\" in your selected Excel sheet."
@@ -101,6 +101,7 @@ excel_cleaner <- function(Excel, sheet, HFcalcextra, compare, import) {
       mutate(across(everything(), as.numeric)) %>% # Ensure all columns are numeric
       drop_na()
   )
+  print(sprintf("%.20f", Excel[2,2]))  
   
   if (HFcalcextra) {
     if (import == 1) {

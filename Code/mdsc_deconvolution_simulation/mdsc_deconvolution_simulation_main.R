@@ -155,8 +155,13 @@ mdsc_sim_server <- function(id) {
       
       reactiveInputs$specialMeltCheck <- input$specialMeltCheck
       reactiveInputs$specialMelt <- as.numeric(unlist(strsplit(input$specialMelt, ",")))
+      reactiveInputs$sharpnessLinkPeriod <- input$sharpnessLinkPeriod
+      reactiveInputs$sigmasmallperiod <- as.numeric(input$sigmasmallperiod)
       reactiveInputs$sharpness <- input$sharpness/100
-      reactiveInputs$offset <- input$offset/100*reactiveInputs$period
+      
+      if (input$sharpnessLinkPeriod) {
+        reactiveInputs$offset <- input$offset/100*reactiveInputs$period
+      } else {reactiveInputs$offset <- input$altoffset}
 
       reactiveInputs$locationTgTHF <- tryCatch({
         vec <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))

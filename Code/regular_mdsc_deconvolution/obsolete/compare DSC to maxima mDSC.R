@@ -5,10 +5,10 @@ library(signal)
 library(openxlsx)
 
 #Settings
-Location <- "C:/Users/u0155764/Desktop"
-excelName <- "DSC vs mDSC.xlsx"
-sheetName_DSC <- "DSC 2"
-sheetName_mDSC <- "mDSC 2"
+Location <- "C:/Users/u0155764/Downloads/"
+excelName <- "testOldSoftware.xlsx"
+sheetName_DSC <- "DSC"
+sheetName_mDSC <- "mDSC"
 plotTitle <- "2°C_min, 0.212°C, 40s vs. unmodulated DSC 2"
 
 
@@ -29,13 +29,20 @@ temp_amplitude <- set_amplitude*freq
 
 
 
+
 # Read data from Excel sheets
 setwd(Location)
 dataDSC <-  na.omit(read_excel(excelName, sheet = sheetName_DSC))
 datamDSC <- na.omit(read_excel(excelName, sheet = sheetName_mDSC))
 
-dataDSC <- dataDSC[-1,]
-datamDSC <- datamDSC[-1,]
+dataDSC <- dataDSC %>%
+  mutate(across(where(is.character), ~ as.numeric(gsub(",", ".", .))))
+
+datamDSC <- datamDSC %>%
+  mutate(across(where(is.character), ~ as.numeric(gsub(",", ".", .))))
+
+# dataDSC <- dataDSC[-1,]
+# datamDSC <- datamDSC[-1,]
 
 dataDSC <- as.data.frame(sapply(dataDSC, as.numeric))
 datamDSC <- as.data.frame(sapply(datamDSC, as.numeric))
