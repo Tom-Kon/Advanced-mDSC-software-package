@@ -158,6 +158,8 @@ mdsc_sim_server <- function(id) {
       reactiveInputs$sharpnessLinkPeriod <- input$sharpnessLinkPeriod
       reactiveInputs$sigmasmallperiod <- as.numeric(input$sigmasmallperiod)
       reactiveInputs$sharpness <- input$sharpness/100
+      reactiveInputs$firstpointSwitch <- input$firstpointSwitch
+      
       
       if (input$sharpnessLinkPeriod) {
         reactiveInputs$offset <- input$offset/100*reactiveInputs$period

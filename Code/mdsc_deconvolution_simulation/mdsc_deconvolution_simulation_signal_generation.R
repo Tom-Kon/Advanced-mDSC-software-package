@@ -216,13 +216,19 @@ signal_generation <- function(reactiveInputs, timeGen) {
     sharpness <- reactiveInputs$sharpness
     offset <- reactiveInputs$offset
     sigmasmallperiod <- reactiveInputs$sigmasmallperiod
+    firstpointSwitch <- reactiveInputs$firstpointSwitch
 
     
     sigma <- (endset - onset) /(2*sqrt(2 * log(1000)))
     
     if (sharpnessLinkPeriod) {
-      sigmaSmall <- period/(4*sqrt(2*log(2))) * sharpness
-    } else {sigmaSmall <- sigmasmallperiod/(4*sqrt(2*log(2))) * sharpness}
+      sigmaSmall <- period/(6*sqrt(2*log(2))) * sharpness
+    } else {sigmaSmall <- sigmasmallperiod/(6*sqrt(2*log(2))) * sharpness}
+    
+    #Checking if FWHMs are equal
+    # print(paste0("SineFWHM = ",(period/3)))
+    # print(paste0("smallGaussianFWHM = ",(2*sigmaSmall*(sqrt(2*log(2))))))
+    
     
     # Overlaying Gaussian (main signal)
     overlayingGaussian <<- enthalpy / sqrt(2 * pi * sigma^2) * exp(-((df$TRef - midpoint)^2) / (2 * sigma^2))
@@ -239,10 +245,17 @@ signal_generation <- function(reactiveInputs, timeGen) {
     
     # Find the time where modTemp deviates least from linear expectation
     removeRamp <- windowmodTemp - ((windowTimes-windowTimes[1]) * heatRate)
-    firstMin <- windowTimes[which.min(removeRamp)] + offset
     
-    #Make sure that firstMin (and multiples hereoff) can actually be found in df$time
-    firstMin <- round(firstMin, 1)
+    if(firstpointSwitch == "min") {
+      firstpoint <- windowTimes[which.min(removeRamp)] + offset
+    } else if(firstpointSwitch == "max") {
+      firstpoint <- windowTimes[which.max(removeRamp)] + offset
+    } else if(firstpointSwitch == "zero") {
+      firstpoint <- windowTimes[which.min(abs(removeRamp))] + offset
+    }
+    
+    #Make sure that firstpoint (and multiples hereoff) can actually be found in df$time
+    firstpoint <- round(firstpoint, 1)
     
     # Calculate number of full periods (integer)
     numberPeriods <- floor((endset - onset) / heatRate / period)
@@ -250,9 +263,9 @@ signal_generation <- function(reactiveInputs, timeGen) {
     # Pre-allocate timeList vector
     timeList <- numeric(numberPeriods + 1)
     
-    # Build list of times at each period starting from firstMin
+    # Build list of times at each period starting from firstpoint
     for (i in 0:numberPeriods) {
-      timeList[i + 1] <- firstMin + i * period  # R is 1-indexed
+      timeList[i + 1] <- firstpoint + i * period  # R is 1-indexed
     }
 
     # Extract corresponding TRef values from df for these times
@@ -274,16 +287,19 @@ signal_generation <- function(reactiveInputs, timeGen) {
     names(smallSignalDf) <- c("TRef", "modTemp", paste0("signal_", seq_len(n_signals)))
     
     
-    # Add to MHF column
+    # Add to MHF column but also save the old MHF
     df <- df %>%
-      mutate(MHF = MHF + smallSignal)
+      mutate(
+        MHFnomelt = MHF,
+        MHF = MHF + smallSignal
+      )
     
     df$smallSignal <- smallSignal
     
     df <- cbind(df, smallSignalDf[, -(1:2)])  # drop TRef and modTemp from smallSignalDf
   }
   
-
+  print(df)
   
   signalGen <- df
 
