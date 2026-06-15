@@ -146,9 +146,9 @@ mdsc_sim_server <- function(id) {
       reactiveInputs$loessAlpha <- eval(parse(text = input$loessAlpha))
       
       
-      reactiveInputs$deltaRHFPreTg <- eval(parse(text = input$deltaRHFPreTg))
-      reactiveInputs$deltaRHFPostTg <- eval(parse(text = input$deltaRHFPostTg))
-      reactiveInputs$StartRHFPreTg <- eval(parse(text = input$StartRHFPreTg))
+      reactiveInputs$deltaRevCpPreTg <- eval(parse(text = input$deltaRevCpPreTg))
+      reactiveInputs$deltaRevCpPostTg <- eval(parse(text = input$deltaRevCpPostTg))
+      reactiveInputs$startRevCpPreTg <- eval(parse(text = input$startRevCpPreTg))
       reactiveInputs$deltaCpPreTg <- eval(parse(text = input$deltaCpPreTg))
       reactiveInputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
       reactiveInputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))

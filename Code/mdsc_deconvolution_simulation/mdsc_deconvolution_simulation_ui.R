@@ -58,15 +58,15 @@ configUIsim2 <- function(ns) {
   tagList(
     fluidRow(
       column(4,
-             numericInput(ns("deltaRHFPreTg"), "What is the slope of the reversing heat flow before the Tg (J/(g*°C))", -0.0001, step = 0.0001),
-             numericInput(ns("deltaRHFPostTg"), "What is the slope of the reversing heat flow after the Tg (J/(g*°C))", -0.0001, step = 0.0001),
-             numericInput(ns("StartRHFPreTg"), "What value does your reversing heat flow start at (J/g)", -0.040, step = 0.001),
+             numericInput(ns("deltaRevCpPreTg"), "What is the slope of the reversing heat capacity before the Tg (J/(g*°C²))", 0.003, step = 0.0005),
+             numericInput(ns("deltaRevCpPostTg"), "What is the slope of the reversing heat capacity after the Tg (J/(g*°C²))", 0.003, step = 0.0005),
+             numericInput(ns("startRevCpPreTg"), "What value does your reversing heat capacity start at (J/(g*°C)", 1.2, step = 0.01),
              
       ),
       column(4,
-             numericInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C))", 0.0008, step = 0.0001),
-             numericInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C))", 0.0009, step = 0.0001),
-             numericInput(ns("StartCpTempPreTg"), "What value does your total heat capacity start at (J/g)", 1.05, step = 0.01)
+             numericInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C²))", 0.0008, step = 0.0001),
+             numericInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C²))", 0.0009, step = 0.0001),
+             numericInput(ns("StartCpTempPreTg"), "What value does your total heat capacity start at (J/(g*°C)", 1.05, step = 0.01)
              
       ),
       column(4,

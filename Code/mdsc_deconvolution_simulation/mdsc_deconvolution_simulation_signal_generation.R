@@ -21,6 +21,9 @@ signal_generation <- function(reactiveInputs, timeGen) {
   deltaCpPreTg <- reactiveInputs$deltaCpPreTg
   deltaCpPostTg <- reactiveInputs$deltaCpPostTg
   StartCpTempPreTg <- reactiveInputs$StartCpTempPreTg
+  deltaRevCpPreTg <- reactiveInputs$deltaRevCpPreTg
+  deltaRevCpPostTg <- reactiveInputs$deltaRevCpPostTg
+  startRevCpPreTg <- reactiveInputs$startRevCpPreTg
   
   gaussianNumber <- reactiveInputs$gaussianNumber
 
@@ -39,15 +42,12 @@ signal_generation <- function(reactiveInputs, timeGen) {
   periodSignal <- reactiveInputs$periodSignal
 
   times <- timeGen$times
+
   
-  deltaRevCpTempPreTg <- -deltaRHFPreTg/heatRate
-  deltaRevCpTempPostTg <- -deltaRHFPostTg/heatRate
-  StartRevCpTempPreTg <- -StartRHFPreTg/heatRate
-  
-  deltaHFPreTg <- -deltaCpPreTg*heatRate
-  deltaHFPostTg <- -deltaCpPostTg*heatRate
-  StartHFTempPreTg <- -StartCpTempPreTg*heatRate
-  deltaHFTg <- -deltaCpTg*heatRate  # in W/g
+  # deltaHFPreTg <- -deltaCpPreTg*heatRate
+  # deltaHFPostTg <- -deltaCpPostTg*heatRate
+  # StartHFTempPreTg <- -StartCpTempPreTg*heatRate
+  # deltaHFTg <- -deltaCpTg*heatRate  # in W/g
 
   
   modTemp <- Atemp * sin(2*pi/period * times) + heatRate * times
@@ -57,7 +57,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
   modTempdervPhase <- Atemp * 2*pi/period * cos(2*pi/period * times + phase) + heatRate
   modTempdervPhaseNoHR <- Atemp * 2*pi/period * cos(2*pi/period * times + phase)
   
-  FinalRevCpPreTg <- StartRevCpTempPreTg + deltaRevCpTempPreTg * locationTgRHF[1]
+  FinalRevCpPreTg <- startRevCpPreTg + deltaRevCpPreTg * locationTgRHF[1]
   StartRevCpTempPostTg <- FinalRevCpPreTg + deltaCpTg
   
   
@@ -78,8 +78,8 @@ signal_generation <- function(reactiveInputs, timeGen) {
   
   RevCpTg <- 1/ (1 + exp(-kRHF * (TRef - locationTgRHF[3])))
   
-  SinebeforeTg <- (StartRevCpTempPreTg + deltaRevCpTempPreTg * TRef) * modTempdervPhaseNoHR
-  SineafterTg <- (StartRevCpTempPostTg + deltaRevCpTempPostTg * TRef) * modTempdervPhaseNoHR
+  SinebeforeTg <- (startRevCpPreTg + deltaRevCpPreTg * TRef) * modTempdervPhaseNoHR
+  SineafterTg <- (StartRevCpTempPostTg + deltaRevCpPostTg * TRef) * modTempdervPhaseNoHR
   
   TRef1 <- TRef[TRef <= locationTgTHF[1]]
   BaseBeforeTgShort <- -(StartCpTempPreTg + deltaCpPreTg * TRef1) * heatRate

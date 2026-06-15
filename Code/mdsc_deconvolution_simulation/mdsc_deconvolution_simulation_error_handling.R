@@ -26,7 +26,7 @@ simulation_error_handling <- function(reactiveInputs){
     return(msg)
   }
   
-  if(is.null(reactiveInputs$deltaRHFPreTg) || is.null(reactiveInputs$deltaRHFPostTg) || is.null(reactiveInputs$StartRHFPreTg) ||
+  if(is.null(reactiveInputs$startRevCpPreTg) || is.null(reactiveInputs$deltaRevCpPostTg) || is.null(reactiveInputs$deltaRevCpPreTg) ||
      is.null(reactiveInputs$deltaCpPreTg) || is.null(reactiveInputs$deltaCpPostTg) || is.null(reactiveInputs$StartCpTempPreTg) ||
      is.null(reactiveInputs$locationTgTHF) || is.null(reactiveInputs$locationTgRHF) || is.null(reactiveInputs$deltaCpTg)) {
     
