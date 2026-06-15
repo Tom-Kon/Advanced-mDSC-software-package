@@ -31,6 +31,10 @@ download_Excel <- function(reactiveInputs) {
   sharpness <- reactiveInputs$sharpness
   offset <- reactiveInputs$offset
   specialMeltCheck <- reactiveInputs$specialMeltCheck
+  firstpointSwitch <- reactiveInputs$firstpointSwitch
+  sharpnessLinkPeriod <- reactiveInputs$sharpnessLinkPeriod
+  sigmasmallperiod <- as.numeric(reactiveInputs$sigmasmallperiod)
+  
   
   #MHF generation (for loop)
   gaussianNumber <- reactiveInputs$gaussianNumber
@@ -40,6 +44,7 @@ download_Excel <- function(reactiveInputs) {
   finaldf <- reactiveInputs$finaldf
   noFTcalc <- reactiveInputs$noFTcalc
   signalGen <- reactiveInputs$signalGen
+  loess <- reactiveInputs$loessAlpha
   
   onsetVals <- c()
   for(i in seq_along(gaussianList)) {onsetVals[i] <- gaussianList[[i]][1]}
@@ -65,11 +70,12 @@ download_Excel <- function(reactiveInputs) {
                    "Starting value of the RHF before the Tg (W)",
                    "Slope of the Cp before the Tg (W/°C)",
                    "Slope of the Cp after the Tg (W/°C)",
-                   "Starting value of the Cp before the Tg (W/°C)"),
+                   "Starting value of the Cp before the Tg (W/°C)",
+                   "LOESS factor"),
     
     "Values" = c(sampling, startTemp, endTemp, period, heatRate*60, Atemp, phase, 
                  deltaRHFPreTg, deltaRHFPostTg, StartRHFPreTg, deltaCpPreTg, 
-                 deltaCpPostTg, StartCpTempPreTg),
+                 deltaCpPostTg, StartCpTempPreTg, loess),
     
     check.names = FALSE
   )
@@ -89,6 +95,9 @@ download_Excel <- function(reactiveInputs) {
       "Onset special melting(°C)" = specialMelt[1], 
       "Endset special melting (°C)" = specialMelt[2], 
       "Enthalpy special melting (J/g)" = specialMelt[3],
+      "Were sharpness and offset calculated relative to the MHF period or not?" = sharpnessLinkPeriod,
+      "If the answer to the question above was no, then what period should be used to calculate the small signal FWHM?" = sigmasmallperiod,
+      "Is the offset of the first special melting peak calculated with respect to a zero, min, or max of the MHF signal?" = firstpointSwitch,
       "Sharpness (% of the FWHM of a sine wave)" = sharpness*100,
       "Offset (with respect of the minima of the modulated heat flow, in seconds)" = offset,
       check.names = FALSE)
