@@ -14,9 +14,9 @@ download_Excel <- function(reactiveInputs) {
   #MHF generation (fixed)
   Atemp <- reactiveInputs$Atemp
   phase <- reactiveInputs$phase
-  deltaRHFPreTg <- reactiveInputs$deltaRHFPreTg
-  deltaRHFPostTg <- reactiveInputs$deltaRHFPostTg
-  StartRHFPreTg <- reactiveInputs$StartRHFPreTg
+  deltaRevCpPreTg <- reactiveInputs$deltaRevCpPreTg
+  deltaRevCpPostTg <- reactiveInputs$deltaRevCpPostTg
+  startRevCpPreTg <- reactiveInputs$startRevCpPreTg
   deltaCpPreTg <- reactiveInputs$deltaCpPreTg
   deltaCpPostTg <- reactiveInputs$deltaCpPostTg
   StartCpTempPreTg <- reactiveInputs$StartCpTempPreTg
@@ -65,16 +65,16 @@ download_Excel <- function(reactiveInputs) {
                    "Heating rate (°C/min)",
                    "Temperature modulation amplitude (°C)", 
                    "Phase difference (rad)",
-                   "Slope of the RHF before the Tg (W/°C)",
-                   "Slope of the RHF after the Tg (W/°C)",
-                   "Starting value of the RHF before the Tg (W)",
-                   "Slope of the Cp before the Tg (W/°C)",
-                   "Slope of the Cp after the Tg (W/°C)",
-                   "Starting value of the Cp before the Tg (W/°C)",
+                   "Slope of the RevCp before the Tg (J/°C²*g)",
+                   "Slope of the RevCp after the Tg (J/°C²*g)",
+                   "Starting value of the RevCp before the Tg (J/(g*°C))",
+                   "Slope of the Cp before the Tg (J/°C²*g)",
+                   "Slope of the Cp after the Tg (J/°C²*g)",
+                   "Starting value of the Cp before the Tg (J/(°C*g)",
                    "LOESS factor"),
     
     "Values" = c(sampling, startTemp, endTemp, period, heatRate*60, Atemp, phase, 
-                 deltaRHFPreTg, deltaRHFPostTg, StartRHFPreTg, deltaCpPreTg, 
+                 deltaRevCpPreTg, deltaRevCpPostTg, startRevCpPreTg, deltaCpPreTg, 
                  deltaCpPostTg, StartCpTempPreTg, loess),
     
     check.names = FALSE
@@ -91,6 +91,7 @@ download_Excel <- function(reactiveInputs) {
   )
   
   if(specialMeltCheck) {
+    print("hello")
     configSpecialMelt <- data.frame(
       "Onset special melting(°C)" = specialMelt[1], 
       "Endset special melting (°C)" = specialMelt[2], 
