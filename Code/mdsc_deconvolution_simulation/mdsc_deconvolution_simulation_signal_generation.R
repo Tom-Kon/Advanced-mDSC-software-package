@@ -299,8 +299,6 @@ signal_generation <- function(reactiveInputs, timeGen) {
     df <- cbind(df, smallSignalDf[, -(1:2)])  # drop TRef and modTemp from smallSignalDf
   }
   
-  print(df)
-  
   signalGen <- df
 
 return(signalGen)

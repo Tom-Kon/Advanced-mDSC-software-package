@@ -91,7 +91,6 @@ download_Excel <- function(reactiveInputs) {
   )
   
   if(specialMeltCheck) {
-    print("hello")
     configSpecialMelt <- data.frame(
       "Onset special melting(°C)" = specialMelt[1], 
       "Endset special melting (°C)" = specialMelt[2], 

@@ -15,7 +15,7 @@ configUIsim1 <- function(ns) {
       ),
       column(6,
              numericInput(ns("Atemp"), "Amplitude of the temperature modulation (°C)", 0.212, step=0.001),
-             numericInput(ns("phase"), "Phase of the modulated heat flow with respect to the temperature modulation (rad)", -0.2, step=0.1),
+             numericInput(ns("phase"), "Phase of the modulated heat flow with respect to the temperature modulation (rad)", 0, step=0.1),
              numericInput(ns("loessAlpha"), "Degree of smoothing (higher = more smoothing)", 0.05, step=0.01),
              selectInput(inputId = ns("gaussianNumber"), 
                          label ="How many Gaussian-shaped events do you want to add?", 
@@ -23,11 +23,11 @@ configUIsim1 <- function(ns) {
              checkboxInput(ns("specialMeltCheck"), "Do you want to add a special melting event?", FALSE),
              conditionalPanel(
                condition = sprintf("input['%s']", ns("specialMeltCheck")),
-               textInput(ns("specialMelt"), "What are the onset (°C), endset (°C), and melting enthalpy (J/g)?", value = "130, 150, -5"),
+               textInput(ns("specialMelt"), "What are the onset (°C), endset (°C), and melting enthalpy (J/g)?", value = "130, 150, -25"),
                ##VERY IMPORTANT NOTE: a better naming convention instead of "sharpness" would have been "fractional width"; this is also what is used in the exo peak publication. However, it is still named sharpness in the code.
-               sliderInput(ns("sharpness"), "What percentage of a sine-wave-FWHM should the small melting Gaussians FWHM be?", min = 0.5, max = 100, value = 5, step = 0.5),
-               sliderInput(ns("offset"), "What percentage of the period should the small melting Gaussians be offset when compared to the temperature modulation?", min = 0, max = 100, step = 0.5, value = 12.5),
-               selectInput(ns("firstpointSwitch"), "Should the small melting signal start when the oscillation of modtemp (=modtemp - heatingrate*time) is maximal, minimal, or zero?", choices =c("max", "min", "zero")),
+               sliderInput(ns("sharpness"), "What percentage of a sine-wave-FWHM should the small melting Gaussians FWHM be?", min = 0.5, max = 100, value = 7.5, step = 0.5),
+               sliderInput(ns("offset"), "What percentage of the period should the small melting Gaussians be offset when compared to the temperature modulation?", min = 0, max = 100, step = 0.5, value = 20),
+               selectInput(ns("firstpointSwitch"), "Should the small melting signal start when the oscillation of modtemp (=modtemp - heatingrate*time) is maximal, minimal, or zero?", choices =c("max", "min", "zero"), selected = "min"),
                checkboxInput(ns("sharpnessLinkPeriod"), "Should the sharpness and the offset of the special melting event be linked to the period of the modulation?", TRUE),
                  conditionalPanel(
                    condition = sprintf("!input['%s']", ns("sharpnessLinkPeriod")),
@@ -64,15 +64,15 @@ configUIsim2 <- function(ns) {
              
       ),
       column(4,
-             numericInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C²))", 0.0008, step = 0.0001),
-             numericInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C²))", 0.0009, step = 0.0001),
+             numericInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C²))", 0.0004, step = 0.0001),
+             numericInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C²))", 0.0005, step = 0.0001),
              numericInput(ns("StartCpTempPreTg"), "What value does your total heat capacity start at (J/(g*°C)", 1.05, step = 0.01)
              
       ),
       column(4,
-             textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "30, 40, 35"),
-             textInput(ns("locationTgRHF"), "Where is the Tg on the reversing heat flow? Input start, end, and midpoint separated by commas (°C)", "35, 45, 40"),
-             numericInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", 0.268)
+             textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "33.5, 44.9, 39.2"),
+             textInput(ns("locationTgRHF"), "Where is the Tg on the reversing heat flow? Input start, end, and midpoint separated by commas (°C)", "36, 45.5, 43.75"),
+             numericInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", 0.2)
       )
     ),
     fluidRow(
