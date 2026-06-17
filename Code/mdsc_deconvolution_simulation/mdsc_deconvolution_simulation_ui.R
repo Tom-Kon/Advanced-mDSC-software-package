@@ -14,7 +14,7 @@ configUIsim1 <- function(ns) {
              
       ),
       column(6,
-             numericInput(ns("Atemp"), "Amplitude of the temperature modulation (°C)", 0.212, step=0.001),
+             numericInput(ns("Atemp"), "Amplitude of the temperature modulation (°C)", 0.21, step=0.001),
              numericInput(ns("phase"), "Phase of the modulated heat flow with respect to the temperature modulation (rad)", 0, step=0.1),
              numericInput(ns("loessAlpha"), "Degree of smoothing (higher = more smoothing)", 0.05, step=0.01),
              selectInput(inputId = ns("gaussianNumber"), 
@@ -23,9 +23,9 @@ configUIsim1 <- function(ns) {
              checkboxInput(ns("specialMeltCheck"), "Do you want to add a special melting event?", FALSE),
              conditionalPanel(
                condition = sprintf("input['%s']", ns("specialMeltCheck")),
-               textInput(ns("specialMelt"), "What are the onset (°C), endset (°C), and melting enthalpy (J/g)?", value = "130, 150, -25"),
+               textInput(ns("specialMelt"), "What are the onset (°C), endset (°C), and melting enthalpy (J/g)?", value = "120, 150, -20"),
                ##VERY IMPORTANT NOTE: a better naming convention instead of "sharpness" would have been "fractional width"; this is also what is used in the exo peak publication. However, it is still named sharpness in the code.
-               sliderInput(ns("sharpness"), "What percentage of a sine-wave-FWHM should the small melting Gaussians FWHM be?", min = 0.5, max = 500, value = 7.5, step = 0.5),
+               sliderInput(ns("sharpness"), "What percentage of a sine-wave-FWHM should the small melting Gaussians FWHM be?", min = 10, max = 500, value = 250, step = 10),
                sliderInput(ns("offset"), "What percentage of the period should the small melting Gaussians be offset when compared to the temperature modulation?", min = 0, max = 100, step = 0.5, value = 20),
                selectInput(ns("firstpointSwitch"), "Should the small melting signal start when the oscillation of modtemp (=modtemp - heatingrate*time) is maximal, minimal, or zero?", choices =c("max", "min", "zero"), selected = "min"),
                checkboxInput(ns("sharpnessLinkPeriod"), "Should the sharpness and the offset of the special melting event be linked to the period of the modulation?", TRUE),
