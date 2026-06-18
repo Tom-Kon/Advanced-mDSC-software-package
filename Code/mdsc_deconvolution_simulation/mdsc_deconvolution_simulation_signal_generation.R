@@ -235,7 +235,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     
     
     # Overlaying Gaussian (main signal)
-    overlayingGaussian <- enthalpy / sqrt(2 * pi * sigmaTime^2) * exp(-((df$times - (midpoint-startTemp)/heatRate)^2) / (2 * sigmaTime^2))
+    overlayingGaussian <- 1 / sqrt(2 * pi * sigmaTime^2) * exp(-((df$times - (midpoint-startTemp)/heatRate)^2) / (2 * sigmaTime^2))
 
     # Find index of temperature closest to onset.
     onsetWindow <- which.min(abs(modTemp - onset))
@@ -288,7 +288,6 @@ signal_generation <- function(reactiveInputs, timeGen) {
       weights <- c(weights, overlayingGaussian[i])
     }
     
-    weights <- weights/max(abs(weights))
     factor <- enthalpy/sum(weights)
     currentMagnitude <- weights*factor
     i <- 1
