@@ -50,7 +50,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
   # deltaHFTg <- -deltaCpTg*heatRate  # in W/g
 
   
-  modTemp <- Atemp * sin(2*pi/period * times) + heatRate * times
+  modTemp <- Atemp * sin(2*pi/period * times) + heatRate * times + startTemp
   modTempnoRamp <- Atemp * sin(2*pi/period * times)
   TRef <- startTemp + heatRate * times
   modTempderiv <- Atemp * 2*pi/period * cos(2*pi/period * times) + heatRate
@@ -176,7 +176,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     
     
     for (i in seq_along(df$TRef)) {
-      signalVec[i] <- enthalpy/sqrt(2*pi*sigmaTime^2) * exp(-((df$times[i] - midpoint/heatRate)^2) / (2 * sigmaTime^2))
+      signalVec[i] <- enthalpy/sqrt(2*pi*sigmaTime^2) * exp(-((df$times[i] - (midpoint-startTemp)/heatRate)^2) / (2 * sigmaTime^2))
     }
     
 
@@ -199,7 +199,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
       
       
       for (j in seq_along(df$TRef)) {
-        signalVec[j] <- enthalpy/sqrt(2*pi*sigmaTime^2) * exp(-((df$times[j] - midpoint/heatRate)^2) / (2 * sigmaTime^2))
+        signalVec[j] <- enthalpy/sqrt(2*pi*sigmaTime^2) * exp(-((df$times[j] - (midpoint-startTemp)/heatRate)^2) / (2 * sigmaTime^2))
       }
       
       # Add signal and update MHF
@@ -235,7 +235,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     
     
     # Overlaying Gaussian (main signal)
-    overlayingGaussian <- enthalpy / sqrt(2 * pi * sigmaTime^2) * exp(-((df$times - midpoint/heatRate)^2) / (2 * sigmaTime^2))
+    overlayingGaussian <- enthalpy / sqrt(2 * pi * sigmaTime^2) * exp(-((df$times - (midpoint-startTemp)/heatRate)^2) / (2 * sigmaTime^2))
 
     # Find index of temperature closest to onset.
     onsetWindow <- which.min(abs(modTemp - onset))
@@ -246,10 +246,10 @@ signal_generation <- function(reactiveInputs, timeGen) {
     # Extract windowed times and modTemp values
     windowTimes <- times[onsetWindow: (onsetWindow + delta)]
     windowmodTemp <- modTemp[onsetWindow: (onsetWindow + delta)]
-    
+
     # Find the time where modTemp deviates least from linear expectation
     removeRamp <- windowmodTemp - ((windowTimes-windowTimes[1]) * heatRate)
-    
+
     if(firstpointSwitch == "min") {
       firstpoint <- windowTimes[which.min(removeRamp)] + offset
     } else if(firstpointSwitch == "max") {
@@ -282,7 +282,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
 
     #Here I multiply overlayingGaussian by a scaling factor in order to be consistent with the total enthalpy and to make sure that the integration results in an enthalpy in J/g. 
     weights <- c()
-    
+
     for (time in timeList) {
       i <- which.min(abs(df$times - time))
       weights <- c(weights, overlayingGaussian[i])
@@ -292,8 +292,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     factor <- enthalpy/sum(weights)
     currentMagnitude <- weights*factor
     i <- 1
-    
-    
+
     for (time in timeList) {
       currentPeak <- (currentMagnitude[i]/sqrt(2*pi*sigmaSmall^2)*exp(-((df$times - time)^2) / (2 * sigmaSmall^2)))
       smallSignalDf <- cbind(smallSignalDf, currentPeak)
@@ -313,6 +312,8 @@ signal_generation <- function(reactiveInputs, timeGen) {
         MHFnomelt = MHF,
         MHF = MHF + smallSignal
       )
+    
+    df$overlayingGaussian <- overlayingGaussian
     
     df$smallSignal <- smallSignal
     
