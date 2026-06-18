@@ -12,7 +12,7 @@ configUI1<- function(ns) {
              ),
  
       column(6,
-             numericInput(ns("setAmplitude"), "What was your temperature modulation amplitude (in °C)", 0.212, step=0.001),
+             numericInput(ns("setAmplitude"), "What was your temperature modulation amplitude (in °C)", 0.21, step=0.001),
              numericInput(ns("modulationsBack"), "How many modulations should be used for the final calculation?", 15),
              numericInput(ns("sampling"), "What was your sampling rate in pts/s?", 10),
              fileInput(ns("Excel"), "Upload your Excel here"),
