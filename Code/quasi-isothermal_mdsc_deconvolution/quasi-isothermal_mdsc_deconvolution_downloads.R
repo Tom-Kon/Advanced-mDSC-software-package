@@ -17,7 +17,7 @@ downloadExcel <- function(fileName, results, modulationsBack, period, setAmplitu
                   "Sampling interval (pts/sec)"),
     
     Value = c(startingTemp, 
-              period*60,
+              period,
               isothermLength,
               stepSize, 
               modulationsBack, 
