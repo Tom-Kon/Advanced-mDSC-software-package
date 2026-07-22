@@ -10,7 +10,6 @@ The exact input required depends on the events to be modeled. All the required i
 ## Mathematical and theoretical background
 
 ### Signal generation
-
 First, the modulated heat flow is generated as an oscillating sine wave based on the heat capacity of the sample: 
 
 $$
@@ -26,17 +25,70 @@ C_p(T)= FinalRevCpPreTg+ \frac{\Delta C_p}{1+e^{-k(T-T_g midpoint)}}
 $$
 
 $$
-\Delta C_p= T_g endset- T_g onset  \quad \quad \text{and} \quad \quad   k=1
+\Delta C_p= StartRevCpTempPostTg-FinalRevCpPreTg
 $$
+
+The challenge lies in determining the constant k. Since a glass transition is a sigmoid curve, taking its derivative results in a peak-shape. k is defined based on the magnitude of the signal of the derivative at the Tg onset and end. The derivative of the sigmoid expressed above is:
+
+$$
+\frac{dC_p(T)}{dT} = \frac{\Delta C_p k e^{-k(T-T_{g,\mathrm{midpoint}})}}
+{\left(1+e^{-k(T-T_{g,\mathrm{midpoint}})}\right)^2}
+$$
+
+Which is maximal at $T=Tg midpoint$. Thus, the maximal value of $\frac{dC_p(T)}{dT}$ is $\frac{\Delta C_pk}{4}$. 
+
+Now, we define the value $\epsilon$ as the fraction of the maximum of the derivative $\frac{\Delta C_pk}{4}$ at the start or onset of the Tg. Thus, if $\epsilon$ is 0.01 for instance, $k$ needs to be defined such that $\frac{dC_p(Tg onset)}{dT}= 0.01 \frac{dC_p(Tg midpoint)}{dT}$. 
+
+Hence 
+
+$$
+\epsilon \frac{\Delta C_p k}{4} =
+\frac{\Delta C_p k e^{-k(T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}})}}
+{\left(1+e^{-k(T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}})}\right)^2}
+$$
+
+$$
+\therefore \quad \quad
+1+2e^{-k(T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}})} + e^{-2k(T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}})} = 4\frac{e^{-k(T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}})}}{\epsilon}
+$$
+
+$$
+\therefore \quad \quad
+e^{-2k(T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}})}
++
+\left(2-\frac{4}{\epsilon}\right)
+e^{-k(T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}})}
++1
+=0
+$$
+
+$$
+\therefore \quad \quad
+k=\frac{1}{T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}}}\ln\left(\frac{\frac{4}{\epsilon}-2\mp\sqrt{\left(\frac{4}{\epsilon}-2\right)^2-4}}{2}\right)
+$$
+
+where the negative result for $k$ can of course be discarded. The limitation with this approach is that only the Tg onset is taken into account. Indeed, a very similar derivation can be performed using Tg endset rather than onset. In order to solve this problem, the distance between Tg onset and Tg midpoint as well between Tg endset and Tg midpoint can be assumed to be very similar. As a result, 
+
+$$
+T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}}= \frac{T_{g,\mathrm{endset}}-T_{g,\mathrm{onset}}}{2}
+$$
+
+, and thus:
+
+$$
+k=\frac{2}{T_{g,\mathrm{endset}}-T_{g,\mathrm{onset}}}\ln\left(\frac{\frac{4}{\epsilon}-2\mp\sqrt{\left(\frac{4}{\epsilon}-2\right)^2-4}}{2}\right)
+$$
+
+$ϵ$ is hardcoded to be equal to 0.1, but the user is of course free to change this in the code if this is absolutely required. 
 
 Melting events, crystallization events, solvent evaporation events and enthalpy recoveries are modeled through Gaussian curves and are added to the signal that was generated previously by simple addition. The melting enthalpy, peak temperature, peak endset and peak onset are all user inputs. These are the equations used to determine the shape of the Gaussians: 
 
 $$
-f(T)=\frac{melting enthalpy}{\sqrt{2π σ}} e^{-(\frac{(T-µ)^2}{2σ^2})}  
+f(t)=\frac{\mathrm{melting\ enthalpy}}{\sqrt{2\pi}\sigma}\exp\left(-\frac{(t-\mu)^2}{2\sigma^2}\right)
 $$
 
 $$
-µ=peak temperature  \quad \quad \text{and} \quad \quad σ= \frac{peak endset-peak onset}{\sqrt(2log⁡(1000))}.
+\mu=\mathrm{time\ at\ peak\ temperature},\qquad\sigma=\frac{1}{\beta}\frac{\mathrm{peak\ endset}-\mathrm{peak\ onset}}{\sqrt{2\ln(1000)}}.
 $$
 
 
@@ -45,14 +97,13 @@ The end result of adding the oscillation, the baseline, the Tg(s), and the other
 $$
 \frac{dQ}{dt}= C_p Aω cos⁡(ωt) + C_p β + f(t,T)
 $$
-
 ### Signal deconvolution
 The goal is to take a rolling average to calculate the total heat flow and to extract the amplitude of the signal to calculate the reversing heat flow. The non-reversing heat flow is then easily determined based on the other two signals. 
 
 #### Total heat flow 
 The cosine transformation required to transform the list of timepoints into a modulated heat flow is not a linear transformation. In other words, even if a list of time points is equally spaced (such as 1, 2, 3, 4, 5, etc.), the cosine transform of this list might not have equally spaced values. Hence, performing a rolling average on cosine-transformed data yields another oscillating signal due to the uneven spacing of points. Hence, the points making up the modulated heat flow signal must be transformed to ensure consistent y-spacing between them.
 
-To make sure that y-values are spaced equally, they are resamples after fully initializing the signal through linear interpolation. The approx() function is used for this in R. After this, the total heat flow is simply calculated through this equation: 
+To make sure that y-values are spaced equally, they are resampled after fully initializing the signal through linear interpolation. The approx() function is used for this in R. After this, the total heat flow is simply calculated through this equation: 
 
 $$
 THF= 〈\frac{dQ}{dt}〉.
