@@ -68,9 +68,15 @@ signal_generation <- function(reactiveInputs, timeGen) {
   
   
   # Create a sequence for the gradual change in RevCp within the Tg regions
-  epsilon <- 0.001
-  kRHF <- log((1 - epsilon)/epsilon) / ((locationTgRHF[2] - locationTgRHF[1])/2)
-  kTHF <- log((1 - epsilon)/epsilon) / ((locationTgTHF[2] - locationTgTHF[1])/2)
+  epsilon <- 0.1
+  numerator <- abs(log((4/epsilon - 2 + sqrt((4/epsilon - 2)^2-4))/2))
+  
+  deltaRHF <- (locationTgRHF[2] - locationTgRHF[1])/2
+  kRHF <- numerator / (deltaRHF)
+  print(kRHF)
+  deltaTHF <- (locationTgTHF[2] - locationTgTHF[1])/2
+  kTHF <- numerator / (deltaTHF)
+  
   
   RevCpTg <- 1/ (1 + exp(-kRHF * (TRef - locationTgRHF[3])))
   
