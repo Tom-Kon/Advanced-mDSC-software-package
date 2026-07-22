@@ -17,9 +17,12 @@ signal_generation <- function(reactiveInputs, timeGen) {
   deltaCpPreTg <- reactiveInputs$deltaCpPreTg
   deltaCpPostTg <- reactiveInputs$deltaCpPostTg
   StartCpTempPreTg <- reactiveInputs$StartCpTempPreTg
+  deltaRevCpPreTg <- reactiveInputs$deltaRevCpPreTg
+  deltaRevCpPostTg <- reactiveInputs$deltaRevCpPostTg
+  startRevCpPreTg <- reactiveInputs$startRevCpPreTg
   
   gaussianNumber <- reactiveInputs$gaussianNumber
-
+  
   locationTgTHF <- reactiveInputs$locationTgTHF
   locationTgRHF <- reactiveInputs$locationTgRHF
   deltaCpTg <- reactiveInputs$deltaCpTg
@@ -33,30 +36,24 @@ signal_generation <- function(reactiveInputs, timeGen) {
   EnthrecEnth <- reactiveInputs$EnthrecEnth
   locationEnthRec <- reactiveInputs$locationEnthRec
   periodSignal <- reactiveInputs$periodSignal
-
   
   times <- timeGen$times
-  groups <- timeGen$groups
   
   
-  deltaRevCpTempPreTg <- -deltaRHFPreTg/heatRate
-  deltaRevCpTempPostTg <- -deltaRHFPostTg/heatRate
-  StartRevCpTempPreTg <- -StartRHFPreTg/heatRate
+  # deltaHFPreTg <- -deltaCpPreTg*heatRate
+  # deltaHFPostTg <- -deltaCpPostTg*heatRate
+  # StartHFTempPreTg <- -StartCpTempPreTg*heatRate
+  # deltaHFTg <- -deltaCpTg*heatRate  # in W/g
   
-  deltaHFPreTg <- -deltaCpPreTg*heatRate
-  deltaHFPostTg <- -deltaCpPostTg*heatRate
-  StartHFTempPreTg <- -StartCpTempPreTg*heatRate
-  deltaHFTg <- -deltaCpTg*heatRate  # in W/g
-
   
-  modTemp <- Atemp * sin(2*pi/period * times) + heatRate * times
+  modTemp <- Atemp * sin(2*pi/period * times) + heatRate * times + startTemp
   modTempnoRamp <- Atemp * sin(2*pi/period * times)
   TRef <- startTemp + heatRate * times
   modTempderiv <- Atemp * 2*pi/period * cos(2*pi/period * times) + heatRate
   modTempdervPhase <- Atemp * 2*pi/period * cos(2*pi/period * times + phase) + heatRate
   modTempdervPhaseNoHR <- Atemp * 2*pi/period * cos(2*pi/period * times + phase)
   
-  FinalRevCpPreTg <- StartRevCpTempPreTg + deltaRevCpTempPreTg * locationTgRHF[1]
+  FinalRevCpPreTg <- startRevCpPreTg + deltaRevCpPreTg * locationTgRHF[1]
   StartRevCpTempPostTg <- FinalRevCpPreTg + deltaCpTg
   
   
@@ -77,8 +74,8 @@ signal_generation <- function(reactiveInputs, timeGen) {
   
   RevCpTg <- 1/ (1 + exp(-kRHF * (TRef - locationTgRHF[3])))
   
-  SinebeforeTg <- (StartRevCpTempPreTg + deltaRevCpTempPreTg * TRef) * modTempdervPhaseNoHR
-  SineafterTg <- (StartRevCpTempPostTg + deltaRevCpTempPostTg * TRef) * modTempdervPhaseNoHR
+  SinebeforeTg <- (startRevCpPreTg + deltaRevCpPreTg * TRef) * modTempdervPhaseNoHR
+  SineafterTg <- (StartRevCpTempPostTg + deltaRevCpPostTg * TRef) * modTempdervPhaseNoHR
   
   TRef1 <- TRef[TRef <= locationTgTHF[1]]
   BaseBeforeTgShort <- -(StartCpTempPreTg + deltaCpPreTg * TRef1) * heatRate
@@ -88,9 +85,9 @@ signal_generation <- function(reactiveInputs, timeGen) {
   BaseAfterTgShort <- -(StartCpPostTg + deltaCpPostTg * TRef2) * heatRate
   BaseAfterTg <- -(StartCpPostTg + deltaCpPostTg * TRef)*heatRate
   
-
+  
   HfTg <- (BaseAfterTgShort[1] - BaseBeforeTgShort[length(BaseBeforeTgShort)]) / (1 + exp(-kTHF * (TRef - locationTgTHF[3])))
-
+  
   
   # Create a tibble and assign MHF with proper indexing for whole thermogram without latent effects-------------
   # This part only takes into account the oscillatory component, so heatRate is not used in the generation of the signal.  
@@ -99,8 +96,7 @@ signal_generation <- function(reactiveInputs, timeGen) {
     TRef = TRef,
     modTemp = modTemp,
     modTempderiv = modTempderiv,
-    modTempnoRamp = modTempnoRamp,
-    groups = groups
+    modTempnoRamp = modTempnoRamp
   ) %>%
     # Identify rows in the Tg region and compute a relative index
     mutate(
@@ -121,43 +117,8 @@ signal_generation <- function(reactiveInputs, timeGen) {
   
   #Add baseline to MHF
   df$MHF <- df$MHF + SinebeforeTg*(1-RevCpTg)+SineafterTg*RevCpTg
-
   
-  # Track already reached temperatures
-  # reachedTemps <- numeric(0)
-  # 
-  # # Initialize signal vector
-  # signal_vecmelt <- numeric(nrow(df))
-  # sigmamelt <- (locationMelt[2]-locationMelt[3])/sqrt(2*log(1000))  # Assuming FWHM-based estimate
-  # meltAmplitude <- MeltEnth/sqrt(2*pi*sigmamelt^2) * exp(-((TRef - locationMelt[3])^2) / (2 * sigmamelt^2))
-  # 
-  # 
-  # for (i in seq_along(df$modTemp)) {
-  #   if (df$modTemp[i] %in% reachedTemps) {
-  #     signal_vecmelt[i] <- 0  # No new signal
-  #   } else {
-  #     # Add new temperature to reached list
-  #     reachedTemps <- c(reachedTemps, df$modTemp[i])
-  #     
-  #     # Compute signal
-  #     if (df$TRef[i] >= locationMelt[1] && df$TRef[i] <= locationMelt[2]) {
-  #       signal_vecmelt[i] <- min(meltAmplitude[i] * sin((2*pi/periodSignal*df$times[i]) + phase_melt), 0)
-  #     } else {
-  #       signal_vecmelt[i] <- 0
-  #     }
-  #   }
-  # }
-  # 
-  # # Add signal and update MHF
-  # df <- df %>%
-  #   mutate(
-  #     signal_vecmelt = signal_vecmelt,
-  #     MHF = if_else(
-  #       TRef >= locationMelt[1] & TRef <= locationMelt[2],
-  #       MHF + signal_vecmelt,
-  #       MHF
-  #     )
-  #   )
+  
   
   signalVec <- numeric(nrow(df))
   
@@ -170,15 +131,16 @@ signal_generation <- function(reactiveInputs, timeGen) {
     onset <- signalToAdd[1]
     endset <- signalToAdd[2]
     midpoint <- (signalToAdd[1]+signalToAdd[2])/2
-    enthalpy <- signalToAdd[3]/heatRate       #Normalize by heating rate because here the signal is being generated with respect to temperature whereas the enthalpy is normally calculated with respect to time. In other words, the AUC of a heat flow vs temperature graph is not the enthalpy; the AUC of a heat flow vs time is. 
+    enthalpy <- signalToAdd[3]      #No normalization for heating rate since it's already being defined in the time domain. 
     sigma <- (endset-onset)/(2*sqrt(2*log(1000)))
+    sigmaTime <- sigma/heatRate
     
     
     for (i in seq_along(df$TRef)) {
-      signalVec[i] <- enthalpy/sqrt(2*pi*sigma^2) * exp(-((df$TRef[i] - midpoint)^2) / (2 * sigma^2))
+      signalVec[i] <- enthalpy/sqrt(2*pi*sigmaTime^2) * exp(-((df$times[i] - (midpoint-startTemp)/heatRate)^2) / (2 * sigmaTime^2))
     }
     
-
+    
     # Add signal and update MHF
     df <- df %>%
       mutate(
@@ -194,9 +156,11 @@ signal_generation <- function(reactiveInputs, timeGen) {
       midpoint <- (signalToAdd[1]+signalToAdd[2])/2
       enthalpy <- signalToAdd[3]
       sigma <- (endset-onset)/(2*sqrt(2*log(1000)))
+      sigmaTime <- sigma/heatRate
+      
       
       for (j in seq_along(df$TRef)) {
-        signalVec[j] <- enthalpy/sqrt(2*pi*sigma^2) * exp(-((TRef[j] - midpoint)^2) / (2 * sigma^2))
+        signalVec[j] <- enthalpy/sqrt(2*pi*sigmaTime^2) * exp(-((df$times[j] - (midpoint-startTemp)/heatRate)^2) / (2 * sigmaTime^2))
       }
       
       # Add signal and update MHF
@@ -206,9 +170,10 @@ signal_generation <- function(reactiveInputs, timeGen) {
         )
     }
   }
-
+  
+  
   signalGen <- df
-
-return(signalGen)
+  
+  return(signalGen)
 }
 
