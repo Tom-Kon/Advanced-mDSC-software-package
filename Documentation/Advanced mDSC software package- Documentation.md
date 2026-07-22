@@ -581,8 +581,18 @@ e^{-k(T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}})}
 =0
 $$
 
+$$
+\therefore \quad \quad
+k=\frac{1}{T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}}}\ln\left(\frac{\frac{4}{\epsilon}-2\mp\sqrt{\left(\frac{4}{\epsilon}-2\right)^2-4}}{2}\right)
+$$
 
-where the negative result for $k$ can of course be discarded. The limitation with this approach is that only the Tg onset is taken into account. Indeed, a very similar derivation can be performed using Tg endset rather than onset. In order to solve this problem, the distance between Tg onset and Tg midpoint as well between Tg endset and Tg midpoint can be assumed to be very similar. As a result, $Tg onset-Tg midpoint= \frac{Tg onset-Tg endset}/{2}$, and thus:
+where the negative result for $k$ can of course be discarded. The limitation with this approach is that only the Tg onset is taken into account. Indeed, a very similar derivation can be performed using Tg endset rather than onset. In order to solve this problem, the distance between Tg onset and Tg midpoint as well between Tg endset and Tg midpoint can be assumed to be very similar. As a result, 
+
+$$
+T_{g,\mathrm{onset}}-T_{g,\mathrm{midpoint}}= \frac{T_{g,\mathrm{endset}}-T_{g,\mathrm{onset}}}{2}
+$$
+
+, and thus:
 
 $$
 k=\frac{1}{T_{g,\mathrm{midpoint}}-T_{g,\mathrm{onset}}}\ln\left(\frac{\frac{4}{\epsilon}-2\mp\sqrt{\left(\frac{4}{\epsilon}-2\right)^2-4}}{2}\right)
