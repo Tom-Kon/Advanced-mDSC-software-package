@@ -16,7 +16,7 @@ simulation_error_handling <- function(reactiveInputs){
     msg <- "Error: The input for the Tg location must contain 3 values; the onset, the endset, and the midpoint, separated by commas. Something is wrong with your input"
     return(msg)
   }
-
+  
   if (any(c(reactiveInputs$sampling,
             reactiveInputs$period,
             reactiveInputs$heatRate,
@@ -26,7 +26,7 @@ simulation_error_handling <- function(reactiveInputs){
     return(msg)
   }
   
-  if(is.null(reactiveInputs$deltaRHFPreTg) || is.null(reactiveInputs$deltaRHFPostTg) || is.null(reactiveInputs$StartRHFPreTg) ||
+  if(is.null(reactiveInputs$startRevCpPreTg) || is.null(reactiveInputs$deltaRevCpPostTg) || is.null(reactiveInputs$deltaRevCpPreTg) ||
      is.null(reactiveInputs$deltaCpPreTg) || is.null(reactiveInputs$deltaCpPostTg) || is.null(reactiveInputs$StartCpTempPreTg) ||
      is.null(reactiveInputs$locationTgTHF) || is.null(reactiveInputs$locationTgRHF) || is.null(reactiveInputs$deltaCpTg)) {
     
@@ -78,13 +78,13 @@ simulation_error_handling <- function(reactiveInputs){
     msg <- "According to your input, the onset of your Tg on the RHF occurs before the start of your mDSC run" 
     return(msg)
   }
-
+  
   if(reactiveInputs$locationTgTHF[1] < reactiveInputs$startTemp) {
     msg <- "According to your input, the onset of your Tg on the THF occurs before the start of your mDSC run" 
     return(msg)
   }
   
-
+  
   if (reactiveInputs$gaussianNumber != 0 &&
       isTRUE(is.na(reactiveInputs$gaussianList))) {
     
@@ -125,28 +125,28 @@ simulation_error_handling <- function(reactiveInputs){
         return (msg)
       }
     }
-      for(i in 1:reactiveInputs$gaussianNumber) {
-        if(length(reactiveInputs$gaussianList[[i]]) != 3) {
-          msg <- "The input for all Gaussian signals must contain 3 values; the onset, the endset, and the enthalpy. Your input contained more or fewer values"
-          return(msg)
-        }
+    for(i in 1:reactiveInputs$gaussianNumber) {
+      if(length(reactiveInputs$gaussianList[[i]]) != 3) {
+        msg <- "The input for all Gaussian signals must contain 3 values; the onset, the endset, and the enthalpy. Your input contained more or fewer values"
+        return(msg)
       }
     }
+  }
   
-
+  
   if(reactiveInputs$gaussianNumber != 0) {
-      for(i in seq_along(onsetValsGaussian)) {
-        if(onsetValsGaussian[i] < reactiveInputs$startTemp) {
-          msg <- "One of the onset values of your Gaussians is higher than the starting temperature of your mDSC run!"
-          return(msg)
-        }
-      }
-      
-      for(i in seq_along(onsetValsGaussian)) {
-        if(onsetValsGaussian[i] > endsetValsGaussian[i]) {
-          msg <- "One of the onsets of your Gaussian peaks is larger than the endset"
-          return(msg)
-        }
+    for(i in seq_along(onsetValsGaussian)) {
+      if(onsetValsGaussian[i] < reactiveInputs$startTemp) {
+        msg <- "One of the onset values of your Gaussians is higher than the starting temperature of your mDSC run!"
+        return(msg)
       }
     }
+    
+    for(i in seq_along(onsetValsGaussian)) {
+      if(onsetValsGaussian[i] > endsetValsGaussian[i]) {
+        msg <- "One of the onsets of your Gaussian peaks is larger than the endset"
+        return(msg)
+      }
+    }
+  }
 }
