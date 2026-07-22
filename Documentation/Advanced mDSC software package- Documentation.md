@@ -129,6 +129,7 @@ Now that the basics of DSC are clear, it is time to discuss the simple
 temperature program used in unmodulated DSC, since this will paint the picture
 for the main differences between modulated (mDSC) and unmodulated DSC (still DSC).
 For a DSC analysis, temperature ($T$) can be expressed as follows:
+
 $$
 T = T_0 + \beta t \quad \quad \quad \quad \text{(Equation 3)}
 $$
@@ -383,6 +384,7 @@ In terms of Fourier transformations, the zero frequency component after performi
 
 ### Reversing heat flow calculation
 It was shown in the background theory that: 
+
 $$
 Rev_{Cp}=  \frac{A_{MHF}}{\frac{2π A_{temp}}{T}}.
 $$
@@ -437,24 +439,25 @@ The user input consists of the modulated heat flow, the modulated temperature an
 ## Details on how the software works
 1. The Excel sheet is loaded and column names are assigned based on titles present in the Excel. 
 2. There are only a few temperature ranges that are possible, if the starting temperature, the step size, and the amplitude are known. First, a vector of integers is generated:
-    $$
-    ranges(n)= \mathrm{c \left [0: \left (\frac{round(d$modTemp[length(d$modTemp)])}{stepSize}+10 \right ) \right ]}
-    $$
 
-    then,
+$$
+ranges(n)= {c [0: (\frac{round(modTemp[length(modTemp)])}{stepSize}+10)]}
+$$
 
-    $$
-    rangesmax=startingTemp+rangesn*stepSize+setAmplitude+0.25
-    $$
+then,
 
-    $$
-    rangesmin=startingTemp+rangesn*stepSize-setAmplitude-0.25.
-    $$
+$$
+rangesmax=startingTemp+rangesn*stepSize+setAmplitude+0.25
+$$
+
+$$
+rangesmin=startingTemp+rangesn*stepSize-setAmplitude-0.25.
+$$
     
-    All points not contained between $rangesmax[i]$ and $rangesmin[i]$ are deleted. These correspond to the points in between the oscillatory patterns and are not of interest. 
+All points not contained between $rangesmax[i]$ and $rangesmin[i]$ are deleted. These correspond to the points in between the oscillatory patterns and are not of interest. 
 
-3. The resulting data frame is filtered for duplicate time points, which would prevent proper maxima and minima detection. 
-4. Detect the “patterns” (see Figure 2). This is done using: 
+4. The resulting data frame is filtered for duplicate time points, which would prevent proper maxima and minima detection. 
+5. Detect the “patterns” (see Figure 2). This is done using: 
 
 $$
 pattern = \mathrm{floor} \left( \frac{ \text{modTemp} - \text{startingTemp} + \text{setAmplitude} + 0.25 }{ \text{stepSize} } \right)
@@ -468,9 +471,9 @@ $$
   - If for a particular pattern the minimum temperature is above the reference temperature for that pattern, all data after the last maximum is deleted. If not, all data is kept. 
   - If for a particular pattern the distance (index) between the last minimum and the last detected maximum is less than: 
 
-    $$
-    \mathrm {1.1* \left( \frac{sampling rate*period}{2} \right)},
-    $$
+$$
+\mathrm {1.1* \left( \frac{sampling rate*period}{2} \right)},
+$$
 
     all data after the second-to-last maximum is deleted. 
 
@@ -596,15 +599,16 @@ $$
 
 1. First, a vector of timepoints is generated. Its length and interval depend on the user-input sampling rate, heat rate, and start and end temperatures. 
 2. Based on the list of timepoints, a vector of modulated temperatures is generated. 
-3. The vector with the timepoints is then used to generate the initial modulated heat   flow: 
+3. The vector with the timepoints is then used to generate the initial modulated heat   flow:
+   
 $$
 \frac{dQ}{dt}= C_p Aω cos⁡(ωt) + C_p β 
 $$
 
-4. The $f(t,T)$ term, which is still missing from the equation above, is then added progressively. For instance, if there is a melting event between temperatures 1 and 2 with a certain melting enthalpy, a Gaussian centered on the average temperature is generated and added to $\frac{dQ}{dt}$. 
-5. Point 4 is repeated for all additional signals. 
-6. The deconvolution procedure is carried out as detailed in the previous section. 
-7. Plotly is used to plot the results. 
+5. The $f(t,T)$ term, which is still missing from the equation above, is then added progressively. For instance, if there is a melting event between temperatures 1 and 2 with a certain melting enthalpy, a Gaussian centered on the average temperature is generated and added to $\frac{dQ}{dt}$. 
+6. Point 4 is repeated for all additional signals. 
+7. The deconvolution procedure is carried out as detailed in the previous section. 
+8. Plotly is used to plot the results. 
 
 
 
