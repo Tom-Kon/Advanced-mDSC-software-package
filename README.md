@@ -48,6 +48,9 @@ There are two ways to install this software:
 ## Testing
 In order to test the software, test files have been included within each sub-app folder (inside the "Code" folder). Specifications on what parameters to use have been included within the test files. A folder with expected results is also included in each of the test folders. 
 
+## Collaboration
+If you wish to contribute to the software, give feedback, or contact the main author for any reason, please feel free to email me at tomkonings01@gmail.com. 
+
 
 
 
