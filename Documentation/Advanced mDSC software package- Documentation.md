@@ -546,8 +546,42 @@ C_p(T)= FinalRevCpPreTg+ \frac{\Delta C_p}{1+e^{-k(T-T_g midpoint)}}
 $$
 
 $$
-\Delta C_p= T_g endset- T_g onset  \quad \quad \text{and} \quad \quad   k=1
+\Delta C_p= StartRevCpTempPostTg-FinalRevCpPreTg
 $$
+
+The challenge lies in determining the constant k. Since a glass transition is a sigmoid curve, taking its derivative results in a peak-shape. k is defined based on the magnitude of the signal of the derivative at the Tg onset and end. The derivative of the sigmoid expressed above is:
+
+$$
+\frac{dC_p(T)}/{dT}=  \frac{\Delta C_p ke^{-k(T-Tg midpoint)}}{1+e^{-k(T-Tg midpoint) }^2}
+$$
+
+Which is maximal at $T=Tg midpoint$. Thus, the maximal value of $ \frac{dC_p(T)}{dT}$ is $\frac{\Delta C_pk}{4}$. 
+
+Now, we define the value $\epsilon$ as the fraction of the maximum of the derivative $\frac{\Delta C_pk}{4}$ at the start or onset of the Tg. Thus, if $\epsilon$ is 0.01 for instance, $k$ needs to be defined such that $\frac{dC_p(Tg onset)}{dT}= 0.01 \frac{dC_p(Tg midpoint)}{dT}$. 
+
+Hence, 
+
+$$
+\epsilon \frac{\Delta C_pk}{4}=  \frac{\Delta C_pke^{-k(Tg onset-Tg midpoint)}}{1+e^{-k(Tg onset-Tg midpoint)}^2  }
+
+∴ 1+2e^{-k(Tg onset-Tg midpoint)}+ e^{-2k(Tg onset-Tg midpoint)}= 4 \frac{e^{-k(Tg onset-Tg midpoint)}}{ϵ}  
+
+∴ e^{-2k(Tg onset-Tg midpoint)} + (2-\frac{4}{\epsilon}) + e^{-k(Tg onset-Tg midpoint)}+ 1=0  
+$$
+
+This is a quadratic equation that can be solved by setting $u=e^{-k(Tg onset-Tg midpoint)}$. The result is:
+
+$$
+k=ln⁡\frac{\frac{4}{\epsilon}-2 ∓ ((\frac{4}{\epsilon}-2)^2-4)^{\frac{1}{2}}}{2}  \frac{1}{(Tg onset-Tg midpoint)},
+$$
+
+where the negative result for $k$ can of course be discarded. The limitation with this approach is that only the Tg onset is taken into account. Indeed, a very similar derivation can be performed using Tg endset rather than onset. In order to solve this problem, the distance between Tg onset and Tg midpoint as well between Tg endset and Tg midpoint can be assumed to be very similar. As a result, $Tg onset-Tg midpoint= \frac{Tg onset-Tg endset}/{2}$, and thus:
+
+$$
+k=ln⁡\frac{\frac{4}{\epsilon}-2 ∓ ((\frac{4}{\epsilon}-2)^2-4)^{\frac{1}{2}}}{2}  \frac{2}{(Tg enset-Tg onset)},
+$$
+
+$ϵ$ is hardcoded to be equal to 0.1, but the user is of course free to change this in the code if this is absolutely required. 
 
 Melting events, crystallization events, solvent evaporation events and enthalpy recoveries are modeled through Gaussian curves and are added to the signal that was generated previously by simple addition. The melting enthalpy, peak temperature, peak endset and peak onset are all user inputs. These are the equations used to determine the shape of the Gaussians: 
 
