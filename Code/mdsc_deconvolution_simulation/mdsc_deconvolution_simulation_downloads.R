@@ -14,9 +14,9 @@ download_Excel <- function(reactiveInputs) {
   #MHF generation (fixed)
   Atemp <- reactiveInputs$Atemp
   phase <- reactiveInputs$phase
-  deltaRHFPreTg <- reactiveInputs$deltaRHFPreTg
-  deltaRHFPostTg <- reactiveInputs$deltaRHFPostTg
-  StartRHFPreTg <- reactiveInputs$StartRHFPreTg
+  deltaRevCpPreTg <- reactiveInputs$deltaRevCpPreTg
+  deltaRevCpPostTg <- reactiveInputs$deltaRevCpPostTg
+  startRevCpPreTg <- reactiveInputs$startRevCpPreTg
   deltaCpPreTg <- reactiveInputs$deltaCpPreTg
   deltaCpPostTg <- reactiveInputs$deltaCpPostTg
   StartCpTempPreTg <- reactiveInputs$StartCpTempPreTg
@@ -26,14 +26,15 @@ download_Excel <- function(reactiveInputs) {
   locationTgRHF <- reactiveInputs$locationTgRHF
   deltaCpTg <- reactiveInputs$deltaCpTg
   
-  #MHF generation (for loop)
+  #MHF generation (Peaks)
   gaussianNumber <- reactiveInputs$gaussianNumber
   gaussianList <- reactiveInputs$gaussianList
-  
   
   #Results
   finaldf <- reactiveInputs$finaldf
   noFTcalc <- reactiveInputs$noFTcalc
+  signalGen <- reactiveInputs$signalGen
+  loess <- reactiveInputs$loessAlpha
   
   onsetVals <- c()
   for(i in seq_along(gaussianList)) {onsetVals[i] <- gaussianList[[i]][1]}
@@ -46,24 +47,25 @@ download_Excel <- function(reactiveInputs) {
   
   
   configFixed <- data.frame(
-
-    "Parameters" = c("Sampling rate (pts/sec)",
-                   "Starting temperature (°C)",
-                   "End temperature (°C)",
-                   "Period (°C)",
-                   "Heating rate (°C/min)",
-                   "Temperature modulation amplitude (°C)", 
-                   "Phase difference (rad)",
-                   "Slope of the RHF before the Tg (W/°C)",
-                   "Slope of the RHF after the Tg (W/°C)",
-                   "Starting value of the RHF before the Tg (W)",
-                   "Slope of the Cp before the Tg (W/°C)",
-                   "Slope of the Cp after the Tg (W/°C)",
-                   "Starting value of the Cp before the Tg (W/°C)"),
     
-    "Values" = c(sampling, startTemp, endTemp, period, heatRate, Atemp, phase, 
-                 deltaRHFPreTg, deltaRHFPostTg, StartRHFPreTg, deltaCpPreTg, 
-                 deltaCpPostTg, StartCpTempPreTg),
+    "Parameters" = c("Sampling rate (pts/sec)",
+                     "Starting temperature (°C)",
+                     "End temperature (°C)",
+                     "Period (°C)",
+                     "Heating rate (°C/min)",
+                     "Temperature modulation amplitude (°C)", 
+                     "Phase difference (rad)",
+                     "Slope of the RevCp before the Tg (J/°C²*g)",
+                     "Slope of the RevCp after the Tg (J/°C²*g)",
+                     "Starting value of the RevCp before the Tg (J/(g*°C))",
+                     "Slope of the Cp before the Tg (J/°C²*g)",
+                     "Slope of the Cp after the Tg (J/°C²*g)",
+                     "Starting value of the Cp before the Tg (J/(°C*g)",
+                     "LOESS factor"),
+    
+    "Values" = c(sampling, startTemp, endTemp, period, heatRate*60, Atemp, phase, 
+                 deltaRevCpPreTg, deltaRevCpPostTg, startRevCpPreTg, deltaCpPreTg, 
+                 deltaCpPostTg, StartCpTempPreTg, loess),
     
     check.names = FALSE
   )
@@ -78,6 +80,7 @@ download_Excel <- function(reactiveInputs) {
     
   )
   
+  
   if(gaussianNumber > 0) {
     configGauss <- data.frame(
       "Onset(°C)" = onsetVals,
@@ -87,15 +90,16 @@ download_Excel <- function(reactiveInputs) {
       check.names = FALSE
     )
   }
-
+  
   wbmDSCSim <- createWorkbook()
   
   addWorksheet(wbmDSCSim, "Settings")
   writeData(wbmDSCSim, sheet <- "Settings", configFixed, startCol = 1)
-  writeData(wbmDSCSim, sheet <- "Settings", configTg, startCol = 4)
+  writeData(wbmDSCSim, sheet <- "Settings", configTg, startCol = 4, rowNames =  TRUE)
+  
   
   if(gaussianNumber > 0) {
-    writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 10)
+    writeData(wbmDSCSim, sheet <- "Settings", configGauss, startCol = 16)
   }
   
   addWorksheet(wbmDSCSim, "FT Deconvoluted signals")
@@ -103,7 +107,10 @@ download_Excel <- function(reactiveInputs) {
   
   addWorksheet(wbmDSCSim, "Non-FT Deconvoluted signals")
   writeData(wbmDSCSim, sheet <- "Non-FT Deconvoluted signals", noFTcalc)
-
+  
+  addWorksheet(wbmDSCSim, "Raw signals")
+  writeData(wbmDSCSim, sheet <- "Raw signals", signalGen)
+  
   
   return(wbmDSCSim)
 }
