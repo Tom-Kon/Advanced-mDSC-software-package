@@ -1,7 +1,7 @@
 # Advanced mDSC software package
 
 Welcome to the mDSC analysis software package. If you are not familiar with mDSC, 
-we recommend you go to the section about theoretical background first (you can find this in the full documentation), since the 
+we recommend you go to consult the full documentation first, since the 
 following will be technical. This package is intended to help you with:
 
 1. **DSC descriptive statistics**: Quickly calculating averages, standard deviations, 
@@ -36,7 +36,7 @@ More information on how the different packages work, what input is required, and
 
 ## Installation
 There are two ways to install this software:
-1. Download the Windows installer from the Github repository. It can be found under "releases", on the right side of the page. Download the .exe file and run the installer. There is no need for further action; the software will be installed and runs!
+1. Download the Windows installer from the Github repository. It can be found under "releases", on the right side of the page. Download the .exe file and run the installer. There is no need for further action; the software will be installed and runs.
 2. If you do not have a Windows PC or are comfortable tinkering with the code, you will need to install R and clone the repository to your local machine to run it. For this:
    - Make an account on Github.
    - Install R (https://cran.rstudio.com). Click the right link at the top based on your operating system.
@@ -46,7 +46,7 @@ There are two ways to install this software:
    - The previous steps install the app. To run it, go to the folder that has appeared where you saved the clone. Within the folder, navigate to the "Code" folder, and within that folder, click the file "App.R". This opens the app in R. To get the user-friendly interface, click "Run App" on the top of the left upper pane. This step will install all additional dependencies and packages the app needs automatically. You will need to perform this step each time you want to use the app, but the package installation will only happen once, so the first time you start the app will take significantly longer.
 
 ## Testing
-In order to test the software, test files have been included within each sub-app folder. Specifications on what parameters to use have been included within the test files. A folder with expected results is also included in each of the test folders. 
+In order to test the software, test files have been included within each sub-app folder (inside the "Code" folder). Specifications on what parameters to use have been included within the test files. A folder with expected results is also included in each of the test folders. 
 
 
 
