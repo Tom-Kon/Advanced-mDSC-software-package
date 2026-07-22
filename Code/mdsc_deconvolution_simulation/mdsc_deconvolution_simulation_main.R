@@ -41,7 +41,7 @@ mdsc_sim_ui <- function(id) {
       value = "gaussPeak",
       icon = icon("chart-area", class = "fa-solid"),
       fluidPage(
-          configUIsim3(ns)
+        configUIsim3(ns)
       )
     ),
     
@@ -145,15 +145,14 @@ mdsc_sim_server <- function(id) {
       reactiveInputs$phase <- eval(parse(text = input$phase))
       reactiveInputs$loessAlpha <- eval(parse(text = input$loessAlpha))
       
-      
-      reactiveInputs$deltaRHFPreTg <- eval(parse(text = input$deltaRHFPreTg))
-      reactiveInputs$deltaRHFPostTg <- eval(parse(text = input$deltaRHFPostTg))
-      reactiveInputs$StartRHFPreTg <- eval(parse(text = input$StartRHFPreTg))
+      reactiveInputs$deltaRevCpPreTg <- eval(parse(text = input$deltaRevCpPreTg))
+      reactiveInputs$deltaRevCpPostTg <- eval(parse(text = input$deltaRevCpPostTg))
+      reactiveInputs$startRevCpPreTg <- eval(parse(text = input$startRevCpPreTg))
       reactiveInputs$deltaCpPreTg <- eval(parse(text = input$deltaCpPreTg))
       reactiveInputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
       reactiveInputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
       
-      
+
       reactiveInputs$locationTgTHF <- tryCatch({
         vec <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
         if (any(is.na(vec))) NA else vec
@@ -184,7 +183,7 @@ mdsc_sim_server <- function(id) {
           reactiveInputs$gaussianList <- NA
         }
       } else { NULL }
-
+      
       msg <- simulation_error_handling(reactiveInputs)
       
       # Update the error message output (this triggers UI update)
@@ -237,10 +236,10 @@ mdsc_sim_server <- function(id) {
       
       enable("mDSCSimplotsDownload")
       enable("downloadExcelSimDSC")
-
+      
       output$succesMessage <- renderText({
         "Analysis succesful! You can now head over to the \"Graphs\" or \"Downloads\" tab."
-        })      
+      })      
       
       hidePageSpinner()
     })
@@ -332,8 +331,9 @@ mdsc_sim_server <- function(id) {
         )
         
         # Bundle into a zip file
-        zip::zipr(zipfile = file, files = c(plot1_file, plot2_file, plot3_file, 
-                                      plot4_file, plot5_file, plot6_file)
+        utils::zip(zipfile = file, files = c(plot1_file, plot2_file, plot3_file, 
+                                             plot4_file, plot5_file, plot6_file), 
+                   flags = "-j"
         )
         
         hidePageSpinner()
