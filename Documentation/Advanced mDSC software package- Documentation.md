@@ -326,14 +326,14 @@ Quasi-isothermal mDSC can be performed to ensure that a sample is always in equi
 
 As a result, the events seen on quasi-isothermal mDSC are not necessarily the same as on regular mDSC. For example, a melting event taking place very quickly will not be present, or much less prominently so, in quasi-isothermal mDSC since the melting was already finished once equilibrium had been reached. 
 
-A small snippet of a typical temperature versus time graph of a quasi-isothermal mDSC run is shown in Figure 1. The output of quasi-isothermal mDSC is a modulated heat flow signal in function of time or temperature. Unfortunately, not all standard mDSC software can deconvolute this signal. This is where this software comes in.
+A small snippet of a typical temperature versus time graph of a quasi-isothermal mDSC run is shown in Figure 4. The output of quasi-isothermal mDSC is a modulated heat flow signal in function of time or temperature. Unfortunately, not all standard mDSC software can deconvolute this signal. This is where this software comes in.
 
 <p align="center">
-  <img src="../Assets/Fig4_TempVsTime.png" alt="Figure 1." width="500">
+  <img src="../Assets/Fig4_TempVsTime.png" alt="Figure 4." width="500">
 </p>
 
 <p align="center">
-<strong>Figure 1.</strong> Temperature - time graph of a quasi-isothermal mDSC run. 
+<strong>Figure 4.</strong> Temperature - time graph of a quasi-isothermal mDSC run. 
 </p>
 
 ## Input and output
@@ -347,10 +347,16 @@ The required modulation parameters are as follows:
 1.	Modulation amplitude (°C)
 2.	Modulation period (minutes).
 
-Based on the parameters mentioned above, it cleans up the data to only keep the relevant oscillatory signals. It then deconvolutes these signals into reversing and non-reversing heat flows. All the parameters mentioned above are required for the software to perform the deconvolution, but it also requires an additional one. The last modulations within a signal oscillatory pattern (Figure 2) are the ones that represent the sample at equilibrium. Thus, the user can select how many oscillations (counting from the right) should be considered for the deconvolution. 
+Based on the parameters mentioned above, it cleans up the data to only keep the relevant oscillatory signals. It then deconvolutes these signals into reversing and non-reversing heat flows. All the parameters mentioned above are required for the software to perform the deconvolution, but it also requires an additional one. The last modulations within a signal oscillatory pattern (Figure 5) are the ones that represent the sample at equilibrium. Thus, the user can select how many oscillations (counting from the right) should be considered for the deconvolution. 
 
-![Figure 2](Fig2_Quasi-isoExplain2.png){.center}
-<p style="text-align: center;"> <b>Figure 2. </b> Visual explanation of several of the user inputs required for the app. </p>
+<p align="center">
+  <img src="../Assets/Fig5_Quasi-isoExplain2.png" alt="Figure 5." width="500">
+</p>
+
+<p align="center">
+<strong>Figure 5.</strong> Visual explanation of several of the user inputs required for the app.
+</p>
+
 <br>
 <br>
 
