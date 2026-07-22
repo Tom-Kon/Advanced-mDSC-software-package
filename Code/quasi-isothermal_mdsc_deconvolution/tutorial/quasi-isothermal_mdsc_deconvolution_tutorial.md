@@ -6,7 +6,7 @@ As a result, the events seen on quasi-isothermal mDSC are not necessarily the sa
 
 A small snippet of a typical temperature versus time graph of a quasi-isothermal mDSC run is shown in Figure 1. The output of quasi-isothermal mDSC is a modulated heat flow signal in function of time or temperature. Unfortunately, not all standard mDSC software can deconvolute this signal. This is where this software comes in.
 
-![Figure 1](Fig1_TempVsTime.png){.center}
+![Figure 1](../../../Assets/inside-app/Fig4_TempVsTime.png){.center}
 <p style="text-align: center;"> <b>Figure 1. </b>Temperature - time graph of a quasi-isothermal mDSC run. </p>
 
 
@@ -23,7 +23,7 @@ The required modulation parameters are as follows:
 
 Based on the parameters mentioned above, it cleans up the data to only keep the relevant oscillatory signals. It then deconvolutes these signals into reversing and non-reversing heat flows. All the parameters mentioned above are required for the software to perform the deconvolution, but it also requires an additional one. The last modulations within a signal oscillatory pattern (Figure 2) are the ones that represent the sample at equilibrium. Thus, the user can select how many oscillations (counting from the right) should be considered for the deconvolution. 
 
-![Figure 2](Fig2_Quasi-isoExplain2.png){.center}
+![Figure 2](../../../Assets/inside-app/Fig5_Quasi-isoExplain.png){.center}
 <p style="text-align: center;"> <b>Figure 2. </b> Visual explanation of several of the user inputs required for the app. </p>
 <br>
 <br>

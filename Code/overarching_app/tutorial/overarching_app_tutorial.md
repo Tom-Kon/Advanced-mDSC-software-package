@@ -1,6 +1,9 @@
+# General information
+Please note that general information regarding installation, testing, and collaboration is available in the README file. This document only dives into the more technical aspects of DSC, the app in general, and the different sub apps. Also note that the information presented in the overview is available inside the software package as well. 
+
 # Tutorial for the overarching app
 
-Welcome to the mDSC analysis software package. If you are not familiar with mDSC, 
+Welcome to the mDSC analysis software package, a software package intended for people that want to dive much deeper into their mDSC data. If you are not familiar with mDSC, 
 we recommend you go to the section about theoretical background first, since the 
 following will be technical. This package is intended to help you with:
 
@@ -70,7 +73,7 @@ calibration is always necessary for all DSC instruments to correct for
 instrumental error. Nonetheless, the sample contribution is still fully contained 
 in *Equation 1*.
 
-![Figure 1.](figures/Fig1_differential_scanning_calorimeter.png){.center}
+![Figure 1.](../../../Assets/inside-app/Fig1_differential_scanning_calorimeter.png){.center}
 
 **Figure 1.** Basic representation of a differential scanning calorimeter.
 
@@ -84,7 +87,7 @@ containing a glass transition, an enthalpy recovery, a crystallization event,
 and a melting event is shown in *Figure 2*. Further instructions on how to analyze 
 and interpret thermograms are not included in this text.
 
-![Figure 2](figures/Fig2_typical_thermogram2.png){.center}
+![Figure 2](../../../Assets/inside-app/Fig2_typical_thermogram.png){.center}
 
 **Figure 2.** Typical thermogram resulting from a differential scanning 
 calorimetry experiment. Different thermal events are present and highlighted in 
@@ -202,7 +205,7 @@ $$
 
 A summary of this discussion is presented in Figure 3. The different methods are explained in further detail in the documentation of the respective sub apps. 
 
-![Figure 3](figures/Fig3_deconvolutionSummary.png){.center}
+![Figure 3](../../../Assets/inside-app/Fig3_deconvolutionSummary.png){.center}
 
 **Figure 3.** Visual summary of how modulated heat flow is deconvoluted into the total, reversing, and non-reversing heat flows.
 
@@ -223,13 +226,3 @@ The way the equations for THF, RHF, and NRHF were derived here was not strictly 
 6. Thomas, L. *Modulated DSC® Paper #2: Modulated DSC® Basics; Calculation and Calibration of MDSC®*. TA Instruments, 2005.
 
 7. *MODULATED DSC® (MDSC®): HOW DOES IT WORK?* TA Instruments.
-
-## Further tutorials and explanations
-The intention of all the above was to give crucial insight into the theoretical background of DSC. Tutorials on how the different sub-apps work can be found via the Github, but also within the sub-app itself (by navigating to the tutorial tabs in the different sub-applications). 
-
-The navigation system itself, with the main menu referring to different sub-applications, is based on a Shiny router. The navigation system is self-explanatory and thus is not explained further here. What is useful to mention is how to install the R app locally via Github. A tutorial can be found here: 
-
-https://argoshare.is.ed.ac.uk/healthyr_book/clone-an-existing-github-project-to-new-rstudio-project.html. 
-
-Or, in video format, here: 
-https://www.youtube.com/watch?v=NInwldFZgwA.  
