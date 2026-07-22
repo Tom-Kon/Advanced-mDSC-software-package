@@ -14,12 +14,14 @@ configUIsim1 <- function(ns) {
              
       ),
       column(6,
-             numericInput(ns("Atemp"), "Amplitude of the temperature modulation (°C)", 0.212, step=0.001),
-             numericInput(ns("phase"), "Phase of the modulated heat flow with respect to the temperature modulation (rad)", -0.2, step=0.1),
+             numericInput(ns("Atemp"), "Amplitude of the temperature modulation (°C)", 0.21, step=0.001),
+             numericInput(ns("phase"), "Phase of the modulated heat flow with respect to the temperature modulation (rad)", 0, step=0.1),
              numericInput(ns("loessAlpha"), "Degree of smoothing (higher = more smoothing)", 0.05, step=0.01),
              selectInput(inputId = ns("gaussianNumber"), 
                          label ="How many Gaussian-shaped events do you want to add?", 
                          choices = c(0:10)),
+             
+             
       )
     ),
     fluidRow(
@@ -41,21 +43,21 @@ configUIsim2 <- function(ns) {
   tagList(
     fluidRow(
       column(4,
-             numericInput(ns("deltaRHFPreTg"), "What is the slope of the reversing heat flow before the Tg (J/(g*°C))", -0.0001, step = 0.0001),
-             numericInput(ns("deltaRHFPostTg"), "What is the slope of the reversing heat flow after the Tg (J/(g*°C))", -0.0001, step = 0.0001),
-             numericInput(ns("StartRHFPreTg"), "What value does your reversing heat flow start at (J/g)", -0.040, step = 0.001),
+             numericInput(ns("deltaRevCpPreTg"), "What is the slope of the reversing heat capacity before the Tg (J/(g*°C²))", 0.003, step = 0.0005),
+             numericInput(ns("deltaRevCpPostTg"), "What is the slope of the reversing heat capacity after the Tg (J/(g*°C²))", 0.003, step = 0.0005),
+             numericInput(ns("startRevCpPreTg"), "What value does your reversing heat capacity start at (J/(g*°C)", 1.2, step = 0.01),
              
       ),
       column(4,
-             numericInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C))", 0.0008, step = 0.0001),
-             numericInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C))", 0.0009, step = 0.0001),
-             numericInput(ns("StartCpTempPreTg"), "What value does your total heat capacity start at (J/g)", 1.05, step = 0.01)
+             numericInput(ns("deltaCpPreTg"), "What is the slope of the total heat capacity before the Tg (J/(g*°C²))", 0.0004, step = 0.0001),
+             numericInput(ns("deltaCpPostTg"), "What is the slope of the total heat capacity after the Tg (J/(g*°C²))", 0.0005, step = 0.0001),
+             numericInput(ns("StartCpTempPreTg"), "What value does your total heat capacity start at (J/(g*°C)", 1.05, step = 0.01)
              
       ),
       column(4,
-             textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "30, 40, 35"),
-             textInput(ns("locationTgRHF"), "Where is the Tg on the reversing heat flow? Input start, end, and midpoint separated by commas (°C)", "35, 45, 40"),
-             numericInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", 0.268)
+             textInput(ns("locationTgTHF"), "Where is the Tg on the total heat flow? Input start, end, and midpoint separated by commas (°C)", "33.5, 44.9, 39.2"),
+             textInput(ns("locationTgRHF"), "Where is the Tg on the reversing heat flow? Input start, end, and midpoint separated by commas (°C)", "36, 45.5, 43.75"),
+             numericInput(ns("deltaCpTg"), "What is the jump in heat capacity at the Tg (J/(g*°C))", 0.2)
       )
     ),
     fluidRow(
@@ -71,7 +73,7 @@ configUIsim2 <- function(ns) {
       column(4)
     )
   )
-
+  
 }
 
 
@@ -133,9 +135,9 @@ configUI5 <- function(ns) {
                   c(".png", ".jpg", ".tiff")), 
       numericInput(ns("exportDpi"), "What should the plot dpi be?", value= 600),
       numericInput(ns("exportWidth"), "What should the plot width be in cm?",  
-                value= 20),
+                   value= 20),
       numericInput(ns("exportHeight"), "What should the plot height be in cm?", 
-                value= 20)
+                   value= 20)
     ),
     
     mainPanel(
