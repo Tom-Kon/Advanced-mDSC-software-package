@@ -595,7 +595,7 @@ $$
 , and thus:
 
 $$
-k=\frac{1}{T_{g,\mathrm{midpoint}}-T_{g,\mathrm{onset}}}\ln\left(\frac{\frac{4}{\epsilon}-2\mp\sqrt{\left(\frac{4}{\epsilon}-2\right)^2-4}}{2}\right)
+k=\frac{2}{T_{g,\mathrm{endset}}-T_{g,\mathrm{onset}}}\ln\left(\frac{\frac{4}{\epsilon}-2\mp\sqrt{\left(\frac{4}{\epsilon}-2\right)^2-4}}{2}\right)
 $$
 
 $ϵ$ is hardcoded to be equal to 0.1, but the user is of course free to change this in the code if this is absolutely required. 
