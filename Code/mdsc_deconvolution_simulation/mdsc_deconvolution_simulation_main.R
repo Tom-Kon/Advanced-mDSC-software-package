@@ -163,7 +163,8 @@ mdsc_sim_server <- function(id) {
         if (any(is.na(vec))) NA else vec
       }, error = function(e) NA)
       
-      reactiveInputs$deltaCpTg <- as.numeric(input$deltaCpTg)
+      reactiveInputs$deltaCpTgTHF <- as.numeric(input$deltaCpTgTHF)
+      reactiveInputs$deltaCpTgRHF <- as.numeric(input$deltaCpTgRHF)
       reactiveInputs$gaussianNumber <- as.numeric(input$gaussianNumber)
       reactiveInputs$gaussianList <- list()
       

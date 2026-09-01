@@ -28,7 +28,7 @@ simulation_error_handling <- function(reactiveInputs){
   
   if(is.null(reactiveInputs$startRevCpPreTg) || is.null(reactiveInputs$deltaRevCpPostTg) || is.null(reactiveInputs$deltaRevCpPreTg) ||
      is.null(reactiveInputs$deltaCpPreTg) || is.null(reactiveInputs$deltaCpPostTg) || is.null(reactiveInputs$StartCpTempPreTg) ||
-     is.null(reactiveInputs$locationTgTHF) || is.null(reactiveInputs$locationTgRHF) || is.null(reactiveInputs$deltaCpTg)) {
+     is.null(reactiveInputs$locationTgTHF) || is.null(reactiveInputs$locationTgRHF) || is.null(reactiveInputs$deltaCpTgTHF) || is.null(reactiveInputs$deltaCpTgRHF)) {
     
     msg <- "One of your Tg inputs is missing!"
     return(msg)

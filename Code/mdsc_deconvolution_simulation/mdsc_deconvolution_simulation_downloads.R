@@ -24,7 +24,9 @@ download_Excel <- function(reactiveInputs) {
   #MHF generation (Tg)
   locationTgTHF <- reactiveInputs$locationTgTHF
   locationTgRHF <- reactiveInputs$locationTgRHF
-  deltaCpTg <- reactiveInputs$deltaCpTg
+  deltaCpTgTHF <- reactiveInputs$deltaCpTgTHF
+  deltaCpTgRHF <- reactiveInputs$deltaCpTgRHF
+  
   
   #MHF generation (Peaks)
   gaussianNumber <- reactiveInputs$gaussianNumber
@@ -74,7 +76,7 @@ download_Excel <- function(reactiveInputs) {
     "Onset(°C)" = c(locationTgTHF[1], locationTgRHF[1]), 
     "Endset(°C)" = c(locationTgTHF[2], locationTgRHF[2]), 
     "Midpoint(°C)" = c(locationTgTHF[3], locationTgRHF[3]), 
-    "Jump in heat capacity (J/g*°C)" = c(deltaCpTg, deltaCpTg),
+    "Jump in heat capacity (J/g*°C)" = c(deltaCpTgTHF, deltaCpTgRHF),
     row.names = c("THF Tg values", "RHF Tg values"),
     check.names = FALSE
     

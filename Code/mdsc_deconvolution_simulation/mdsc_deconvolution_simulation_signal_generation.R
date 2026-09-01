@@ -25,7 +25,8 @@ signal_generation <- function(reactiveInputs, timeGen) {
   
   locationTgTHF <- reactiveInputs$locationTgTHF
   locationTgRHF <- reactiveInputs$locationTgRHF
-  deltaCpTg <- reactiveInputs$deltaCpTg
+  deltaCpTgTHF <- reactiveInputs$deltaCpTgTHF
+  deltaCpTgRHF <- reactiveInputs$deltaCpTgRHF
   
   
   MeltEnth <- reactiveInputs$MeltEnth
@@ -54,11 +55,11 @@ signal_generation <- function(reactiveInputs, timeGen) {
   modTempdervPhaseNoHR <- Atemp * 2*pi/period * cos(2*pi/period * times + phase)
   
   FinalRevCpPreTg <- startRevCpPreTg + deltaRevCpPreTg * locationTgRHF[1]
-  StartRevCpTempPostTg <- FinalRevCpPreTg + deltaCpTg
+  StartRevCpTempPostTg <- FinalRevCpPreTg + deltaCpTgRHF
   
   
   FinalCpPreTg <- StartCpTempPreTg + deltaCpPreTg*locationTgTHF[1]
-  StartCpPostTg <- FinalCpPreTg + deltaCpTg
+  StartCpPostTg <- FinalCpPreTg + deltaCpTgTHF
   
   # Determine indices for the RHF Tg region
   idx_Tg1RHF <- which.min(abs(TRef - locationTgRHF[1]))
@@ -70,10 +71,10 @@ signal_generation <- function(reactiveInputs, timeGen) {
   # Create a sequence for the gradual change in RevCp within the Tg regions
   epsilon <- 0.1
   numerator <- abs(log((4/epsilon - 2 + sqrt((4/epsilon - 2)^2-4))/2))
+  print(numerator)
   
   deltaRHF <- (locationTgRHF[2] - locationTgRHF[1])/2
   kRHF <- numerator / (deltaRHF)
-  print(kRHF)
   deltaTHF <- (locationTgTHF[2] - locationTgTHF[1])/2
   kTHF <- numerator / (deltaTHF)
   
