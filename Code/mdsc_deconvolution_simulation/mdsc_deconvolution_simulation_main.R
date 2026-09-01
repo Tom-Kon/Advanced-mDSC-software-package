@@ -7,6 +7,8 @@ source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_equally_spac
 source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_final_calculations.R")
 source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_plots.R")
 source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_error_handling.R")
+source("mdsc_deconvolution_simulation/mdsc_deconvolution_simulation_frequency_effect.R")
+
 
 
 mdsc_sim_ui <- function(id) {
@@ -55,10 +57,19 @@ mdsc_sim_ui <- function(id) {
     ),
     
     tabPanel(
+      id = ns("freqeffect"),
+      title = "Frequency effect",
+      icon = icon("calculator", class = "fa-solid"),
+      fluidPage(
+        configUIsim5(ns)
+      )
+    ),
+    
+    tabPanel(
       id = ns("downloads"),
       title = "Downloads",
       icon = icon("download", class = "fa-solid"),
-      fluidPage(configUI5(ns))
+      fluidPage(configUI6Sim(ns))
     ),
     
     tabPanel(
@@ -152,6 +163,25 @@ mdsc_sim_server <- function(id) {
       reactiveInputs$deltaCpPostTg <- eval(parse(text = input$deltaCpPostTg))
       reactiveInputs$StartCpTempPreTg <- eval(parse(text = input$StartCpTempPreTg))
       
+      reactiveInputs$dCpRHF <- input$dCpRHF
+      reactiveInputs$dCpTHF <- input$dCpTHF
+      reactiveInputs$ARHF <- input$ARHF
+      reactiveInputs$ATHF <- input$ATHF
+      reactiveInputs$BRHF <- input$BRHF
+      reactiveInputs$BTHF <- input$BTHF
+      reactiveInputs$DRHF <- input$DRHF
+      reactiveInputs$DTHF <- input$DTHF
+      reactiveInputs$TTHF <- input$TTHF
+      reactiveInputs$TRHF <- input$TRHF
+      reactiveInputs$k <- input$k
+      reactiveInputs$intlimithigher <- input$intlimithigher
+      reactiveInputs$intlimitlower <- input$intlimitlower
+      reactiveInputs$kcorr <- input$kcorr
+      
+      
+      
+      reactiveInputs$int_list <- list()
+      
 
       reactiveInputs$locationTgTHF <- tryCatch({
         vec <- as.numeric(unlist(strsplit(input$locationTgTHF, ",")))
@@ -218,6 +248,12 @@ mdsc_sim_server <- function(id) {
       
       resampled_points <- equal_y_val(reactiveInputs$signalGen)
       
+      reactiveInputs$freqdiffres <- freqdiffFunc(reactiveInputs)
+      reactiveInputs$freqdiffplots <- reactiveInputs$freqdiffres$resdf
+      reactiveInputs$int_list <- reactiveInputs$freqdiffres$int_list
+      
+      test <<- reactiveInputs$freqdifflists
+      
       results <- final_calculation(
         sampling = reactiveInputs$sampling,
         startTemp = reactiveInputs$startTemp,
@@ -242,6 +278,69 @@ mdsc_sim_server <- function(id) {
       })      
       
       hidePageSpinner()
+    })
+    
+    observeEvent(input$analyzefreqEffect, {
+      reactiveInputs$dCpRHF <- input$dCpRHF
+      reactiveInputs$dCpTHF <- input$dCpTHF
+      reactiveInputs$ARHF <- input$ARHF
+      reactiveInputs$ATHF <- input$ATHF
+      reactiveInputs$BRHF <- input$BRHF
+      reactiveInputs$BTHF <- input$BTHF
+      reactiveInputs$DRHF <- input$DRHF
+      reactiveInputs$DTHF <- input$DTHF
+      reactiveInputs$TTHF <- input$TTHF
+      reactiveInputs$TRHF <- input$TRHF
+      reactiveInputs$k <- input$k
+      reactiveInputs$intlimithigher <- input$intlimithigher
+      reactiveInputs$intlimitlower <- input$intlimitlower
+      reactiveInputs$kcorr <- input$kcorr
+  
+       
+       reactiveInputs$freqdiffres <- freqdiffFunc(reactiveInputs)
+       reactiveInputs$freqdiffplots <- reactiveInputs$freqdiffres$resdf
+       reactiveInputs$currentRes <- reactiveInputs$freqdiffres$currentRes
+       
+    })
+    
+    observeEvent(input$saveAnalysis, {
+      reactiveInputs$int_list <- append(reactiveInputs$int_list, list(reactiveInputs$currentRes))
+    })
+    
+    observeEvent(input$exportAnalysis, {
+      
+      wb <- createWorkbook("C:/Users/Tom/Downloads/export.xlsx")
+      addWorksheet(wb, "results")
+      
+      for(i in 1:length(reactiveInputs$int_list)) {
+        startParam <- i + 9*(i-1)
+        startRes <- startParam + 3
+        startResDev <- startParam + 6
+        
+        writeData(
+          wb,
+          sheet = 1,
+          x= reactiveInputs$int_list[[i]]$param,
+          startRow = startParam
+        )
+        
+        writeData(
+          wb,
+          sheet = 1,
+          x = reactiveInputs$int_list[[i]]$int_res,
+          startRow = startRes
+        )
+        
+        writeData(
+          wb,
+          sheet = 1,
+          x = reactiveInputs$int_list[[i]]$int_res_dev,
+          startRow = startResDev
+        )
+        
+      }
+      
+      saveWorkbook(wb, "C:/Users/Tom/Downloads/export.xlsx", overwrite = TRUE)
     })
     
     output$downloadExcelSimDSC <- downloadHandler(
@@ -356,5 +455,65 @@ mdsc_sim_server <- function(id) {
                          "NRHF" = smoothedNRHFplot(res, reactiveInputs$subtitle))
       ggplotly(plot_obj, tooltip = c("x", "y", "text"))
     })
+    
+    
+    #Render the frequency effect plots
+    output$plotfreqeffect <- renderPlotly({
+      req(reactiveInputs$freqdiffplots)  # Ensure results exist
+      res <- reactiveInputs$freqdiffplots
+      freqdiffgraph <- freqdiffgraphFunc(
+        res,
+        id = ns("freqdiffgraph")
+      )
+    })
+    
+    #Ensure the frequency effect plot adapts to zoom
+    observeEvent(
+      event_data(
+        "plotly_relayout",
+        source = ns("freqdiffgraph")
+      ),
+      {
+        relayout <- event_data(
+          "plotly_relayout",
+          source = ns("freqdiffgraph")
+        )
+        
+        req(
+          !is.null(relayout[["xaxis.range[0]"]]),
+          !is.null(relayout[["xaxis.range[1]"]])
+        )
+        
+        reactiveInputs$xmin <- relayout[["xaxis.range[0]"]]
+        reactiveInputs$xmax <- relayout[["xaxis.range[1]"]]
+        
+        reactiveInputs$dCpRHF <- input$dCpRHF
+        reactiveInputs$dCpTHF <- input$dCpTHF
+        reactiveInputs$ARHF <- input$ARHF
+        reactiveInputs$ATHF <- input$ATHF
+        reactiveInputs$BRHF <- input$BRHF
+        reactiveInputs$BTHF <- input$BTHF
+        reactiveInputs$DRHF <- input$DRHF
+        reactiveInputs$DTHF <- input$DTHF
+        reactiveInputs$TTHF <- input$TTHF
+        reactiveInputs$TRHF <- input$TRHF
+        reactiveInputs$k <- input$k
+        
+        res <- freqdiffFunc(reactiveInputs)
+        
+        plotlyProxy(
+          ns("plotfreqeffect"),
+          session
+        ) %>%
+          plotlyProxyInvoke(
+            "restyle",
+            list(
+              x = list(res$x_list),
+              y = list(res$y_full)
+            )
+          )
+      },
+      ignoreInit = TRUE
+    )
   })
 }

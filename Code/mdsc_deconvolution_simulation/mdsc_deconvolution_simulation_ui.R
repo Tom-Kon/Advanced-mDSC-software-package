@@ -127,7 +127,42 @@ configUIsim4 <- function(ns) {
   )
 }
 
-configUI5 <- function(ns) {
+configUIsim5 <- function(ns) {
+  sidebarLayout(
+    sidebarPanel(
+      actionButton(ns("analyzefreqEffect"), "Analyze!"),
+      actionButton(ns("saveAnalysis"), "Save analysis"),
+      actionButton(ns("exportAnalysis"), "Export analysis"),
+      h4("Parameters"),
+      sliderInput(ns("intlimitlower"), "Lower limit of integration/baseline correction", min = -100, max = 200, value= -50),
+      sliderInput(ns("intlimithigher"), "Upper limit of integration/baseline correction", min = -100, max = 200, value= 50),
+      sliderInput(ns("dCpRHF"), "Jump in Cp on RHF", min = 0.05, max = 1, value= 0.3),
+      sliderInput(ns("dCpTHF"), "Jump in Cp on THF", min = 0.05, max = 1, value= 0.3),
+      sliderInput(ns("ARHF"), "Starting Cp value of RHF", min = 0.01, max = 0.5, value= 0.025),
+      sliderInput(ns("ATHF"), "Starting Cp value of THF", min = 0.01, max = 0.5, value= 0.025),
+      sliderInput(ns("BRHF"), "Slope before Tg on RHF", min = 0.0001, max = 0.01, value= 0.0005),
+      sliderInput(ns("BTHF"), "Slope before Tg on THF", min = 0.0001, max = 0.01, value= 0.0005),
+      sliderInput(ns("DRHF"), "Slope after Tg on RHF", min = 0.0001, max = 0.01, value= 0.0005),
+      sliderInput(ns("DTHF"), "Slope after Tg on THF", min = 0.0001, max = 0.01, value= 0.0005),
+      sliderInput(ns("TTHF"), "Tg midpoint on THF", min = 0, max = 200, value= 30),
+      sliderInput(ns("TRHF"), "Tg midpoint on RHF", min = 10, max = 210, value= 40),
+      sliderInput(ns("k"), "k-value", min = 0.05, max = 2, value= 0.3, step = 0.025),
+      sliderInput(ns("kcorr"), "Baseline correction value", min = 0.005, max = 1, value= 0.3),
+    ),
+    
+    mainPanel(
+      br(), br(), br(), br(), br(),
+        fluidRow(
+          column(12, plotlyOutput(ns("plotfreqeffect"), height = "90vh"))
+        )
+      )
+    )
+}
+
+
+
+
+configUI6Sim <- function(ns) {
   sidebarLayout(
     sidebarPanel(
       h4("Plot export settings"),
