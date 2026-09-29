@@ -10,16 +10,13 @@ tags:
 authors:
   - name: Tom Konings
     orcid: 0000-0003-1256-6557
-    equal-contrib: True
     affiliation: 1
     corresponding: True
   - name: Julia Bandera
     orcid: 0009-0000-1104-7232
-    equal-contrib: False
     affiliation: 2
   - name: Guy Van den Mooter
     orcid: 0000-0001-9166-6075
-    equal-contrib: False
     affiliation: 1
 
 affiliations:
@@ -59,6 +56,13 @@ The core principle guiding most of the software's design was its user friendline
 
 # Research impact statement
 The software was initially developed in order to elucidate a physically unexplainable signal on the reversing heat flow when analysing a polymer from the polyoxazoline class, which required the use of all the apps present within the software. This research will be submitted to the Journal of Thermal Analysis and Calorimetry. This being said, the software's value lies in the fact that the four different apps can be used in other contexts as well. For instance, quasi-isothermal mDSC is a more widely used technique that requires software for data analysis [@Wunderlich2005]. The mDSC deconvolution simulator can be used to simulate certain thermal events and investigate them, as was done in the previously mentioned research. The app that deconvolutes mDSC data without performing a Fourier transform can be used to check the validity of a wide variety of mDSC analyses, especially when it comes to the question as to whether enough modulations were present over a thermal event. Furthermore, the software is not tied to any specific file format and requires Excel files to run analyses, which can always be exported using any commercial software. This makes the software compatible with mDSC systems used across research groups to solve any research question that requires advanced mDSC analysis.
+
+![A demonstration of an application of the quasi-isothermal mDSC deconvolution app applied to an ethyl cellulose sample. A: modulated heat flow prior to deconvolution. The different isothermal segments characteristic of quasi-isothermal mDSC are clearly visible. B. Result of the deconvolution procedure showing the reversing heat capacity.](QI_mDSC.svg){width=0.5\textwidth}
+
+![A demonstration of the mDSC deconvolution simulation app. A. Modulated heat flow generated based on user input. B. Overlay of the different heat flows obtained after deconvolution.](mDSCsim_overlay.svg){width=0.5textwidth}
+
+![A demonstration of the regular mDSC deconvolution app. A. Reversing heat flow obtained after deconvolution of the modulated heat flow signal using neighbouring minima and maxima (the envelope method). B. Reversing heat flow obtained after deconvolution of the modulated heat flow using Fourier analysis.](minmaxenvelope.svg){width=0.5\textwidth}
+
 
 # Mathematics
 The detailed mathematics used within the software package are described in the documentation, as it would be too extensive to give a full overview here. However, three equations are crucial for all applications and are thus mentioned here. When deconvoluting an mDSC signal (also called the modulated heat flow, MHF), this normally results in a total heat flow (THF), a reversing heat flow (RHF), and a non-reversing heat flow (NRHF). The equations used to calculate these three quantities are, respectively, 
