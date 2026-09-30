@@ -50,8 +50,11 @@
          width="6673178"
          height="3023061"
          id="rect2" /></clipPath></defs><g
-     transform="matrix(0.15474152,0,0,0.15474152,-122.63655,-8.8146752)"
-     id="g6"><g
+     transform="matrix(0.15474152,0,0,0.15474152,-122.63655,-8.8146762)"
+     id="g6"
+     inkscape:export-filename="minmaxenvelope.svg"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"><g
        transform="matrix(3.60892e-4,0,0,3.60892e-4,819,131)"
        id="g3"><g
          clip-path="url(#clip1)"
