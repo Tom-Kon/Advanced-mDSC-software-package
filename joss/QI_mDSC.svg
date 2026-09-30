@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="150mm"
-   height="126.2259mm"
-   viewBox="0 0 150 126.2259"
+   width="119.99999mm"
+   height="100.98073mm"
+   viewBox="0 0 119.99999 100.98073"
    version="1.1"
    id="svg1"
    xml:space="preserve"
@@ -34,9 +34,9 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"><inkscape:page
        x="0"
-       y="-5.0472361e-22"
-       width="150"
-       height="126.22591"
+       y="0"
+       width="119.99999"
+       height="100.98073"
        id="page2"
        margin="0"
        bleed="0" /></sodipodi:namedview><defs
@@ -72,10 +72,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-22.571473,-20.14999)"><g
+     transform="translate(-22.571473,-20.149992)"><g
        style="overflow:hidden"
        id="g1"
-       transform="matrix(0.05179565,0,0,0.05179565,20.758625,17.301221)"
+       transform="matrix(0.04143652,0,0,0.04143652,21.121194,17.870975)"
        inkscape:export-filename="QI_mDSC.svg"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"><g
