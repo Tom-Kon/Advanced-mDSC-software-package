@@ -75,7 +75,6 @@ mdsc_quasiIso_server <- function(id) {
     # Create a reactiveValues object to store inputs
     reactiveInputs <- reactiveValues()
     
-    # This part is separate and independent of your server logic
     observeEvent(input$analyze, {
       
       showPageSpinner()
