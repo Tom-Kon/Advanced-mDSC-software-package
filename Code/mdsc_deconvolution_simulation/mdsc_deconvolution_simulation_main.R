@@ -309,7 +309,7 @@ mdsc_sim_server <- function(id) {
     
     observeEvent(input$exportAnalysis, {
       
-      wb <- createWorkbook("C:/Users/Tom/Downloads/export.xlsx")
+      wb <- createWorkbook("export.xlsx")
       addWorksheet(wb, "results")
       
       for(i in 1:length(reactiveInputs$int_list)) {
@@ -340,7 +340,7 @@ mdsc_sim_server <- function(id) {
         
       }
       
-      saveWorkbook(wb, "C:/Users/Tom/Downloads/export.xlsx", overwrite = TRUE)
+      saveWorkbook(wb, "export.xlsx", overwrite = TRUE)
     })
     
     output$downloadExcelSimDSC <- downloadHandler(

@@ -183,9 +183,9 @@ freqdiffgraphFunc <- function(res, id) {
     geom_vline(xintercept = res$intlimitlower, linetype = "dotted") +
     geom_vline(xintercept = res$intlimithigher, linetype = "dotted") +
     labs(
-      title = "LOESS smoothed Total heat flow",
+      title = "Frequency effect",
       x = "Temperature (°C)",
-      y = "Total heat flow (W/g)"
+      y = "Non-reversing heat flow (W/g)"
     ) +
     theme_minimal(base_size = 18)
   
